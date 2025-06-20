@@ -1,0 +1,2888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatus</title>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #075e54;
+            --secondary-color: #128c7e;
+            --accent-color: #25d366;
+            --light-color: #dcf8c6;
+            --dark-color: #333;
+            --background-color: #e5ddd5;
+            --panel-color: white;
+        }
+        
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--dark-color);
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .panel {
+            background-color: var(--panel-color);
+            padding: 20px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: var(--background-color);
+            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_a4be512e7195b6b733d9110b408f075d.png');
+            position: relative;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            max-width: 70%;
+            padding: 8px 12px;
+            border-radius: 7.5px;
+            position: relative;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .received {
+            background-color: var(--panel-color);
+            align-self: flex-start;
+        }
+        
+        .sent {
+            background-color: var(--light-color);
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: #666;
+            text-align: right;
+            margin-top: 3px;
+        }
+        
+        .input-area {
+            display: flex;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-top: 1px solid #ddd;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        .send-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+        
+        .send-button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        button {
+            padding: 10px 15px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            transform: none;
+        }
+        
+        input[type="text"], 
+        input[type="password"],
+        input[type="email"],
+        select {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 16px;
+        }
+        
+        .status {
+            margin: 10px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .file-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .media-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .media-preview:hover {
+            transform: scale(1.05);
+        }
+        
+        .document {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .document:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .document-icon {
+            font-size: 30px;
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .profile-pic {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .user-suggestions {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 200px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .suggestion-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .suggestion-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        .notification-close {
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            z-index: 100;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .settings-panel.open {
+            transform: translateX(0);
+        }
+        
+        .settings-toggle {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 101;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .emoji-picker {
+            position: absolute;
+            bottom: 60px;
+            right: 10px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+            display: none;
+        }
+        
+        .emoji-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            margin: 2px;
+        }
+        
+        .typing-indicator {
+            font-size: 12px;
+            color: #666;
+            margin-left: 10px;
+            font-style: italic;
+        }
+        
+        .context-menu {
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .context-menu-item {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        
+        .context-menu-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .fullscreen-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .fullscreen-image img {
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .fullscreen-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header hidden" id="header">
+        <div id="profileName"></div>
+        <div class="profile">
+            <div class="profile-pic" id="profilePic"></div>
+            <button id="logoutButton">Logout</button>
+        </div>
+    </div>
+
+    <!-- Login Panel -->
+    <div class="panel" id="loginPanel">
+        <h2>Login or Register</h2>
+        <div id="loginTabs">
+            <button class="tab-btn active" id="loginTabBtn">Login</button>
+            <button class="tab-btn" id="registerTabBtn">Register</button>
+        </div>
+        
+        <div id="loginForm">
+            <input type="text" id="usernameInput" placeholder="Username" required>
+            <input type="password" id="passwordInput" placeholder="Password" required>
+            <button id="loginButton">Login</button>
+            <div class="status" id="loginStatus"></div>
+        </div>
+        
+        <div id="registerForm" class="hidden">
+            <input type="text" id="regUsernameInput" placeholder="Username" required>
+            <input type="password" id="regPasswordInput" placeholder="Password" required>
+            <input type="email" id="regEmailInput" placeholder="Email (optional)">
+            <button id="registerButton">Register</button>
+            <div class="status" id="registerStatus"></div>
+        </div>
+    </div>
+
+    <!-- Connection Panel -->
+    <div class="panel hidden" id="connectionPanel">
+        <h2>Connect to a Friend</h2>
+        <p>Your Peer ID: <strong id="peerIdDisplay"></strong></p>
+        
+        <div class="suggestion-container">
+            <input type="text" id="remoteIdInput" placeholder="Search or enter Peer ID">
+            <div class="user-suggestions hidden" id="userSuggestions"></div>
+        </div>
+        
+        <button id="connectButton">Connect</button>
+        <div class="status" id="connectionStatus">Not connected</div>
+        
+        <h3>Recent Connections</h3>
+        <div id="recentConnections"></div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div class="chat-container hidden" id="chatContainer">
+        <!-- Messages will appear here -->
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-area hidden" id="inputArea">
+        <button class="file-button" id="fileButton" title="Attach file">📎</button>
+        <input type="file" id="fileInput" class="file-input" accept="image/*,.pdf,.doc,.docx,.txt,.mp3,.mp4">
+        <button class="emoji-button" id="emojiButton" title="Emoji">😊</button>
+        <input type="text" class="message-input" id="messageInput" placeholder="Type a message...">
+        <button class="send-button" id="sendButton" title="Send">➤</button>
+    </div>
+
+    <!-- Emoji Picker -->
+    <div class="emoji-picker" id="emojiPicker">
+        <div class="emoji-category">
+            <button class="emoji-btn">😀</button>
+            <button class="emoji-btn">😁</button>
+            <button class="emoji-btn">😂</button>
+            <button class="emoji-btn">🤣</button>
+            <button class="emoji-btn">😃</button>
+            <button class="emoji-btn">😄</button>
+            <button class="emoji-btn">😅</button>
+            <button class="emoji-btn">😆</button>
+            <button class="emoji-btn">😉</button>
+            <button class="emoji-btn">😊</button>
+            <button class="emoji-btn">😋</button>
+            <button class="emoji-btn">😎</button>
+            <button class="emoji-btn">😍</button>
+            <button class="emoji-btn">😘</button>
+            <button class="emoji-btn">🥰</button>
+            <button class="emoji-btn">😗</button>
+            <button class="emoji-btn">😙</button>
+            <button class="emoji-btn">😚</button>
+            <button class="emoji-btn">☺️</button>
+            <button class="emoji-btn">🙂</button>
+            <button class="emoji-btn">🤗</button>
+            <button class="emoji-btn">🤩</button>
+            <button class="emoji-btn">🤔</button>
+            <button class="emoji-btn">🤨</button>
+            <button class="emoji-btn">😐</button>
+            <button class="emoji-btn">😑</button>
+            <button class="emoji-btn">😶</button>
+            <button class="emoji-btn">🙄</button>
+            <button class="emoji-btn">😏</button>
+            <button class="emoji-btn">😣</button>
+            <button class="emoji-btn">😥</button>
+            <button class="emoji-btn">😮</button>
+            <button class="emoji-btn">🤐</button>
+            <button class="emoji-btn">😯</button>
+            <button class="emoji-btn">😪</button>
+            <button class="emoji-btn">😫</button>
+            <button class="emoji-btn">😴</button>
+            <button class="emoji-btn">😌</button>
+            <button class="emoji-btn">😛</button>
+            <button class="emoji-btn">😜</button>
+            <button class="emoji-btn">😝</button>
+            <button class="emoji-btn">🤤</button>
+            <button class="emoji-btn">😒</button>
+            <button class="emoji-btn">😓</button>
+            <button class="emoji-btn">😔</button>
+            <button class="emoji-btn">😕</button>
+            <button class="emoji-btn">🙃</button>
+            <button class="emoji-btn">🤑</button>
+            <button class="emoji-btn">😲</button>
+            <button class="emoji-btn">☹️</button>
+            <button class="emoji-btn">🙁</button>
+            <button class="emoji-btn">😖</button>
+            <button class="emoji-btn">😞</button>
+            <button class="emoji-btn">😟</button>
+            <button class="emoji-btn">😤</button>
+            <button class="emoji-btn">😢</button>
+            <button class="emoji-btn">😭</button>
+            <button class="emoji-btn">😦</button>
+            <button class="emoji-btn">😧</button>
+            <button class="emoji-btn">😨</button>
+            <button class="emoji-btn">😩</button>
+            <button class="emoji-btn">🤯</button>
+            <button class="emoji-btn">😬</button>
+            <button class="emoji-btn">😰</button>
+            <button class="emoji-btn">😱</button>
+            <button class="emoji-btn">🥵</button>
+            <button class="emoji-btn">🥶</button>
+            <button class="emoji-btn">😳</button>
+            <button class="emoji-btn">🤪</button>
+            <button class="emoji-btn">😵</button>
+            <button class="emoji-btn">🥴</button>
+            <button class="emoji-btn">😠</button>
+            <button class="emoji-btn">😡</button>
+            <button class="emoji-btn">🤬</button>
+            <button class="emoji-btn">😷</button>
+            <button class="emoji-btn">🤒</button>
+            <button class="emoji-btn">🤕</button>
+            <button class="emoji-btn">🤢</button>
+            <button class="emoji-btn">🤮</button>
+            <button class="emoji-btn">🤧</button>
+            <button class="emoji-btn">😇</button>
+            <button class="emoji-btn">🥳</button>
+            <button class="emoji-btn">🥺</button>
+            <button class="emoji-btn">🤠</button>
+            <button class="emoji-btn">🤡</button>
+            <button class="emoji-btn">👻</button>
+            <button class="emoji-btn">👽</button>
+            <button class="emoji-btn">🤖</button>
+            <button class="emoji-btn">😈</button>
+            <button class="emoji-btn">👿</button>
+            <button class="emoji-btn">💀</button>
+            <button class="emoji-btn">☠️</button>
+            <button class="emoji-btn">💋</button>
+            <button class="emoji-btn">👋</button>
+            <button class="emoji-btn">🤚</button>
+            <button class="emoji-btn">🖐️</button>
+            <button class="emoji-btn">✋</button>
+            <button class="emoji-btn">🖖</button>
+            <button class="emoji-btn">👌</button>
+            <button class="emoji-btn">🤏</button>
+            <button class="emoji-btn">✌️</button>
+            <button class="emoji-btn">🤞</button>
+            <button class="emoji-btn">🤟</button>
+            <button class="emoji-btn">🤘</button>
+            <button class="emoji-btn">🤙</button>
+            <button class="emoji-btn">👈</button>
+            <button class="emoji-btn">👉</button>
+            <button class="emoji-btn">👆</button>
+            <button class="emoji-btn">🖕</button>
+            <button class="emoji-btn">👇</button>
+            <button class="emoji-btn">👍</button>
+            <button class="emoji-btn">👎</button>
+            <button class="emoji-btn">✊</button>
+            <button class="emoji-btn">👊</button>
+            <button class="emoji-btn">🤛</button>
+            <button class="emoji-btn">🤜</button>
+            <button class="emoji-btn">🤚</button>
+            <button class="emoji-btn">👏</button>
+            <button class="emoji-btn">🙌</button>
+            <button class="emoji-btn">👐</button>
+            <button class="emoji-btn">🤲</button>
+            <button class="emoji-btn">🤝</button>
+            <button class="emoji-btn">🙏</button>
+            <button class="emoji-btn">✍️</button>
+            <button class="emoji-btn">💅</button>
+            <button class="emoji-btn">🤳</button>
+            <button class="emoji-btn">💪</button>
+            <button class="emoji-btn">🦾</button>
+            <button class="emoji-btn">🦿</button>
+            <button class="emoji-btn">🦵</button>
+            <button class="emoji-btn">🦶</button>
+            <button class="emoji-btn">👂</button>
+            <button class="emoji-btn">🦻</button>
+            <button class="emoji-btn">👃</button>
+            <button class="emoji-btn">🧠</button>
+            <button class="emoji-btn">🦷</button>
+            <button class="emoji-btn">🦴</button>
+            <button class="emoji-btn">👀</button>
+            <button class="emoji-btn">👁️</button>
+            <button class="emoji-btn">👅</button>
+            <button class="emoji-btn">👄</button>
+            <button class="emoji-btn">👶</button>
+            <button class="emoji-btn">🧒</button>
+            <button class="emoji-btn">👦</button>
+            <button class="emoji-btn">👧</button>
+            <button class="emoji-btn">🧑</button>
+            <button class="emoji-btn">👨</button>
+            <button class="emoji-btn">👩</button>
+            <button class="emoji-btn">🧔</button>
+            <button class="emoji-btn">👵</button>
+            <button class="emoji-btn">👴</button>
+            <button class="emoji-btn">👲</button>
+            <button class="emoji-btn">👳</button>
+            <button class="emoji-btn">👮</button>
+            <button class="emoji-btn">👷</button>
+            <button class="emoji-btn">💂</button>
+            <button class="emoji-btn">🕵️</button>
+            <button class="emoji-btn">👩‍⚕️</button>
+            <button class="emoji-btn">👨‍⚕️</button>
+            <button class="emoji-btn">👩‍🌾</button>
+            <button class="emoji-btn">👨‍🌾</button>
+            <button class="emoji-btn">👩‍🍳</button>
+            <button class="emoji-btn">👨‍🍳</button>
+            <button class="emoji-btn">👩‍🎓</button>
+            <button class="emoji-btn">👨‍🎓</button>
+            <button class="emoji-btn">👩‍🎤</button>
+            <button class="emoji-btn">👨‍🎤</button>
+            <button class="emoji-btn">👩‍🏫</button>
+            <button class="emoji-btn">👨‍🏫</button>
+            <button class="emoji-btn">👩‍🏭</button>
+            <button class="emoji-btn">👨‍🏭</button>
+            <button class="emoji-btn">👩‍💻</button>
+            <button class="emoji-btn">👨‍💻</button>
+            <button class="emoji-btn">👩‍💼</button>
+            <button class="emoji-btn">👨‍💼</button>
+            <button class="emoji-btn">👩‍🔧</button>
+            <button class="emoji-btn">👨‍🔧</button>
+            <button class="emoji-btn">👩‍🔬</button>
+            <button class="emoji-btn">👨‍🔬</button>
+            <button class="emoji-btn">👩‍🎨</button>
+            <button class="emoji-btn">👨‍🎨</button>
+            <button class="emoji-btn">👩‍🚒</button>
+            <button class="emoji-btn">👨‍🚒</button>
+            <button class="emoji-btn">👩‍✈️</button>
+            <button class="emoji-btn">👨‍✈️</button>
+            <button class="emoji-btn">👩‍🚀</button>
+            <button class="emoji-btn">👨‍🚀</button>
+            <button class="emoji-btn">👩‍⚖️</button>
+            <button class="emoji-btn">👨‍⚖️</button>
+            <button class="emoji-btn">👰</button>
+            <button class="emoji-btn">🤵</button>
+            <button class="emoji-btn">👸</button>
+            <button class="emoji-btn">🤴</button>
+            <button class="emoji-btn">🦸</button>
+            <button class="emoji-btn">🦹</button>
+            <button class="emoji-btn">🤶</button>
+            <button class="emoji-btn">🎅</button>
+            <button class="emoji-btn">🧙</button>
+            <button class="emoji-btn">🧚</button>
+            <button class="emoji-btn">🧛</button>
+            <button class="emoji-btn">🧜</button>
+            <button class="emoji-btn">🧝</button>
+            <button class="emoji-btn">🧞</button>
+            <button class="emoji-btn">🧟</button>
+            <button class="emoji-btn">💆</button>
+            <button class="emoji-btn">💇</button>
+            <button class="emoji-btn">🚶</button>
+            <button class="emoji-btn">🏃</button>
+            <button class="emoji-btn">💃</button>
+            <button class="emoji-btn">🕺</button>
+            <button class="emoji-btn">🕴️</button>
+            <button class="emoji-btn">🧖</button>
+            <button class="emoji-btn">🧗</button>
+            <button class="emoji-btn">🧘</button>
+            <button class="emoji-btn">🛀</button>
+            <button class="emoji-btn">🛌</button>
+            <button class="emoji-btn">🧑‍🤝‍🧑</button>
+            <button class="emoji-btn">👭</button>
+            <button class="emoji-btn">👫</button>
+            <button class="emoji-btn">👬</button>
+            <button class="emoji-btn">💏</button>
+            <button class="emoji-btn">💑</button>
+            <button class="emoji-btn">👪</button>
+            <button class="emoji-btn">🗣️</button>
+            <button class="emoji-btn">👤</button>
+            <button class="emoji-btn">👥</button>
+            <button class="emoji-btn">🫂</button>
+            <button class="emoji-btn">👣</button>
+            <button class="emoji-btn">🦰</button>
+            <button class="emoji-btn">🦱</button>
+            <button class="emoji-btn">🦳</button>
+            <button class="emoji-btn">🦲</button>
+            <button class="emoji-btn">🐵</button>
+            <button class="emoji-btn">🐒</button>
+            <button class="emoji-btn">🦍</button>
+            <button class="emoji-btn">🦧</button>
+            <button class="emoji-btn">🐶</button>
+            <button class="emoji-btn">🐕</button>
+            <button class="emoji-btn">🦮</button>
+            <button class="emoji-btn">🐕‍🦺</button>
+            <button class="emoji-btn">🐩</button>
+            <button class="emoji-btn">🐺</button>
+            <button class="emoji-btn">🦊</button>
+            <button class="emoji-btn">🦝</button>
+            <button class="emoji-btn">🐱</button>
+            <button class="emoji-btn">🐈</button>
+            <button class="emoji-btn">🐈‍⬛</button>
+            <button class="emoji-btn">🦁</button>
+            <button class="emoji-btn">🐯</button>
+            <button class="emoji-btn">🐅</button>
+            <button class="emoji-btn">🐆</button>
+            <button class="emoji-btn">🐴</button>
+            <button class="emoji-btn">🐎</button>
+            <button class="emoji-btn">🦄</button>
+            <button class="emoji-btn">🦓</button>
+            <button class="emoji-btn">🦌</button>
+            <button class="emoji-btn">🦬</button>
+            <button class="emoji-btn">🐮</button>
+            <button class="emoji-btn">🐂</button>
+            <button class="emoji-btn">🐃</button>
+            <button class="emoji-btn">🐄</button>
+            <button class="emoji-btn">🐷</button>
+            <button class="emoji-btn">🐖</button>
+            <button class="emoji-btn">🐗</button>
+            <button class="emoji-btn">🐽</button>
+            <button class="emoji-btn">🐏</button>
+            <button class="emoji-btn">🐑</button>
+            <button class="emoji-btn">🐐</button>
+            <button class="emoji-btn">🐪</button>
+            <button class="emoji-btn">🐫</button>
+            <button class="emoji-btn">🦙</button>
+            <button class="emoji-btn">🦒</button>
+            <button class="emoji-btn">🐘</button>
+            <button class="emoji-btn">🦣</button>
+            <button class="emoji-btn">🦏</button>
+            <button class="emoji-btn">🦛</button>
+            <button class="emoji-btn">🐭</button>
+            <button class="emoji-btn">🐁</button>
+            <button class="emoji-btn">🐀</button>
+            <button class="emoji-btn">🐹</button>
+            <button class="emoji-btn">🐰</button>
+            <button class="emoji-btn">🐇</button>
+            <button class="emoji-btn">🐿️</button>
+            <button class="emoji-btn">🦫</button>
+            <button class="emoji-btn">🦔</button>
+            <button class="emoji-btn">🦇</button>
+            <button class="emoji-btn">🐻</button>
+            <button class="emoji-btn">🐻‍❄️</button>
+            <button class="emoji-btn">🐨</button>
+            <button class="emoji-btn">🐼</button>
+            <button class="emoji-btn">🦥</button>
+            <button class="emoji-btn">🦦</button>
+            <button class="emoji-btn">🦨</button>
+            <button class="emoji-btn">🦘</button>
+            <button class="emoji-btn">🦡</button>
+            <button class="emoji-btn">🐾</button>
+            <button class="emoji-btn">🦃</button>
+            <button class="emoji-btn">🐔</button>
+            <button class="emoji-btn">🐓</button>
+            <button class="emoji-btn">🐣</button>
+            <button class="emoji-btn">🐤</button>
+            <button class="emoji-btn">🐥</button>
+            <button class="emoji-btn">🐦</button>
+            <button class="emoji-btn">🐧</button>
+            <button class="emoji-btn">🕊️</button>
+            <button class="emoji-btn">🦅</button>
+            <button class="emoji-btn">🦆</button>
+            <button class="emoji-btn">🦢</button>
+            <button class="emoji-btn">🦉</button>
+            <button class="emoji-btn">🦤</button>
+            <button class="emoji-btn">🪶</button>
+            <button class="emoji-btn">🦩</button>
+            <button class="emoji-btn">🦜</button>
+            <button class="emoji-btn">🐸</button>
+            <button class="emoji-btn">🐊</button>
+            <button class="emoji-btn">🐢</button>
+            <button class="emoji-btn">🦎</button>
+            <button class="emoji-btn">🐍</button>
+            <button class="emoji-btn">🐲</button>
+            <button class="emoji-btn">🐉</button>
+            <button class="emoji-btn">🦕</button>
+            <button class="emoji-btn">🦖</button>
+            <button class="emoji-btn">🐳</button>
+            <button class="emoji-btn">🐋</button>
+            <button class="emoji-btn">🐬</button>
+            <button class="emoji-btn">🦭</button>
+            <button class="emoji-btn">🐟</button>
+            <button class="emoji-btn">🐠</button>
+            <button class="emoji-btn">🐡</button>
+            <button class="emoji-btn">🦈</button>
+            <button class="emoji-btn">🐙</button>
+            <button class="emoji-btn">🐚</button>
+            <button class="emoji-btn">🪸</button>
+            <button class="emoji-btn">🦀</button>
+            <button class="emoji-btn">🦞</button>
+            <button class="emoji-btn">🦐</button>
+            <button class="emoji-btn">🦑</button>
+            <button class="emoji-btn">🦪</button>
+            <button class="emoji-btn">🐌</button>
+            <button class="emoji-btn">🦋</button>
+            <button class="emoji-btn">🐛</button>
+            <button class="emoji-btn">🐜</button>
+            <button class="emoji-btn">🐝</button>
+            <button class="emoji-btn">🪲</button>
+            <button class="emoji-btn">🐞</button>
+            <button class="emoji-btn">🦗</button>
+            <button class="emoji-btn">🪳</button>
+            <button class="emoji-btn">🕷️</button>
+            <button class="emoji-btn">🕸️</button>
+            <button class="emoji-btn">🦂</button>
+            <button class="emoji-btn">🦟</button>
+            <button class="emoji-btn">🦠</button>
+            <button class="emoji-btn">💐</button>
+            <button class="emoji-btn">🌸</button>
+            <button class="emoji-btn">💮</button>
+            <button class="emoji-btn">🏵️</button>
+            <button class="emoji-btn">🌹</button>
+            <button class="emoji-btn">🥀</button>
+            <button class="emoji-btn">🌺</button>
+            <button class="emoji-btn">🌻</button>
+            <button class="emoji-btn">🌼</button>
+            <button class="emoji-btn">🌷</button>
+            <button class="emoji-btn">🌱</button>
+            <button class="emoji-btn">🪴</button>
+            <button class="emoji-btn">🌲</button>
+            <button class="emoji-btn">🌳</button>
+            <button class="emoji-btn">🌴</button>
+            <button class="emoji-btn">🌵</button>
+            <button class="emoji-btn">🌾</button>
+            <button class="emoji-btn">🌿</button>
+            <button class="emoji-btn">☘️</button>
+            <button class="emoji-btn">🍀</button>
+            <button class="emoji-btn">🍁</button>
+            <button class="emoji-btn">🍂</button>
+            <button class="emoji-btn">🍃</button>
+            <button class="emoji-btn">🍄</button>
+            <button class="emoji-btn">🍇</button>
+            <button class="emoji-btn">🍈</button>
+            <button class="emoji-btn">🍉</button>
+            <button class="emoji-btn">🍊</button>
+            <button class="emoji-btn">🍋</button>
+            <button class="emoji-btn">🍌</button>
+            <button class="emoji-btn">🍍</button>
+            <button class="emoji-btn">🥭</button>
+            <button class="emoji-btn">🍎</button>
+            <button class="emoji-btn">🍏</button>
+            <button class="emoji-btn">🍐</button>
+            <button class="emoji-btn">🍑</button>
+            <button class="emoji-btn">🍒</button>
+            <button class="emoji-btn">🍓</button>
+            <button class="emoji-btn">🫐</button>
+            <button class="emoji-btn">🥝</button>
+            <button class="emoji-btn">🍅</button>
+            <button class="emoji-btn">🫒</button>
+            <button class="emoji-btn">🥥</button>
+            <button class="emoji-btn">🥑</button>
+            <button class="emoji-btn">🍆</button>
+            <button class="emoji-btn">🥔</button>
+            <button class="emoji-btn">🥕</button>
+            <button class="emoji-btn">🌽</button>
+            <button class="emoji-btn">🌶️</button>
+            <button class="emoji-btn">🫑</button>
+            <button class="emoji-btn">🥒</button>
+            <button class="emoji-btn">🥬</button>
+            <button class="emoji-btn">🥦</button>
+            <button class="emoji-btn">🧄</button>
+            <button class="emoji-btn">🧅</button>
+            <button class="emoji-btn">🍠</button>
+            <button class="emoji-btn">🥐</button>
+            <button class="emoji-btn">🍞</button>
+            <button class="emoji-btn">🥖</button>
+            <button class="emoji-btn">🥨</button>
+            <button class="emoji-btn">🥯</button>
+            <button class="emoji-btn">🥞</button>
+            <button class="emoji-btn">🧇</button>
+            <button class="emoji-btn">🧀</button>
+            <button class="emoji-btn">🍖</button>
+            <button class="emoji-btn">🍗</button>
+            <button class="emoji-btn">🥩</button>
+            <button class="emoji-btn">🥓</button>
+            <button class="emoji-btn">🍔</button>
+            <button class="emoji-btn">🍟</button>
+            <button class="emoji-btn">🍕</button>
+            <button class="emoji-btn">🌭</button>
+            <button class="emoji-btn">🥪</button>
+            <button class="emoji-btn">🌮</button>
+            <button class="emoji-btn">🌯</button>
+            <button class="emoji-btn">🫔</button>
+            <button class="emoji-btn">🥙</button>
+            <button class="emoji-btn">🧆</button>
+            <button class="emoji-btn">🥚</button>
+            <button class="emoji-btn">🍳</button>
+            <button class="emoji-btn">🥘</button>
+            <button class="emoji-btn">🍲</button>
+            <button class="emoji-btn">🫕</button>
+            <button class="emoji-btn">🥣</button>
+            <button class="emoji-btn">🥗</button>
+            <button class="emoji-btn">🍿</button>
+            <button class="emoji-btn">🧈</button>
+            <button class="emoji-btn">🧂</button>
+            <button class="emoji-btn">🥫</button>
+            <button class="emoji-btn">🍱</button>
+            <button class="emoji-btn">🍘</button>
+            <button class="emoji-btn">🍙</button>
+            <button class="emoji-btn">🍚</button>
+            <button class="emoji-btn">🍛</button>
+            <button class="emoji-btn">🍜</button>
+            <button class="emoji-btn">🍝</button>
+            <button class="emoji-btn">🍠</button>
+            <button class="emoji-btn">🍢</button>
+            <button class="emoji-btn">🍣</button>
+            <button class="emoji-btn">🍤</button>
+            <button class="emoji-btn">🍥</button>
+            <button class="emoji-btn">🥮</button>
+            <button class="emoji-btn">🍡</button>
+            <button class="emoji-btn">🥟</button>
+            <button class="emoji-btn">🥠</button>
+            <button class="emoji-btn">🥡</button>
+            <button class="emoji-btn">🦀</button>
+            <button class="emoji-btn">🦞</button>
+            <button class="emoji-btn">🦐</button>
+            <button class="emoji-btn">🦑</button>
+            <button class="emoji-btn">🦪</button>
+            <button class="emoji-btn">🍦</button>
+            <button class="emoji-btn">🍧</button>
+            <button class="emoji-btn">🍨</button>
+            <button class="emoji-btn">🍩</button>
+            <button class="emoji-btn">🍪</button>
+            <button class="emoji-btn">🎂</button>
+            <button class="emoji-btn">🍰</button>
+            <button class="emoji-btn">🧁</button>
+            <button class="emoji-btn">🥧</button>
+            <button class="emoji-btn">🍫</button>
+            <button class="emoji-btn">🍬</button>
+            <button class="emoji-btn">🍭</button>
+            <button class="emoji-btn">🍮</button>
+            <button class="emoji-btn">🍯</button>
+            <button class="emoji-btn">🥛</button>
+            <button class="emoji-btn">🍼</button>
+            <button class="emoji-btn">🫖</button>
+            <button class="emoji-btn">☕</button>
+            <button class="emoji-btn">🍵</button>
+            <button class="emoji-btn">🍶</button>
+            <button class="emoji-btn">🍾</button>
+            <button class="emoji-btn">🍷</button>
+            <button class="emoji-btn">🍸</button>
+            <button class="emoji-btn">🍹</button>
+            <button class="emoji-btn">🍺</button>
+            <button class="emoji-btn">🍻</button>
+            <button class="emoji-btn">🥂</button>
+            <button class="emoji-btn">🥃</button>
+            <button class="emoji-btn">🥤</button>
+            <button class="emoji-btn">🧃</button>
+            <button class="emoji-btn">🧉</button>
+            <button class="emoji-btn">🧊</button>
+            <button class="emoji-btn">🥢</button>
+            <button class="emoji-btn">🍽️</button>
+            <button class="emoji-btn">🍴</button>
+            <button class="emoji-btn">🥄</button>
+            <button class="emoji-btn">🔪</button>
+            <button class="emoji-btn">🏺</button>
+            <button class="emoji-btn">🌍</button>
+            <button class="emoji-btn">🌎</button>
+            <button class="emoji-btn">🌏</button>
+            <button class="emoji-btn">🌐</button>
+            <button class="emoji-btn">🗺️</button>
+            <button class="emoji-btn">🗾</button>
+            <button class="emoji-btn">🧭</button>
+            <button class="emoji-btn">🏔️</button>
+            <button class="emoji-btn">⛰️</button>
+            <button class="emoji-btn">🌋</button>
+            <button class="emoji-btn">🗻</button>
+            <button class="emoji-btn">🏕️</button>
+            <button class="emoji-btn">🏖️</button>
+            <button class="emoji-btn">🏜️</button>
+            <button class="emoji-btn">🏝️</button>
+            <button class="emoji-btn">🏞️</button>
+            <button class="emoji-btn">🏟️</button>
+            <button class="emoji-btn">🏛️</button>
+            <button class="emoji-btn">🏗️</button>
+            <button class="emoji-btn">🧱</button>
+            <button class="emoji-btn">🪨</button>
+            <button class="emoji-btn">🪵</button>
+            <button class="emoji-btn">🛖</button>
+            <button class="emoji-btn">🏘️</button>
+            <button class="emoji-btn">🏚️</button>
+            <button class="emoji-btn">🏠</button>
+            <button class="emoji-btn">🏡</button>
+            <button class="emoji-btn">🏢</button>
+            <button class="emoji-btn">🏣</button>
+            <button class="emoji-btn">🏤</button>
+            <button class="emoji-btn">🏥</button>
+            <button class="emoji-btn">🏦</button>
+            <button class="emoji-btn">🏨</button>
+            <button class="emoji-btn">🏩</button>
+            <button class="emoji-btn">🏪</button>
+            <button class="emoji-btn">🏫</button>
+            <button class="emoji-btn">🏬</button>
+            <button class="emoji-btn">🏭</button>
+            <button class="emoji-btn">🏯</button>
+            <button class="emoji-btn">🏰</button>
+            <button class="emoji-btn">💒</button>
+            <button class="emoji-btn">🗼</button>
+            <button class="emoji-btn">🗽</button>
+            <button class="emoji-btn">⛪</button>
+            <button class="emoji-btn">🕌</button>
+            <button class="emoji-btn">🛕</button>
+            <button class="emoji-btn">🕍</button>
+            <button class="emoji-btn">⛩️</button>
+            <button class="emoji-btn">🕋</button>
+            <button class="emoji-btn">⛲</button>
+            <button class="emoji-btn">⛺</button>
+            <button class="emoji-btn">🌁</button>
+            <button class="emoji-btn">🌃</button>
+            <button class="emoji-btn">🏙️</button>
+            <button class="emoji-btn">🌄</button>
+            <button class="emoji-btn">🌅</button>
+            <button class="emoji-btn">🌆</button>
+            <button class="emoji-btn">🌇</button>
+            <button class="emoji-btn">🌉</button>
+            <button class="emoji-btn">♨️</button>
+            <button class="emoji-btn">🎠</button>
+            <button class="emoji-btn">🎡</button>
+            <button class="emoji-btn">🎢</button>
+            <button class="emoji-btn">💈</button>
+            <button class="emoji-btn">🎪</button>
+            <button class="emoji-btn">🚂</button>
+            <button class="emoji-btn">🚃</button>
+            <button class="emoji-btn">🚄</button>
+            <button class="emoji-btn">🚅</button>
+            <button class="emoji-btn">🚆</button>
+            <button class="emoji-btn">🚇</button>
+            <button class="emoji-btn">🚈</button>
+            <button class="emoji-btn">🚉</button>
+            <button class="emoji-btn">🚊</button>
+            <button class="emoji-btn">🚝</button>
+            <button class="emoji-btn">🚞</button>
+            <button class="emoji-btn">🚋</button>
+            <button class="emoji-btn">🚌</button>
+            <button class="emoji-btn">🚍</button>
+            <button class="emoji-btn">🚎</button>
+            <button class="emoji-btn">🚐</button>
+            <button class="emoji-btn">🚑</button>
+            <button class="emoji-btn">🚒</button>
+            <button class="emoji-btn">🚓</button>
+            <button class="emoji-btn">🚔</button>
+            <button class="emoji-btn">🚕</button>
+            <button class="emoji-btn">🚖</button>
+            <button class="emoji-btn">🚗</button>
+            <button class="emoji-btn">🚘</button>
+            <button class="emoji-btn">🚙</button>
+            <button class="emoji-btn">🛻</button>
+            <button class="emoji-btn">🚚</button>
+            <button class="emoji-btn">🚛</button>
+            <button class="emoji-btn">🚜</button>
+            <button class="emoji-btn">🏎️</button>
+            <button class="emoji-btn">🏍️</button>
+            <button class="emoji-btn">🛵</button>
+            <button class="emoji-btn">🦽</button>
+            <button class="emoji-btn">🦼</button>
+            <button class="emoji-btn">🛺</button>
+            <button class="emoji-btn">🚲</button>
+            <button class="emoji-btn">🛴</button>
+            <button class="emoji-btn">🛹</button>
+            <button class="emoji-btn">🛼</button>
+            <button class="emoji-btn">🚏</button>
+            <button class="emoji-btn">🛣️</button>
+            <button class="emoji-btn">🛤️</button>
+            <button class="emoji-btn">🛢️</button>
+            <button class="emoji-btn">⛽</button>
+            <button class="emoji-btn">🚨</button>
+            <button class="emoji-btn">🚥</button>
+            <button class="emoji-btn">🚦</button>
+            <button class="emoji-btn">🛑</button>
+            <button class="emoji-btn">🚧</button>
+            <button class="emoji-btn">⚓</button>
+            <button class="emoji-btn">⛵</button>
+            <button class="emoji-btn">🛶</button>
+            <button class="emoji-btn">🚤</button>
+            <button class="emoji-btn">🛳️</button>
+            <button class="emoji-btn">⛴️</button>
+            <button class="emoji-btn">🛥️</button>
+            <button class="emoji-btn">🚢</button>
+            <button class="emoji-btn">✈️</button>
+            <button class="emoji-btn">🛩️</button>
+            <button class="emoji-btn">🛫</button>
+            <button class="emoji-btn">🛬</button>
+            <button class="emoji-btn">🪂</button>
+            <button class="emoji-btn">💺</button>
+            <button class="emoji-btn">🚁</button>
+            <button class="emoji-btn">🚟</button>
+            <button class="emoji-btn">🚠</button>
+            <button class="emoji-btn">🚡</button>
+            <button class="emoji-btn">🛰️</button>
+            <button class="emoji-btn">🚀</button>
+            <button class="emoji-btn">🛸</button>
+            <button class="emoji-btn">🛎️</button>
+            <button class="emoji-btn">🧳</button>
+            <button class="emoji-btn">⌛</button>
+            <button class="emoji-btn">⏳</button>
+            <button class="emoji-btn">⌚</button>
+            <button class="emoji-btn">⏰</button>
+            <button class="emoji-btn">⏱️</button>
+            <button class="emoji-btn">⏲️</button>
+            <button class="emoji-btn">🕰️</button>
+            <button class="emoji-btn">🕛</button>
+            <button class="emoji-btn">🕧</button>
+            <button class="emoji-btn">🕐</button>
+            <button class="emoji-btn">🕜</button>
+            <button class="emoji-btn">🕑</button>
+            <button class="emoji-btn">🕝</button>
+            <button class="emoji-btn">🕒</button>
+            <button class="emoji-btn">🕞</button>
+            <button class="emoji-btn">🕓</button>
+            <button class="emoji-btn">🕟</button>
+            <button class="emoji-btn">🕔</button>
+            <button class="emoji-btn">🕠</button>
+            <button class="emoji-btn">🕕</button>
+            <button class="emoji-btn">🕡</button>
+            <button class="emoji-btn">🕖</button>
+            <button class="emoji-btn">🕢</button>
+            <button class="emoji-btn">🕗</button>
+            <button class="emoji-btn">🕣</button>
+            <button class="emoji-btn">🕘</button>
+            <button class="emoji-btn">🕤</button>
+            <button class="emoji-btn">🕙</button>
+            <button class="emoji-btn">🕥</button>
+            <button class="emoji-btn">🕚</button>
+            <button class="emoji-btn">🕦</button>
+            <button class="emoji-btn">🌑</button>
+            <button class="emoji-btn">🌒</button>
+            <button class="emoji-btn">🌓</button>
+            <button class="emoji-btn">🌔</button>
+            <button class="emoji-btn">🌕</button>
+            <button class="emoji-btn">🌖</button>
+            <button class="emoji-btn">🌗</button>
+            <button class="emoji-btn">🌘</button>
+            <button class="emoji-btn">🌙</button>
+            <button class="emoji-btn">🌚</button>
+            <button class="emoji-btn">🌛</button>
+            <button class="emoji-btn">🌜</button>
+            <button class="emoji-btn">🌡️</button>
+            <button class="emoji-btn">☀️</button>
+            <button class="emoji-btn">🌝</button>
+            <button class="emoji-btn">🌞</button>
+            <button class="emoji-btn">🪐</button>
+            <button class="emoji-btn">⭐</button>
+            <button class="emoji-btn">🌟</button>
+            <button class="emoji-btn">🌠</button>
+            <button class="emoji-btn">🌌</button>
+            <button class="emoji-btn">☁️</button>
+            <button class="emoji-btn">⛅</button>
+            <button class="emoji-btn">⛈️</button>
+            <button class="emoji-btn">🌤️</button>
+            <button class="emoji-btn">🌥️</button>
+            <button class="emoji-btn">🌦️</button>
+            <button class="emoji-btn">🌧️</button>
+            <button class="emoji-btn">🌨️</button>
+            <button class="emoji-btn">🌩️</button>
+            <button class="emoji-btn">🌪️</button>
+            <button class="emoji-btn">🌫️</button>
+            <button class="emoji-btn">🌬️</button>
+            <button class="emoji-btn">🌀</button>
+            <button class="emoji-btn">🌈</button>
+            <button class="emoji-btn">🌂</button>
+            <button class="emoji-btn">☂️</button>
+            <button class="emoji-btn">☔</button>
+            <button class="emoji-btn">⛱️</button>
+            <button class="emoji-btn">⚡</button>
+            <button class="emoji-btn">❄️</button>
+            <button class="emoji-btn">☃️</button>
+            <button class="emoji-btn">⛄</button>
+            <button class="emoji-btn">☄️</button>
+            <button class="emoji-btn">🔥</button>
+            <button class="emoji-btn">💧</button>
+            <button class="emoji-btn">🌊</button>
+            <button class="emoji-btn">🎄</button>
+            <button class="emoji-btn">🎆</button>
+            <button class="emoji-btn">🎇</button>
+            <button class="emoji-btn">🧨</button>
+            <button class="emoji-btn">✨</button>
+            <button class="emoji-btn">🎈</button>
+            <button class="emoji-btn">🎉</button>
+            <button class="emoji-btn">🎊</button>
+            <button class="emoji-btn">🎋</button>
+            <button class="emoji-btn">🎍</button>
+            <button class="emoji-btn">🎎</button>
+            <button class="emoji-btn">🎏</button>
+            <button class="emoji-btn">🎐</button>
+            <button class="emoji-btn">🎑</button>
+            <button class="emoji-btn">🧧</button>
+            <button class="emoji-btn">🎀</button>
+            <button class="emoji-btn">🎁</button>
+            <button class="emoji-btn">🎗️</button>
+            <button class="emoji-btn">🎟️</button>
+            <button class="emoji-btn">🎫</button>
+            <button class="emoji-btn">🎖️</button>
+            <button class="emoji-btn">🏆</button>
+            <button class="emoji-btn">🏅</button>
+            <button class="emoji-btn">🥇</button>
+            <button class="emoji-btn">🥈</button>
+            <button class="emoji-btn">🥉</button>
+            <button class="emoji-btn">⚽</button>
+            <button class="emoji-btn">⚾</button>
+            <button class="emoji-btn">🥎</button>
+            <button class="emoji-btn">🏀</button>
+            <button class="emoji-btn">🏐</button>
+            <button class="emoji-btn">🏈</button>
+            <button class="emoji-btn">🏉</button>
+            <button class="emoji-btn">🎾</button>
+            <button class="emoji-btn">🥏</button>
+            <button class="emoji-btn">🎳</button>
+            <button class="emoji-btn">🏏</button>
+            <button class="emoji-btn">🏑</button>
+            <button class="emoji-btn">🏒</button>
+            <button class="emoji-btn">🥍</button>
+            <button class="emoji-btn">🏓</button>
+            <button class="emoji-btn">🏸</button>
+            <button class="emoji-btn">🥊</button>
+            <button class="emoji-btn">🥋</button>
+            <button class="emoji-btn">🥅</button>
+            <button class="emoji-btn">⛳</button>
+            <button class="emoji-btn">🎯</button>
+            <button class="emoji-btn">🪀</button>
+            <button class="emoji-btn">🪁</button>
+            <button class="emoji-btn">🎱</button>
+            <button class="emoji-btn">🔮</button>
+            <button class="emoji-btn">🪄</button>
+            <button class="emoji-btn">🧿</button>
+            <button class="emoji-btn">🎮</button>
+            <button class="emoji-btn">🕹️</button>
+            <button class="emoji-btn">🎰</button>
+            <button class="emoji-btn">🎲</button>
+            <button class="emoji-btn">🧩</button>
+            <button class="emoji-btn">🧸</button>
+            <button class="emoji-btn">🪅</button>
+            <button class="emoji-btn">🪆</button>
+            <button class="emoji-btn">♠️</button>
+            <button class="emoji-btn">♥️</button>
+            <button class="emoji-btn">♦️</button>
+            <button class="emoji-btn">♣️</button>
+            <button class="emoji-btn">♟️</button>
+            <button class="emoji-btn">🃏</button>
+            <button class="emoji-btn">🀄</button>
+            <button class="emoji-btn">🎴</button>
+            <button class="emoji-btn">🎭</button>
+            <button class="emoji-btn">🖼️</button>
+            <button class="emoji-btn">🎨</button>
+            <button class="emoji-btn">🧵</button>
+            <button class="emoji-btn">🪡</button>
+            <button class="emoji-btn">🧶</button>
+            <button class="emoji-btn">🪢</button>
+            <button class="emoji-btn">👓</button>
+            <button class="emoji-btn">🕶️</button>
+            <button class="emoji-btn">🥽</button>
+            <button class="emoji-btn">🥼</button>
+            <button class="emoji-btn">🦺</button>
+            <button class="emoji-btn">👔</button>
+            <button class="emoji-btn">👕</button>
+            <button class="emoji-btn">👖</button>
+            <button class="emoji-btn">🧣</button>
+            <button class="emoji-btn">🧤</button>
+            <button class="emoji-btn">🧥</button>
+            <button class="emoji-btn">🧦</button>
+            <button class="emoji-btn">👗</button>
+            <button class="emoji-btn">👘</button>
+            <button class="emoji-btn">🥻</button>
+            <button class="emoji-btn">🩱</button>
+            <button class="emoji-btn">🩲</button>
+            <button class="emoji-btn">🩳</button>
+            <button class="emoji-btn">👙</button>
+            <button class="emoji-btn">👚</button>
+            <button class="emoji-btn">👛</button>
+            <button class="emoji-btn">👜</button>
+            <button class="emoji-btn">👝</button>
+            <button class="emoji-btn">🛍️</button>
+            <button class="emoji-btn">🎒</button>
+            <button class="emoji-btn">🩴</button>
+            <button class="emoji-btn">👞</button>
+            <button class="emoji-btn">👟</button>
+            <button class="emoji-btn">🥾</button>
+            <button class="emoji-btn">🥿</button>
+            <button class="emoji-btn">👠</button>
+            <button class="emoji-btn">👡</button>
+            <button class="emoji-btn">🩰</button>
+            <button class="emoji-btn">👢</button>
+            <button class="emoji-btn">👑</button>
+            <button class="emoji-btn">👒</button>
+            <button class="emoji-btn">🎩</button>
+            <button class="emoji-btn">🎓</button>
+            <button class="emoji-btn">🧢</button>
+            <button class="emoji-btn">🪖</button>
+            <button class="emoji-btn">⛑️</button>
+            <button class="emoji-btn">💄</button>
+            <button class="emoji-btn">💍</button>
+            <button class="emoji-btn">💼</button>
+            <button class="emoji-btn">🩸</button>
+            <button class="emoji-btn">💌</button>
+            <button class="emoji-btn">🕳️</button>
+            <button class="emoji-btn">💣</button>
+            <button class="emoji-btn">🛀</button>
+            <button class="emoji-btn">🛌</button>
+            <button class="emoji-btn">🔪</button>
+            <button class="emoji-btn">🏺</button>
+            <button class="emoji-btn">🗺️</button>
+            <button class="emoji-btn">🧭</button>
+            <button class="emoji-btn">🧱</button>
+            <button class="emoji-btn">💈</button>
+            <button class="emoji-btn">🛢️</button>
+            <button class="emoji-btn">🛎️</button>
+            <button class="emoji-btn">🧳</button>
+            <button class="emoji-btn">⌛</button>
+            <button class="emoji-btn">⏳</button>
+            <button class="emoji-btn">⌚</button>
+            <button class="emoji-btn">⏰</button>
+            <button class="emoji-btn">⏱️</button>
+            <button class="emoji-btn">⏲️</button>
+            <button class="emoji-btn">🕰️</button>
+            <button class="emoji-btn">🌡️</button>
+            <button class="emoji-btn">⛱️</button>
+            <button class="emoji-btn">🧨</button>
+            <button class="emoji-btn">🎈</button>
+            <button class="emoji-btn">🎉</button>
+            <button class="emoji-btn">🎊</button>
+            <button class="emoji-btn">🎀</button>
+            <button class="emoji-btn">🎁</button>
+            <button class="emoji-btn">🎗️</button>
+            <button class="emoji-btn">🎟️</button>
+            <button class="emoji-btn">🎫</button>
+            <button class="emoji-btn">🎖️</button>
+            <button class="emoji-btn">🏆</button>
+            <button class="emoji-btn">🏅</button>
+            <button class="emoji-btn">🥇</button>
+            <button class="emoji-btn">🥈</button>
+            <button class="emoji-btn">🥉</button>
+            <button class="emoji-btn">⚽</button>
+            <button class="emoji-btn">⚾</button>
+            <button class="emoji-btn">🥎</button>
+            <button class="emoji-btn">🏀</button>
+            <button class="emoji-btn">🏐</button>
+            <button class="emoji-btn">🏈</button>
+            <button class="emoji-btn">🏉</button>
+            <button class="emoji-btn">🎾</button>
+            <button class="emoji-btn">🥏</button>
+            <button class="emoji-btn">🎳</button>
+            <button class="emoji-btn">🏏</button>
+            <button class="emoji-btn">🏑</button>
+            <button class="emoji-btn">🏒</button>
+            <button class="emoji-btn">🥍</button>
+            <button class="emoji-btn">🏓</button>
+            <button class="emoji-btn">🏸</button>
+            <button class="emoji-btn">🥊</button>
+            <button class="emoji-btn">🥋</button>
+            <button class="emoji-btn">🥅</button>
+            <button class="emoji-btn">⛳</button>
+            <button class="emoji-btn">🎯</button>
+            <button class="emoji-btn">🪀</button>
+            <button class="emoji-btn">🪁</button>
+            <button class="emoji-btn">🎱</button>
+            <button class="emoji-btn">🔮</button>
+            <button class="emoji-btn">🪄</button>
+            <button class="emoji-btn">🧿</button>
+            <button class="emoji-btn">🎮</button>
+            <button class="emoji-btn">🕹️</button>
+            <button class="emoji-btn">🎰</button>
+            <button class="emoji-btn">🎲</button>
+            <button class="emoji-btn">🧩</button>
+            <button class="emoji-btn">🧸</button>
+            <button class="emoji-btn">🪅</button>
+            <button class="emoji-btn">🪆</button>
+            <button class="emoji-btn">♠️</button>
+            <button class="emoji-btn">♥️</button>
+            <button class="emoji-btn">♦️</button>
+            <button class="emoji-btn">♣️</button>
+            <button class="emoji-btn">♟️</button>
+            <button class="emoji-btn">🃏</button>
+            <button class="emoji-btn">🀄</button>
+            <button class="emoji-btn">🎴</button>
+            <button class="emoji-btn">🎭</button>
+            <button class="emoji-btn">🖼️</button>
+            <button class="emoji-btn">🎨</button>
+            <button class="emoji-btn">🧵</button>
+            <button class="emoji-btn">🪡</button>
+            <button class="emoji-btn">🧶</button>
+            <button class="emoji-btn">🪢</button>
+            <button class="emoji-btn">📷</button>
+            <button class="emoji-btn">📸</button>
+            <button class="emoji-btn">📹</button>
+            <button class="emoji-btn">🎥</button>
+            <button class="emoji-btn">📽️</button>
+            <button class="emoji-btn">🎞️</button>
+            <button class="emoji-btn">📞</button>
+            <button class="emoji-btn">☎️</button>
+            <button class="emoji-btn">📟</button>
+            <button class="emoji-btn">📠</button>
+            <button class="emoji-btn">📺</button>
+            <button class="emoji-btn">📻</button>
+            <button class="emoji-btn">🎙️</button>
+            <button class="emoji-btn">🎚️</button>
+            <button class="emoji-btn">🎛️</button>
+            <button class="emoji-btn">🧭</button>
+            <button class="emoji-btn">⏱️</button>
+            <button class="emoji-btn">⏲️</button>
+            <button class="emoji-btn">⏰</button>
+            <button class="emoji-btn">🕰️</button>
+            <button class="emoji-btn">⌛</button>
+            <button class="emoji-btn">⏳</button>
+            <button class="emoji-btn">📡</button>
+            <button class="emoji-btn">🔋</button>
+            <button class="emoji-btn">🔌</button>
+            <button class="emoji-btn">💻</button>
+            <button class="emoji-btn">🖥️</button>
+            <button class="emoji-btn">🖨️</button>
+            <button class="emoji-btn">⌨️</button>
+            <button class="emoji-btn">🖱️</button>
+            <button class="emoji-btn">🖲️</button>
+            <button class="emoji-btn">💽</button>
+            <button class="emoji-btn">💾</button>
+            <button class="emoji-btn">💿</button>
+            <button class="emoji-btn">📀</button>
+            <button class="emoji-btn">🧮</button>
+            <button class="emoji-btn">🎥</button>
+            <button class="emoji-btn">🎞️</button>
+            <button class="emoji-btn">📽️</button>
+            <button class="emoji-btn">🎬</button>
+            <button class="emoji-btn">📺</button>
+            <button class="emoji-btn">📷</button>
+            <button class="emoji-btn">📸</button>
+            <button class="emoji-btn">📹</button>
+            <button class="emoji-btn">📼</button>
+            <button class="emoji-btn">🔍</button>
+            <button class="emoji-btn">🔎</button>
+            <button class="emoji-btn">🕯️</button>
+            <button class="emoji-btn">💡</button>
+            <button class="emoji-btn">🔦</button>
+            <button class="emoji-btn">🏮</button>
+            <button class="emoji-btn">🪔</button>
+            <button class="emoji-btn">📔</button>
+            <button class="emoji-btn">📕</button>
+            <button class="emoji-btn">📖</button>
+            <button class="emoji-btn">📗</button>
+            <button class="emoji-btn">📘</button>
+            <button class="emoji-btn">📙</button>
+            <button class="emoji-btn">📚</button>
+            <button class="emoji-btn">📓</button>
+            <button class="emoji-btn">📒</button>
+            <button class="emoji-btn">📃</button>
+            <button class="emoji-btn">📜</button>
+            <button class="emoji-btn">📄</button>
+            <button class="emoji-btn">📰</button>
+            <button class="emoji-btn">🗞️</button>
+            <button class="emoji-btn">📑</button>
+            <button class="emoji-btn">🔖</button>
+            <button class="emoji-btn">🏷️</button>
+            <button class="emoji-btn">💰</button>
+            <button class="emoji-btn">🪙</button>
+            <button class="emoji-btn">💴</button>
+            <button class="emoji-btn">💵</button>
+            <button class="emoji-btn">💶</button>
+            <button class="emoji-btn">💷</button>
+            <button class="emoji-btn">💸</button>
+            <button class="emoji-btn">💳</button>
+            <button class="emoji-btn">🧾</button>
+            <button class="emoji-btn">💹</button>
+            <button class="emoji-btn">✉️</button>
+            <button class="emoji-btn">📧</button>
+            <button class="emoji-btn">📨</button>
+            <button class="emoji-btn">📩</button>
+            <button class="emoji-btn">📤</button>
+            <button class="emoji-btn">📥</button>
+            <button class="emoji-btn">📦</button>
+            <button class="emoji-btn">📫</button>
+            <button class="emoji-btn">📪</button>
+            <button class="emoji-btn">📬</button>
+            <button class="emoji-btn">📭</button>
+            <button class="emoji-btn">📮</button>
+            <button class="emoji-btn">🗳️</button>
+            <button class="emoji-btn">✏️</button>
+            <button class="emoji-btn">✒️</button>
+            <button class="emoji-btn">🖋️</button>
+            <button class="emoji-btn">🖊️</button>
+            <button class="emoji-btn">🖌️</button>
+            <button class="emoji-btn">🖍️</button>
+            <button class="emoji-btn">📝</button>
+            <button class="emoji-btn">💼</button>
+            <button class="emoji-btn">📁</button>
+            <button class="emoji-btn">📂</button>
+            <button class="emoji-btn">🗂️</button>
+            <button class="emoji-btn">📅</button>
+            <button class="emoji-btn">📆</button>
+            <button class="emoji-btn">🗒️</button>
+            <button class="emoji-btn">🗓️</button>
+            <button class="emoji-btn">📇</button>
+            <button class="emoji-btn">📈</button>
+            <button class="emoji-btn">📉</button>
+            <button class="emoji-btn">📊</button>
+            <button class="emoji-btn">📋</button>
+            <button class="emoji-btn">📌</button>
+            <button class="emoji-btn">📍</button>
+            <button class="emoji-btn">📎</button>
+            <button class="emoji-btn">🖇️</button>
+            <button class="emoji-btn">📏</button>
+            <button class="emoji-btn">📐</button>
+            <button class="emoji-btn">✂️</button>
+            <button class="emoji-btn">🗃️</button>
+            <button class="emoji-btn">🗄️</button>
+            <button class="emoji-btn">🗑️</button>
+            <button class="emoji-btn">🔒</button>
+            <button class="emoji-btn">🔓</button>
+            <button class="emoji-btn">🔏</button>
+            <button class="emoji-btn">🔐</button>
+            <button class="emoji-btn">🔑</button>
+            <button class="emoji-btn">🗝️</button>
+            <button class="emoji-btn">🔨</button>
+            <button class="emoji-btn">🪓</button>
+            <button class="emoji-btn">⛏️</button>
+            <button class="emoji-btn">⚒️</button>
+            <button class="emoji-btn">🛠️</button>
+            <button class="emoji-btn">🗡️</button>
+            <button class="emoji-btn">⚔️</button>
+            <button class="emoji-btn">🔫</button>
+            <button class="emoji-btn">🪃</button>
+            <button class="emoji-btn">🏹</button>
+            <button class="emoji-btn">🛡️</button>
+            <button class="emoji-btn">🪚</button>
+            <button class="emoji-btn">🔧</button>
+            <button class="emoji-btn">🪛</button>
+            <button class="emoji-btn">🔩</button>
+            <button class="emoji-btn">⚙️</button>
+            <button class="emoji-btn">🗜️</button>
+            <button class="emoji-btn">⚖️</button>
+            <button class="emoji-btn">🦯</button>
+            <button class="emoji-btn">🔗</button>
+            <button class="emoji-btn">⛓️</button>
+            <button class="emoji-btn">🪝</button>
+            <button class="emoji-btn">🧰</button>
+            <button class="emoji-btn">🧲</button>
+            <button class="emoji-btn">🪜</button>
+            <button class="emoji-btn">⚗️</button>
+            <button class="emoji-btn">🧪</button>
+            <button class="emoji-btn">🧫</button>
+            <button class="emoji-btn">🧬</button>
+            <button class="emoji-btn">🔬</button>
+            <button class="emoji-btn">🔭</button>
+            <button class="emoji-btn">📡</button>
+            <button class="emoji-btn">💉</button>
+            <button class="emoji-btn">🩸</button>
+            <button class="emoji-btn">💊</button>
+            <button class="emoji-btn">🩹</button>
+            <button class="emoji-btn">🩺</button>
+            <button class="emoji-btn">🚪</button>
+            <button class="emoji-btn">🛗</button>
+            <button class="emoji-btn">🪞</button>
+            <button class="emoji-btn">🪟</button>
+            <button class="emoji-btn">🛏️</button>
+            <button class="emoji-btn">🛋️</button>
+            <button class="emoji-btn">🪑</button>
+            <button class="emoji-btn">🚽</button>
+            <button class="emoji-btn">🪠</button>
+            <button class="emoji-btn">🚿</button>
+            <button class="emoji-btn">🛁</button>
+            <button class="emoji-btn">🪤</button>
+            <button class="emoji-btn">🪒</button>
+            <button class="emoji-btn">🧴</button>
+            <button class="emoji-btn">🧷</button>
+            <button class="emoji-btn">🧹</button>
+            <button class="emoji-btn">🧺</button>
+            <button class="emoji-btn">🧻</button>
+            <button class="emoji-btn">🪣</button>
+            <button class="emoji-btn">🧼</button>
+            <button class="emoji-btn">🫧</button>
+            <button class="emoji-btn">🪥</button>
+            <button class="emoji-btn">🧽</button>
+            <button class="emoji-btn">🧯</button>
+            <button class="emoji-btn">🛒</button>
+            <button class="emoji-btn">🚬</button>
+            <button class="emoji-btn">⚰️</button>
+            <button class="emoji-btn">🪦</button>
+            <button class="emoji-btn">⚱️</button>
+            <button class="emoji-btn">🧿</button>
+            <button class="emoji-btn">🪬</button>
+            <button class="emoji-btn">🗿</button>
+            <button class="emoji-btn">🪧</button>
+            <button class="emoji-btn">🪪</button>
+            <button class="emoji-btn">🏧</button>
+            <button class="emoji-btn">🚮</button>
+            <button class="emoji-btn">🚰</button>
+            <button class="emoji-btn">♿</button>
+            <button class="emoji-btn">🚹</button>
+            <button class="emoji-btn">🚺</button>
+            <button class="emoji-btn">🚻</button>
+            <button class="emoji-btn">🚼</button>
+            <button class="emoji-btn">🚾</button>
+            <button class="emoji-btn">🛂</button>
+            <button class="emoji-btn">🛃</button>
+            <button class="emoji-btn">🛄</button>
+            <button class="emoji-btn">🛅</button>
+            <button class="emoji-btn">⚠️</button>
+            <button class="emoji-btn">🚸</button>
+            <button class="emoji-btn">⛔</button>
+            <button class="emoji-btn">🚫</button>
+            <button class="emoji-btn">🚳</button>
+            <button class="emoji-btn">🚭</button>
+            <button class="emoji-btn">🚯</button>
+            <button class="emoji-btn">🚱</button>
+            <button class="emoji-btn">🚷</button>
+            <button class="emoji-btn">📵</button>
+            <button class="emoji-btn">🔞</button>
+            <button class="emoji-btn">☢️</button>
+            <button class="emoji-btn">☣️</button>
+            <button class="emoji-btn">⬆️</button>
+            <button class="emoji-btn">↗️</button>
+            <button class="emoji-btn">➡️</button>
+            <button class="emoji-btn">↘️</button>
+            <button class="emoji-btn">⬇️</button>
+            <button class="emoji-btn">↙️</button>
+            <button class="emoji-btn">⬅️</button>
+            <button class="emoji-btn">↖️</button>
+            <button class="emoji-btn">↕️</button>
+            <button class="emoji-btn">↔️</button>
+            <button class="emoji-btn">↩️</button>
+            <button class="emoji-btn">↪️</button>
+            <button class="emoji-btn">⤴️</button>
+            <button class="emoji-btn">⤵️</button>
+            <button class="emoji-btn">🔃</button>
+            <button class="emoji-btn">🔄</button>
+            <button class="emoji-btn">🔙</button>
+            <button class="emoji-btn">🔚</button>
+            <button class="emoji-btn">🔛</button>
+            <button class="emoji-btn">🔜</button>
+            <button class="emoji-btn">🔝</button>
+            <button class="emoji-btn">🛐</button>
+            <button class="emoji-btn">⚛️</button>
+            <button class="emoji-btn">🕉️</button>
+            <button class="emoji-btn">✡️</button>
+            <button class="emoji-btn">☸️</button>
+            <button class="emoji-btn">☯️</button>
+            <button class="emoji-btn">✝️</button>
+            <button class="emoji-btn">☦️</button>
+            <button class="emoji-btn">☪️</button>
+            <button class="emoji-btn">☮️</button>
+            <button class="emoji-btn">🕎</button>
+            <button class="emoji-btn">🔯</button>
+            <button class="emoji-btn">♈</button>
+            <button class="emoji-btn">♉</button>
+            <button class="emoji-btn">♊</button>
+            <button class="emoji-btn">♋</button>
+            <button class="emoji-btn">♌</button>
+            <button class="emoji-btn">♍</button>
+            <button class="emoji-btn">♎</button>
+            <button class="emoji-btn">♏</button>
+            <button class="emoji-btn">♐</button>
+            <button class="emoji-btn">♑</button>
+            <button class="emoji-btn">♒</button>
+            <button class="emoji-btn">♓</button>
+            <button class="emoji-btn">⛎</button>
+            <button class="emoji-btn">🔀</button>
+            <button class="emoji-btn">🔁</button>
+            <button class="emoji-btn">🔂</button>
+            <button class="emoji-btn">▶️</button>
+            <button class="emoji-btn">⏩</button>
+            <button class="emoji-btn">⏭️</button>
+            <button class="emoji-btn">⏯️</button>
+            <button class="emoji-btn">◀️</button>
+            <button class="emoji-btn">⏪</button>
+            <button class="emoji-btn">⏮️</button>
+            <button class="emoji-btn">🔼</button>
+            <button class="emoji-btn">⏫</button>
+            <button class="emoji-btn">🔽</button>
+            <button class="emoji-btn">⏬</button>
+            <button class="emoji-btn">⏸️</button>
+            <button class="emoji-btn">⏹️</button>
+            <button class="emoji-btn">⏺️</button>
+            <button class="emoji-btn">⏏️</button>
+            <button class="emoji-btn">🎦</button>
+            <button class="emoji-btn">🔅</button>
+            <button class="emoji-btn">🔆</button>
+            <button class="emoji-btn">📶</button>
+            <button class="emoji-btn">📳</button>
+            <button class="emoji-btn">📴</button>
+            <button class="emoji-btn">♀️</button>
+            <button class="emoji-btn">♂️</button>
+            <button class="emoji-btn">⚧️</button>
+            <button class="emoji-btn">✖️</button>
+            <button class="emoji-btn">➕</button>
+            <button class="emoji-btn">➖</button>
+            <button class="emoji-btn">➗</button>
+            <button class="emoji-btn">♾️</button>
+            <button class="emoji-btn">‼️</button>
+            <button class="emoji-btn">⁉️</button>
+            <button class="emoji-btn">❓</button>
+            <button class="emoji-btn">❔</button>
+            <button class="emoji-btn">❕</button>
+            <button class="emoji-btn">❗</button>
+            <button class="emoji-btn">〰️</button>
+            <button class="emoji-btn">💱</button>
+            <button class="emoji-btn">💲</button>
+            <button class="emoji-btn">⚕️</button>
+            <button class="emoji-btn">♻️</button>
+            <button class="emoji-btn">⚜️</button>
+            <button class="emoji-btn">🔱</button>
+            <button class="emoji-btn">📛</button>
+            <button class="emoji-btn">🔰</button>
+            <button class="emoji-btn">⭕</button>
+            <button class="emoji-btn">✅</button>
+            <button class="emoji-btn">☑️</button>
+            <button class="emoji-btn">✔️</button>
+            <button class="emoji-btn">❌</button>
+            <button class="emoji-btn">❎</button>
+            <button class="emoji-btn">➰</button>
+            <button class="emoji-btn">➿</button>
+            <button class="emoji-btn">〽️</button>
+            <button class="emoji-btn">✳️</button>
+            <button class="emoji-btn">✴️</button>
+            <button class="emoji-btn">❇️</button>
+            <button class="emoji-btn">©️</button>
+            <button class="emoji-btn">®️</button>
+            <button class="emoji-btn">™️</button>
+            <button class="emoji-btn">#️⃣</button>
+            <button class="emoji-btn">*️⃣</button>
+            <button class="emoji-btn">0️⃣</button>
+            <button class="emoji-btn">1️⃣</button>
+            <button class="emoji-btn">2️⃣</button>
+            <button class="emoji-btn">3️⃣</button>
+            <button class="emoji-btn">4️⃣</button>
+            <button class="emoji-btn">5️⃣</button>
+            <button class="emoji-btn">6️⃣</button>
+            <button class="emoji-btn">7️⃣</button>
+            <button class="emoji-btn">8️⃣</button>
+            <button class="emoji-btn">9️⃣</button>
+            <button class="emoji-btn">🔟</button>
+            <button class="emoji-btn">🔠</button>
+            <button class="emoji-btn">🔡</button>
+            <button class="emoji-btn">🔢</button>
+            <button class="emoji-btn">🔣</button>
+            <button class="emoji-btn">🔤</button>
+            <button class="emoji-btn">🅰️</button>
+            <button class="emoji-btn">🆎</button>
+            <button class="emoji-btn">🅱️</button>
+            <button class="emoji-btn">🆑</button>
+            <button class="emoji-btn">🆒</button>
+            <button class="emoji-btn">🆓</button>
+            <button class="emoji-btn">ℹ️</button>
+            <button class="emoji-btn">🆔</button>
+            <button class="emoji-btn">Ⓜ️</button>
+            <button class="emoji-btn">🆕</button>
+            <button class="emoji-btn">🆖</button>
+            <button class="emoji-btn">🅾️</button>
+            <button class="emoji-btn">🆗</button>
+            <button class="emoji-btn">🅿️</button>
+            <button class="emoji-btn">🆘</button>
+            <button class="emoji-btn">🆙</button>
+            <button class="emoji-btn">🆚</button>
+            <button class="emoji-btn">🈁</button>
+            <button class="emoji-btn">🈂️</button>
+            <button class="emoji-btn">🈷️</button>
+            <button class="emoji-btn">🈶</button>
+            <button class="emoji-btn">🈯</button>
+            <button class="emoji-btn">🉐</button>
+            <button class="emoji-btn">🈹</button>
+            <button class="emoji-btn">🈚</button>
+            <button class="emoji-btn">🈲</button>
+            <button class="emoji-btn">🉑</button>
+            <button class="emoji-btn">🈸</button>
+            <button class="emoji-btn">🈴</button>
+            <button class="emoji-btn">🈳</button>
+            <button class="emoji-btn">㊗️</button>
+            <button class="emoji-btn">㊙️</button>
+            <button class="emoji-btn">🈺</button>
+            <button class="emoji-btn">🈵</button>
+            <button class="emoji-btn">🔴</button>
+            <button class="emoji-btn">🟠</button>
+            <button class="emoji-btn">🟡</button>
+            <button class="emoji-btn">🟢</button>
+            <button class="emoji-btn">🔵</button>
+            <button class="emoji-btn">🟣</button>
+            <button class="emoji-btn">🟤</button>
+            <button class="emoji-btn">⚫</button>
+            <button class="emoji-btn">⚪</button>
+            <button class="emoji-btn">🟥</button>
+            <button class="emoji-btn">🟧</button>
+            <button class="emoji-btn">🟨</button>
+            <button class="emoji-btn">🟩</button>
+            <button class="emoji-btn">🟦</button>
+            <button class="emoji-btn">🟪</button>
+            <button class="emoji-btn">🟫</button>
+            <button class="emoji-btn">⬛</button>
+            <button class="emoji-btn">⬜</button>
+            <button class="emoji-btn">◼️</button>
+            <button class="emoji-btn">◻️</button>
+            <button class="emoji-btn">◾</button>
+            <button class="emoji-btn">◽</button>
+            <button class="emoji-btn">▪️</button>
+            <button class="emoji-btn">▫️</button>
+            <button class="emoji-btn">🔶</button>
+            <button class="emoji-btn">🔷</button>
+            <button class="emoji-btn">🔸</button>
+            <button class="emoji-btn">🔹</button>
+            <button class="emoji-btn">🔺</button>
+            <button class="emoji-btn">🔻</button>
+            <button class="emoji-btn">💠</button>
+            <button class="emoji-btn">🔘</button>
+            <button class="emoji-btn">🔳</button>
+            <button class="emoji-btn">🔲</button>
+            <button class="emoji-btn">🏁</button>
+            <button class="emoji-btn">🚩</button>
+            <button class="emoji-btn">🎌</button>
+            <button class="emoji-btn">🏴</button>
+            <button class="emoji-btn">🏳️</button>
+            <button class="emoji-btn">🏳️‍🌈</button>
+            <button class="emoji-btn">🏳️‍⚧️</button>
+            <button class="emoji-btn">🏴‍☠️</button>
+                    </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification hidden" id="notification">
+        <span id="notificationText"></span>
+        <span class="notification-close" id="notificationClose">&times;</span>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+        <h2>Settings</h2>
+        
+        <h3>Appearance</h3>
+        <div class="setting-group">
+            <label>Theme:</label>
+            <select id="themeSelect">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="system">System Default</option>
+            </select>
+        </div>
+        
+        <div class="setting-group">
+            <label>Message Density:</label>
+            <select id="densitySelect">
+                <option value="compact">Compact</option>
+                <option value="normal" selected>Normal</option>
+                <option value="comfortable">Comfortable</option>
+            </select>
+        </div>
+        
+        <h3>Notifications</h3>
+        <div class="setting-group">
+            <label>
+                <input type="checkbox" id="notificationsToggle" checked>
+                Enable Notifications
+            </label>
+        </div>
+        
+        <div class="setting-group">
+            <label>
+                <input type="checkbox" id="soundToggle" checked>
+                Enable Sounds
+            </label>
+        </div>
+        
+        <div class="setting-group">
+            <label>Notification Sound:</label>
+            <select id="soundSelect">
+                <option value="chime">Chime</option>
+                <option value="ding">Ding</option>
+                <option value="pop">Pop</option>
+            </select>
+            <button id="testSoundBtn">Test Sound</button>
+        </div>
+        
+        <h3>Privacy</h3>
+        <div class="setting-group">
+            <label>
+                <input type="checkbox" id="typingIndicatorToggle" checked>
+                Show Typing Indicator
+            </label>
+        </div>
+        
+        <div class="setting-group">
+            <label>
+                <input type="checkbox" id="readReceiptsToggle" checked>
+                Send Read Receipts
+            </label>
+        </div>
+        
+        <h3>Data</h3>
+        <div class="setting-group">
+            <label>
+                <input type="checkbox" id="saveHistoryToggle" checked>
+                Save Chat History
+            </label>
+        </div>
+        
+        <button id="clearHistoryBtn">Clear Chat History</button>
+        <button id="exportDataBtn">Export All Data</button>
+        <button id="importDataBtn">Import Data</button>
+        <input type="file" id="importDataInput" class="hidden" accept=".json">
+        
+        <h3>Account</h3>
+        <button id="changePasswordBtn">Change Password</button>
+        <button id="deleteAccountBtn" class="danger">Delete Account</button>
+    </div>
+
+    <button class="settings-toggle" id="settingsToggle">⚙️</button>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu">
+        <div class="context-menu-item" id="copyMessage">Copy</div>
+        <div class="context-menu-item" id="deleteMessage">Delete</div>
+        <div class="context-menu-item" id="forwardMessage">Forward</div>
+    </div>
+
+    <!-- Fullscreen Image Viewer -->
+    <div class="fullscreen-image hidden" id="fullscreenImage">
+        <span class="fullscreen-close" id="fullscreenClose">&times;</span>
+        <img id="fullscreenImageContent">
+    </div>
+
+    <!-- Audio Elements for Sounds -->
+    <audio id="messageSound" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.mp3"></audio>
+    <audio id="connectionSound" src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3"></audio>
+    <audio id="notificationSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const loginPanel = document.getElementById('loginPanel');
+            const connectionPanel = document.getElementById('connectionPanel');
+            const chatContainer = document.getElementById('chatContainer');
+            const inputArea = document.getElementById('inputArea');
+            const header = document.getElementById('header');
+            const userSuggestions = document.getElementById('userSuggestions');
+            const remoteIdInput = document.getElementById('remoteIdInput');
+            const settingsPanel = document.getElementById('settingsPanel');
+            const settingsToggle = document.getElementById('settingsToggle');
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            const notificationClose = document.getElementById('notificationClose');
+            
+            // PeerJS elements
+            let peer;
+            let conn;
+            let currentUser = null;
+            let isTyping = false;
+            let typingTimeout;
+            
+            // Initialize local storage for user data
+            initializeStorage();
+            
+            // Check if user is already logged in
+            checkAutoLogin();
+            
+            // Event listeners
+            setupEventListeners();
+            
+            function initializeStorage() {
+                if (!localStorage.getItem('p2pChatUsers')) {
+                    localStorage.setItem('p2pChatUsers', JSON.stringify({}));
+                }
+                
+                if (!localStorage.getItem('p2pChatConnections')) {
+                    localStorage.setItem('p2pChatConnections', JSON.stringify([]));
+                }
+                
+                if (!localStorage.getItem('p2pChatSettings')) {
+                    localStorage.setItem('p2pChatSettings', JSON.stringify({
+                        theme: 'light',
+                        density: 'normal',
+                        notifications: true,
+                        sounds: true,
+                        soundType: 'chime',
+                        typingIndicator: true,
+                        readReceipts: true,
+                        saveHistory: true
+                    }));
+                }
+            }
+            
+            function checkAutoLogin() {
+                const loggedInUser = localStorage.getItem('p2pChatLoggedIn');
+                if (loggedInUser) {
+                    const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                    if (users[loggedInUser]) {
+                        currentUser = {
+                            username: loggedInUser,
+                            peerId: users[loggedInUser].peerId,
+                            profilePic: users[loggedInUser].profilePic
+                        };
+                        showChatInterface();
+                        initializePeer();
+                    }
+                }
+            }
+            
+            function setupEventListeners() {
+                // Login/Register
+                document.getElementById('loginButton').addEventListener('click', login);
+                document.getElementById('registerButton').addEventListener('click', register);
+                document.getElementById('logoutButton').addEventListener('click', logout);
+                document.getElementById('loginTabBtn').addEventListener('click', () => switchTab('login'));
+                document.getElementById('registerTabBtn').addEventListener('click', () => switchTab('register'));
+                
+                // Connection
+                document.getElementById('connectButton').addEventListener('click', connectToPeer);
+                remoteIdInput.addEventListener('input', showUserSuggestions);
+                remoteIdInput.addEventListener('focus', showUserSuggestions);
+                document.addEventListener('click', () => userSuggestions.classList.add('hidden'));
+                
+                // Chat
+                document.getElementById('sendButton').addEventListener('click', sendMessage);
+                document.getElementById('messageInput').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') sendMessage();
+                });
+                document.getElementById('messageInput').addEventListener('input', handleTyping);
+                
+                // File sharing
+                document.getElementById('fileButton').addEventListener('click', () => document.getElementById('fileInput').click());
+                document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+                
+                // Emoji picker
+                document.getElementById('emojiButton').addEventListener('click', toggleEmojiPicker);
+                document.querySelectorAll('.emoji-btn').forEach(btn => {
+                    btn.addEventListener('click', () => insertEmoji(btn.textContent));
+                });
+                
+                // Notifications
+                notificationClose.addEventListener('click', () => notification.classList.add('hidden'));
+                
+                // Settings
+                settingsToggle.addEventListener('click', toggleSettingsPanel);
+                document.getElementById('themeSelect').addEventListener('change', updateTheme);
+                document.getElementById('densitySelect').addEventListener('change', updateDensity);
+                document.getElementById('notificationsToggle').addEventListener('change', toggleNotifications);
+                document.getElementById('soundToggle').addEventListener('change', toggleSounds);
+                document.getElementById('soundSelect').addEventListener('change', updateSound);
+                document.getElementById('testSoundBtn').addEventListener('click', testSound);
+                document.getElementById('typingIndicatorToggle').addEventListener('change', toggleTypingIndicator);
+                document.getElementById('readReceiptsToggle').addEventListener('change', toggleReadReceipts);
+                document.getElementById('saveHistoryToggle').addEventListener('change', toggleSaveHistory);
+                document.getElementById('clearHistoryBtn').addEventListener('click', clearHistory);
+                document.getElementById('exportDataBtn').addEventListener('click', exportData);
+                document.getElementById('importDataBtn').addEventListener('click', () => document.getElementById('importDataInput').click());
+                document.getElementById('importDataInput').addEventListener('change', importData);
+                document.getElementById('changePasswordBtn').addEventListener('click', changePassword);
+                document.getElementById('deleteAccountBtn').addEventListener('click', deleteAccount);
+                
+                // Context menu
+                document.addEventListener('contextmenu', handleContextMenu);
+                document.addEventListener('click', () => document.getElementById('contextMenu').style.display = 'none');
+                document.getElementById('copyMessage').addEventListener('click', copyMessage);
+                document.getElementById('deleteMessage').addEventListener('click', deleteMessage);
+                document.getElementById('forwardMessage').addEventListener('click', forwardMessage);
+                
+                // Fullscreen image
+                document.getElementById('fullscreenClose').addEventListener('click', () => {
+                    document.getElementById('fullscreenImage').classList.add('hidden');
+                });
+            }
+            
+            function login() {
+                const username = document.getElementById('usernameInput').value.trim();
+                const password = document.getElementById('passwordInput').value.trim();
+                
+                if (!username || !password) {
+                    showNotification('Please enter both username and password');
+                    return;
+                }
+                
+                const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                if (users[username] && users[username].password === password) {
+                    currentUser = {
+                        username,
+                        peerId: users[username].peerId || generatePeerId(),
+                        profilePic: users[username].profilePic || username.charAt(0).toUpperCase()
+                    };
+                    
+                    // Update peer ID if it wasn't set before
+                    if (!users[username].peerId) {
+                        users[username].peerId = currentUser.peerId;
+                        localStorage.setItem('p2pChatUsers', JSON.stringify(users));
+                    }
+                    
+                    // Save login state
+                    localStorage.setItem('p2pChatLoggedIn', username);
+                    
+                    initializePeer();
+                    showChatInterface();
+                    loadSettings();
+                } else {
+                    showNotification('Invalid username or password');
+                }
+            }
+            
+            function register() {
+                const username = document.getElementById('regUsernameInput').value.trim();
+                const password = document.getElementById('regPasswordInput').value.trim();
+                const email = document.getElementById('regEmailInput').value.trim();
+                
+                if (!username || !password) {
+                    showNotification('Please enter both username and password');
+                    return;
+                }
+                
+                const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                if (users[username]) {
+                    showNotification('Username already exists');
+                    return;
+                }
+                
+                users[username] = {
+                    password,
+                    email,
+                    peerId: generatePeerId(),
+                    profilePic: username.charAt(0).toUpperCase(),
+                    lastSeen: new Date().toISOString()
+                };
+                
+                localStorage.setItem('p2pChatUsers', JSON.stringify(users));
+                
+                currentUser = {
+                    username,
+                    peerId: users[username].peerId,
+                    profilePic: users[username].profilePic
+                };
+                
+                // Save login state
+                localStorage.setItem('p2pChatLoggedIn', username);
+                
+                initializePeer();
+                showChatInterface();
+                loadSettings();
+                showNotification('Account created successfully!');
+            }
+            
+            function logout() {
+                if (peer) {
+                    peer.destroy();
+                }
+                
+                // Clear login state
+                localStorage.removeItem('p2pChatLoggedIn');
+                
+                currentUser = null;
+                loginPanel.classList.remove('hidden');
+                connectionPanel.classList.add('hidden');
+                chatContainer.classList.add('hidden');
+                inputArea.classList.add('hidden');
+                header.classList.add('hidden');
+                settingsPanel.classList.remove('open');
+                
+                document.getElementById('usernameInput').value = '';
+                document.getElementById('passwordInput').value = '';
+                
+                showNotification('Logged out successfully');
+            }
+            
+            function generatePeerId() {
+                return 'peer-' + Math.random().toString(36).substr(2, 9);
+            }
+            
+            function initializePeer() {
+                peer = new Peer(currentUser.peerId);
+                
+                peer.on('open', (id) => {
+                    document.getElementById('peerIdDisplay').textContent = id;
+                    document.getElementById('connectionStatus').textContent = 'Ready to connect';
+                    updateUserLastSeen();
+                    loadRecentConnections();
+                });
+                
+                peer.on('connection', (connection) => {
+                    conn = connection;
+                    
+                    conn.on('open', () => {
+                        document.getElementById('connectionStatus').textContent = `Connected to ${conn.peer}`;
+                        inputArea.classList.remove('hidden');
+                        chatContainer.classList.remove('hidden');
+                        
+                        // Save this connection
+                        saveConnection(conn.peer);
+                        loadChatHistory(conn.peer);
+                        
+                        // Play connection sound
+                        playSound('connection');
+                        
+                        showNotification(`Connected to ${conn.peer}`);
+                    });
+                    
+                    conn.on('data', (data) => {
+                        if (data.type === 'message') {
+                            addMessage('received', data.content);
+                            playSound('message');
+                        } else if (data.type === 'file') {
+                            addFileMessage('received', data);
+                            playSound('message');
+                        } else if (data.type === 'typing') {
+                            showTypingIndicator(data.isTyping);
+                        } else if (data.type === 'read') {
+                            // Handle read receipts
+                        }
+                    });
+                    
+                    conn.on('close', () => {
+                        document.getElementById('connectionStatus').textContent = 'Connection closed';
+                        inputArea.classList.add('hidden');
+                        showNotification(`Disconnected from ${conn.peer}`);
+                    });
+                });
+                
+                peer.on('error', (err) => {
+                    console.error('Peer error:', err);
+                    document.getElementById('connectionStatus').textContent = 'Error: ' + err.message;
+                    showNotification('Connection error: ' + err.message, true);
+                });
+            }
+            
+            function connectToPeer() {
+                const remoteId = remoteIdInput.value.trim();
+                if (!remoteId) return;
+                
+                conn = peer.connect(remoteId);
+                
+                conn.on('open', () => {
+                    document.getElementById('connectionStatus').textContent = `Connected to ${remoteId}`;
+                    inputArea.classList.remove('hidden');
+                    chatContainer.classList.remove('hidden');
+                    
+                    // Save this connection
+                    saveConnection(remoteId);
+                    loadChatHistory(remoteId);
+                    
+                    // Play connection sound
+                    playSound('connection');
+                    
+                    showNotification(`Connected to ${remoteId}`);
+                });
+                
+                conn.on('data', (data) => {
+                    if (data.type === 'message') {
+                        addMessage('received', data.content);
+                        playSound('message');
+                    } else if (data.type === 'file') {
+                        addFileMessage('received', data);
+                        playSound('message');
+                    } else if (data.type === 'typing') {
+                        showTypingIndicator(data.isTyping);
+                    } else if (data.type === 'read') {
+                        // Handle read receipts
+                    }
+                });
+                
+                conn.on('close', () => {
+                    document.getElementById('connectionStatus').textContent = 'Connection closed';
+                    inputArea.classList.add('hidden');
+                    showNotification(`Disconnected from ${remoteId}`);
+                });
+            }
+            
+            function sendMessage() {
+                const messageInput = document.getElementById('messageInput');
+                const message = messageInput.value.trim();
+                
+                if (message && conn && conn.open) {
+                    addMessage('sent', message);
+                    conn.send({ type: 'message', content: message });
+                    messageInput.value = '';
+                    
+                    // Save message to history
+                    saveMessage(conn.peer, message);
+                    
+                    // Reset typing indicator
+                    if (isTyping) {
+                        isTyping = false;
+                        if (conn.open) {
+                            conn.send({ type: 'typing', isTyping: false });
+                        }
+                    }
+                }
+            }
+            
+            function handleFileUpload(event) {
+                const file = event.target.files[0];
+                if (!file || !conn || !conn.open) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const fileData = {
+                        type: 'file',
+                        name: file.name,
+                        size: file.size,
+                        mimeType: file.type,
+                        data: e.target.result
+                    };
+                    
+                    addFileMessage('sent', fileData);
+                    conn.send(fileData);
+                    
+                    // Save file to history
+                    saveMessage(conn.peer, fileData, true);
+                    
+                    // Clear file input
+                    event.target.value = '';
+                };
+                
+                if (file.type.startsWith('image/')) {
+                    reader.readAsDataURL(file);
+                } else {
+                    reader.readAsBinaryString(file);
+                }
+            }
+            
+            function handleTyping() {
+                if (!isTyping && conn && conn.open) {
+                    isTyping = true;
+                    conn.send({ type: 'typing', isTyping: true });
+                }
+                
+                // Reset typing indicator after 2 seconds of inactivity
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => {
+                    if (isTyping && conn && conn.open) {
+                        isTyping = false;
+                        conn.send({ type: 'typing', isTyping: false });
+                    }
+                }, 2000);
+            }
+            
+            function showTypingIndicator(show) {
+                const typingIndicator = document.getElementById('typingIndicator');
+                if (show) {
+                    if (!typingIndicator) {
+                        const div = document.createElement('div');
+                        div.id = 'typingIndicator';
+                        div.className = 'typing-indicator';
+                        div.textContent = 'Typing...';
+                        chatContainer.appendChild(div);
+                    }
+                } else {
+                    if (typingIndicator) {
+                        typingIndicator.remove();
+                    }
+                }
+            }
+            
+            function addMessage(type, content) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+                
+                messageDiv.innerHTML = `
+                    <div>${content}</div>
+                    <div class="message-time">${new Date().toLocaleTimeString()}</div>
+                `;
+                
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            function addFileMessage(type, fileData) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+                
+                if (fileData.mimeType.startsWith('image/')) {
+                    messageDiv.innerHTML = `
+                        <img src="${fileData.data}" class="media-preview" alt="${fileData.name}" onclick="showFullscreenImage('${fileData.data}')">
+                        <div class="message-time">${new Date().toLocaleTimeString()}</div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `
+                        <div class="document" onclick="downloadFile('${fileData.name}', '${fileData.data}')">
+                            <div class="document-icon">📄</div>
+                            <div>
+                                <div>${fileData.name}</div>
+                                <div style="font-size: 12px; color: #666;">${formatFileSize(fileData.size)} • ${fileData.mimeType}</div>
+                            </div>
+                        </div>
+                        <div class="message-time">${new Date().toLocaleTimeString()}</div>
+                    `;
+                }
+                
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            function showUserSuggestions() {
+                const searchTerm = remoteIdInput.value.toLowerCase();
+                if (!searchTerm) {
+                    userSuggestions.classList.add('hidden');
+                    return;
+                }
+                
+                const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
+                
+                userSuggestions.innerHTML = '';
+                
+                // Add previous connections first
+                connections.forEach(peerId => {
+                    const user = Object.values(users).find(u => u.peerId === peerId);
+                    if (user && (peerId.includes(searchTerm) || user.username.toLowerCase().includes(searchTerm))) {
+                        const div = document.createElement('div');
+                        div.className = 'suggestion-item';
+                        div.textContent = `${user.username} (${peerId})`;
+                        div.addEventListener('click', () => {
+                            remoteIdInput.value = peerId;
+                            userSuggestions.classList.add('hidden');
+                        });
+                        userSuggestions.appendChild(div);
+                    }
+                });
+                
+                // Add other users
+                Object.entries(users).forEach(([username, user]) => {
+                    if (user.peerId !== currentUser.peerId && 
+                        !connections.includes(user.peerId) &&
+                        (user.peerId.includes(searchTerm) || username.toLowerCase().includes(searchTerm))) {
+                        const div = document.createElement('div');
+                        div.className = 'suggestion-item';
+                        div.textContent = `${username} (${user.peerId})`;
+                        div.addEventListener('click', () => {
+                            remoteIdInput.value = user.peerId;
+                            userSuggestions.classList.add('hidden');
+                        });
+                        userSuggestions.appendChild(div);
+                    }
+                });
+                
+                if (userSuggestions.children.length > 0) {
+                    userSuggestions.classList.remove('hidden');
+                } else {
+                    userSuggestions.classList.add('hidden');
+                }
+            }
+            
+            function saveConnection(peerId) {
+                const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
+                if (!connections.includes(peerId)) {
+                    connections.push(peerId);
+                    localStorage.setItem('p2pChatConnections', JSON.stringify(connections));
+                    loadRecentConnections();
+                }
+            }
+            
+            function saveMessage(peerId, content, isFile = false) {
+                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                if (!settings.saveHistory) return;
+                
+                const chatKey = `chat_${currentUser.peerId}_${peerId}`;
+                const messages = JSON.parse(localStorage.getItem(chatKey)) || [];
+                
+                messages.push({
+                    type: isFile ? 'file' : 'message',
+                    content,
+                    timestamp: new Date().toISOString(),
+                    direction: 'outgoing'
+                });
+                
+                localStorage.setItem(chatKey, JSON.stringify(messages));
+            }
+            
+            function loadChatHistory(peerId) {
+                const chatKey = `chat_${currentUser.peerId}_${peerId}`;
+                const messages = JSON.parse(localStorage.getItem(chatKey)) || [];
+                
+                // Clear current chat
+                chatContainer.innerHTML = '';
+                
+                // Add all messages
+                messages.forEach(msg => {
+                    if (msg.type === 'message') {
+                        addMessage(msg.direction === 'outgoing' ? 'sent' : 'received', msg.content);
+                    } else if (msg.type === 'file') {
+                        addFileMessage(msg.direction === 'outgoing' ? 'sent' : 'received', msg.content);
+                    }
+                });
+            }
+            
+            function loadRecentConnections() {
+                const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
+                const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                const recentConnections = document.getElementById('recentConnections');
+                
+                recentConnections.innerHTML = '';
+                
+                connections.forEach(peerId => {
+                    const user = Object.values(users).find(u => u.peerId === peerId);
+                    if (user) {
+                        const div = document.createElement('div');
+                        div.className = 'suggestion-item';
+                        div.textContent = `${user.username} (${peerId})`;
+                        div.addEventListener('click', () => {
+                            remoteIdInput.value = peerId;
+                            userSuggestions.classList.add('hidden');
+                        });
+                        recentConnections.appendChild(div);
+                    }
+                });
+            }
+            
+            function updateUserLastSeen() {
+                const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                if (users[currentUser.username]) {
+                    users[currentUser.username].lastSeen = new Date().toISOString();
+                    localStorage.setItem('p2pChatUsers', JSON.stringify(users));
+                }
+            }
+            
+            function showChatInterface() {
+                loginPanel.classList.add('hidden');
+                header.classList.remove('hidden');
+                connectionPanel.classList.remove('hidden');
+                
+                document.getElementById('profileName').textContent = currentUser.username;
+                document.getElementById('profilePic').textContent = currentUser.profilePic;
+            }
+            
+            function switchTab(tab) {
+                if (tab === 'login') {
+                    document.getElementById('loginForm').classList.remove('hidden');
+                    document.getElementById('registerForm').classList.add('hidden');
+                    document.getElementById('loginTabBtn').classList.add('active');
+                    document.getElementById('registerTabBtn').classList.remove('active');
+                } else {
+                    document.getElementById('loginForm').classList.add('hidden');
+                    document.getElementById('registerForm').classList.remove('hidden');
+                    document.getElementById('loginTabBtn').classList.remove('active');
+                    document.getElementById('registerTabBtn').classList.add('active');
+                }
+            }
+            
+            function toggleEmojiPicker() {
+                const picker = document.getElementById('emojiPicker');
+                picker.style.display = picker.style.display === 'block' ? 'none' : 'block';
+            }
+            
+            function insertEmoji(emoji) {
+                const input = document.getElementById('messageInput');
+                input.value += emoji;
+                input.focus();
+                document.getElementById('emojiPicker').style.display = 'none';
+            }
+            
+            function showNotification(message, isError = false) {
+                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                if (!settings.notifications) return;
+                
+                notificationText.textContent = message;
+                notification.style.backgroundColor = isError ? '#ff4444' : '#075e54';
+                notification.classList.remove('hidden');
+                
+                if (settings.sounds) {
+                    playSound('notification');
+                }
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 5000);
+            }
+            
+            function playSound(type) {
+                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                if (!settings.sounds) return;
+                
+                let sound;
+                switch(type) {
+                    case 'message':
+                        sound = document.getElementById('messageSound');
+                        break;
+                    case 'connection':
+                        sound = document.getElementById('connectionSound');
+                        break;
+                    case 'notification':
+                        sound = document.getElementById('notificationSound');
+                        break;
+                    default:
+                        return;
+                }
+                
+                sound.currentTime = 0;
+                sound.play();
+            }
+            
+            function toggleSettingsPanel() {
+                settingsPanel.classList.toggle('open');
+            }
+            
+            function loadSettings() {
+                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                
+                // Apply theme
+                document.getElementById('themeSelect').value = settings.theme;
+                updateTheme();
+                
+                // Apply other settings
+                document.getElementById('densitySelect').value = settings.density;
+                document.getElementById('notificationsToggle').checked = settings.notifications;
+                document.getElementById('soundToggle').checked = settings.sounds;
+                document.getElementById('soundSelect').value = settings.soundType;
+                document.getElementById('typingIndicatorToggle').checked = settings.typingIndicator;
+                document.getElementById('readReceiptsToggle').checked = settings.readReceipts;
+                document.getElementById('saveHistoryToggle').checked = settings.saveHistory;
+            }
+            
+            function updateTheme() {
+                const theme = document.getElementById('themeSelect').value;
+                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                settings.theme = theme;
+                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+                
+                if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.style.setProperty('--primary-color', '#128c7e');
+                    document.documentElement.style.setProperty('--background-color', '#0d1418');
+                    document.documentElement.style.setProperty('--panel-color', '#1e2a30');
+                    document.documentElement.style.setProperty('--light-color', '#005c4b');
+                    document.documentElement.style.setProperty('--dark-color', '#e9edef');
+                } else {
+                    document.documentElement.style.setProperty('--primary-color', '#075e54');
+                    document.documentElement.style.setProperty('--background-color', '#e5ddd5');
+                    document.documentElement.style.setProperty('--panel-color', 'white');
+                    document.documentElement.style.setProperty('--light-color', '#dcf8c6');
+                    document.documentElement.style.setProperty('--dark-color', '#333');
+                }
+            }
+            
+            function updateDensity() {
+                const density = document.getElementById('densitySelect').value;
+                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                settings.density = density;
+                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+                
+                // Apply density changes
+                const messages = document.querySelectorAll('.message');
+                messages.forEach(msg => {
+                    msg.style.padding = density === 'compact' ? '5px 8px' : 
+                                      density === 'comfortable' ? '12px 16px' : '8px 12px';
+                    msg.style.marginBottom = density === 'compact' ? '5px' : 
+                                           density === 'comfortable' ? '15px' : '10px';
+                });
+            }
+            
+            function toggleNotifications() {
+                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                settings.notifications = document.getElementById('notificationsToggle').checked;
+                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+            }
+            
+            function toggleSounds() {
+                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                settings.sounds = document.getElementById('soundToggle').checked;
+                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+            }
+            
+            function updateSound() {
+                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                settings.soundType = document.getElementById('soundSelect').value;
+                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+                
+                // Update sound source based on selection
+                const sound = document.getElementById('notificationSound');
+                switch(settings.soundType) {
+                    case 'chime':
+                        sound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3';
+                        break;
+                    case 'ding':
+                        sound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3';
+                        break;
+                    case 'pop':
+                        sound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.mp3';
+                        break;
+                }
+            }
+            
+            function testSound() {
+                playSound('notification');
+            }
+            
+            function toggleTypingIndicator() {
+                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                settings.typingIndicator = document.getElementById('typingIndicatorToggle').checked;
+                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+            }
+            
+            function toggleReadReceipts() {
+                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                settings.readReceipts = document.getElementById('readReceiptsToggle').checked;
+                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+            }
+            
+            function toggleSaveHistory() {
+                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                settings.saveHistory = document.getElementById('saveHistoryToggle').checked;
+                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+            }
+            
+            function clearHistory() {
+                if (confirm('Are you sure you want to clear all chat history? This cannot be undone.')) {
+                    // Get all keys starting with 'chat_'
+                    const keys = Object.keys(localStorage).filter(key => key.startsWith('chat_'));
+                    
+                    // Remove each chat history
+                    keys.forEach(key => {
+                        localStorage.removeItem(key);
+                    });
+                    
+                    showNotification('Chat history cleared');
+                }
+            }
+            
+            function exportData() {
+                const data = {
+                    users: JSON.parse(localStorage.getItem('p2pChatUsers')),
+                    connections: JSON.parse(localStorage.getItem('p2pChatConnections')),
+                    settings: JSON.parse(localStorage.getItem('p2pChatSettings')),
+                    chats: {}
+                };
+                
+                // Get all chat histories
+                const chatKeys = Object.keys(localStorage).filter(key => key.startsWith('chat_'));
+                chatKeys.forEach(key => {
+                    data.chats[key] = JSON.parse(localStorage.getItem(key));
+                });
+                
+                // Create download link
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `p2p_chat_backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showNotification('Data exported successfully');
+            }
+            
+            function importData(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                if (confirm('Importing data will overwrite your current settings and chat history. Continue?')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const data = JSON.parse(e.target.result);
+                            
+                            // Import data
+                            if (data.users) localStorage.setItem('p2pChatUsers', JSON.stringify(data.users));
+                            if (data.connections) localStorage.setItem('p2pChatConnections', JSON.stringify(data.connections));
+                            if (data.settings) localStorage.setItem('p2pChatSettings', JSON.stringify(data.settings));
+                            
+                            // Import chat histories
+                            if (data.chats) {
+                                Object.keys(data.chats).forEach(key => {
+                                    localStorage.setItem(key, JSON.stringify(data.chats[key]));
+                                });
+                            }
+                            
+                            // Reload settings
+                            loadSettings();
+                            
+                            showNotification('Data imported successfully');
+                        } catch (err) {
+                            showNotification('Error importing data: ' + err.message, true);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+                
+                // Reset file input
+                event.target.value = '';
+            }
+            
+            function changePassword() {
+                const newPassword = prompt('Enter new password:');
+                if (newPassword) {
+                    const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                    if (users[currentUser.username]) {
+                        users[currentUser.username].password = newPassword;
+                        localStorage.setItem('p2pChatUsers', JSON.stringify(users));
+                        showNotification('Password changed successfully');
+                    }
+                }
+            }
+            
+            function deleteAccount() {
+                if (confirm('Are you sure you want to delete your account? All your data will be permanently removed.')) {
+                    const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                    delete users[currentUser.username];
+                    localStorage.setItem('p2pChatUsers', JSON.stringify(users));
+                    
+                    // Remove all chat histories involving this user
+                    const chatKeys = Object.keys(localStorage).filter(key => key.startsWith('chat_') && key.includes(currentUser.peerId));
+                    chatKeys.forEach(key => {
+                        localStorage.removeItem(key);
+                    });
+                    
+                    // Remove from connections
+                    const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
+                    const updatedConnections = connections.filter(peerId => peerId !== currentUser.peerId);
+                    localStorage.setItem('p2pChatConnections', JSON.stringify(updatedConnections));
+                    
+                    // Logout
+                    logout();
+                    
+                    showNotification('Account deleted successfully');
+                }
+            }
+            
+            function handleContextMenu(e) {
+                e.preventDefault();
+                
+                // Check if right-click was on a message
+                const message = e.target.closest('.message');
+                if (message) {
+                    const contextMenu = document.getElementById('contextMenu');
+                    contextMenu.style.display = 'block';
+                    contextMenu.style.left = `${e.pageX}px`;
+                    contextMenu.style.top = `${e.pageY}px`;
+                    
+                    // Store the clicked message for context actions
+                    contextMenu.dataset.messageId = message.dataset.id || '';
+                    contextMenu.dataset.messageContent = message.querySelector('div').textContent;
+                }
+            }
+            
+            function copyMessage() {
+                const contextMenu = document.getElementById('contextMenu');
+                navigator.clipboard.writeText(contextMenu.dataset.messageContent);
+                contextMenu.style.display = 'none';
+                showNotification('Message copied to clipboard');
+            }
+            
+            function deleteMessage() {
+                // In a real app, you would need to implement message deletion logic
+                showNotification('Message deletion not implemented in this demo');
+                document.getElementById('contextMenu').style.display = 'none';
+            }
+            
+            function forwardMessage() {
+                // In a real app, you would implement message forwarding
+                showNotification('Message forwarding not implemented in this demo');
+                document.getElementById('contextMenu').style.display = 'none';
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // Make functions available globally for HTML onclick handlers
+            window.showFullscreenImage = function(src) {
+                document.getElementById('fullscreenImageContent').src = src;
+                document.getElementById('fullscreenImage').classList.remove('hidden');
+            };
+            
+            window.downloadFile = function(filename, data) {
+                const element = document.createElement('a');
+                element.setAttribute('href', 'data:application/octet-stream;base64,' + btoa(data));
+                element.setAttribute('download', filename);
+                element.style.display = 'none';
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+            };
+        });
+    </script>
+</body>
+</html>
