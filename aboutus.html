@@ -7,6 +7,7 @@
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <style>
         :root {
+            /* Light Theme - Default */
             --primary-color: #075e54;
             --secondary-color: #128c7e;
             --accent-color: #25d366;
@@ -14,21 +15,106 @@
             --dark-color: #333;
             --background-color: #e5ddd5;
             --panel-color: white;
+            --text-color: #333;
+            --text-light: #777;
+            --shadow-color: rgba(0,0,0,0.1);
+            --border-color: #ddd;
+            --hover-color: rgba(0,0,0,0.05);
+            --active-color: rgba(0,0,0,0.1);
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --danger-color: #F44336;
+            --info-color: #2196F3;
+            
+            /* Theme transition */
+            --transition-speed: 0.3s;
+            --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* New interactive elements */
+            --ripple-color: rgba(255,255,255,0.4);
+            --focus-glow: 0 0 0 2px rgba(37, 211, 102, 0.3);
+            --button-hover-scale: 1.03;
+            --button-active-scale: 0.98;
+        }
+        
+        /* Dark Theme Variables */
+        [data-theme="dark"] {
+            --primary-color: #128c7e;
+            --secondary-color: #075e54;
+            --accent-color: #25d366;
+            --light-color: #005c4b;
+            --dark-color: #e9edef;
+            --background-color: #0d1418;
+            --panel-color: #1e2a30;
+            --text-color: #e9edef;
+            --text-light: #a6a6a6;
+            --shadow-color: rgba(0,0,0,0.3);
+            --border-color: #2d3a40;
+            --hover-color: rgba(255,255,255,0.05);
+            --active-color: rgba(255,255,255,0.1);
+            --ripple-color: rgba(0,0,0,0.2);
+        }
+        
+        /* High Contrast Theme */
+        [data-theme="high-contrast"] {
+            --primary-color: #0057b7;
+            --secondary-color: #003d82;
+            --accent-color: #ffd700;
+            --light-color: #e6f2ff;
+            --dark-color: #000;
+            --background-color: #fff;
+            --panel-color: #f0f0f0;
+            --text-color: #000;
+            --text-light: #444;
+            --shadow-color: rgba(0,0,0,0.2);
+            --border-color: #000;
+            --hover-color: rgba(0,0,0,0.1);
+            --active-color: rgba(0,0,0,0.2);
+            --ripple-color: rgba(0,0,0,0.1);
+        }
+        
+        /* Pink Theme */
+        [data-theme="pink"] {
+            --primary-color: #e91e63;
+            --secondary-color: #c2185b;
+            --accent-color: #ff4081;
+            --light-color: #f8bbd0;
+            --dark-color: #333;
+            --background-color: #fce4ec;
+            --panel-color: #fff;
+            --text-color: #333;
+            --text-light: #777;
+            --shadow-color: rgba(0,0,0,0.1);
+            --border-color: #f8bbd0;
+            --hover-color: rgba(233, 30, 99, 0.1);
+            --active-color: rgba(233, 30, 99, 0.2);
+            --ripple-color: rgba(255,255,255,0.4);
         }
         
         * {
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             margin: 0;
             padding: 0;
+            transition: background-color var(--transition-speed) var(--transition-easing),
+                        color var(--transition-speed) var(--transition-easing),
+                        border-color var(--transition-speed) var(--transition-easing),
+                        box-shadow var(--transition-speed) var(--transition-easing);
         }
         
         body {
             background-color: var(--background-color);
+            color: var(--text-color);
             height: 100vh;
             display: flex;
             flex-direction: column;
-            color: var(--dark-color);
+            transition: background-color var(--transition-speed) var(--transition-easing);
+            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_a4be512e7195b6b733d9110b408f075d.png');
+            background-repeat: repeat;
+        }
+        
+        [data-theme="dark"] body {
+            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-dark_04fcacde539a5823a1b1ae7eb9f4fa0b.png');
         }
         
         .header {
@@ -37,12 +123,13 @@
             padding: 15px;
             text-align: center;
             font-size: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            box-shadow: 0 1px 3px var(--shadow-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: relative;
             z-index: 10;
+            transition: all var(--transition-speed) var(--transition-easing);
         }
         
         .panel {
@@ -52,7 +139,14 @@
             width: 90%;
             max-width: 500px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s var(--transition-easing);
+        }
+        
+        .panel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-color);
         }
         
         .chat-container {
@@ -60,8 +154,9 @@
             overflow-y: auto;
             padding: 10px;
             background-color: var(--background-color);
-            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_a4be512e7195b6b733d9110b408f075d.png');
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
         
         .message {
@@ -71,7 +166,14 @@
             border-radius: 7.5px;
             position: relative;
             word-wrap: break-word;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.3s var(--transition-easing);
+            box-shadow: 0 1px 1px var(--shadow-color);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        
+        .message:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px var(--shadow-color);
         }
         
         @keyframes fadeIn {
@@ -82,35 +184,46 @@
         .received {
             background-color: var(--panel-color);
             align-self: flex-start;
+            border-top-left-radius: 0;
         }
         
         .sent {
             background-color: var(--light-color);
             align-self: flex-end;
             margin-left: auto;
+            border-top-right-radius: 0;
         }
         
         .message-time {
             font-size: 11px;
-            color: #666;
+            color: var(--text-light);
             text-align: right;
             margin-top: 3px;
+            opacity: 0.8;
         }
         
         .input-area {
             display: flex;
             padding: 10px;
-            background-color: #f0f0f0;
-            border-top: 1px solid #ddd;
+            background-color: var(--panel-color);
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -1px 3px var(--shadow-color);
         }
         
         .message-input {
             flex: 1;
             padding: 10px 15px;
-            border: none;
+            border: 1px solid var(--border-color);
             border-radius: 20px;
             outline: none;
             font-size: 16px;
+            background-color: var(--panel-color);
+            color: var(--text-color);
+        }
+        
+        .message-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: var(--focus-glow);
         }
         
         .send-button {
@@ -123,33 +236,94 @@
             margin-left: 10px;
             cursor: pointer;
             font-size: 16px;
-            transition: background-color 0.2s;
+            transition: all 0.2s var(--transition-easing);
+            position: relative;
+            overflow: hidden;
         }
         
         .send-button:hover {
             background-color: var(--secondary-color);
+            transform: scale(var(--button-hover-scale));
+        }
+        
+        .send-button:active {
+            transform: scale(var(--button-active-scale));
+        }
+        
+        /* Ripple effect */
+        .send-button::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: var(--ripple-color);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .send-button:focus:not(:active)::after {
+            animation: ripple 0.6s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
         }
         
         button {
             padding: 10px 15px;
-            margin: 10px 5px;
+            margin: 5px;
             border: none;
             border-radius: 5px;
             background-color: var(--primary-color);
             color: white;
             cursor: pointer;
             font-size: 16px;
-            transition: all 0.2s;
+            transition: all var(--transition-speed) var(--transition-easing);
+            position: relative;
+            overflow: hidden;
         }
         
         button:hover {
             background-color: var(--secondary-color);
-            transform: translateY(-1px);
+            transform: translateY(-1px) scale(var(--button-hover-scale));
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        button:active {
+            transform: translateY(0) scale(var(--button-active-scale));
+            box-shadow: 0 1px 2px var(--shadow-color);
         }
         
         button:disabled {
             background-color: #cccccc;
             transform: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .tab-btn {
+            background-color: transparent;
+            color: var(--primary-color);
+            border-bottom: 2px solid transparent;
+            border-radius: 0;
+            margin: 0 10px 0 0;
+            padding: 5px 10px;
+        }
+        
+        .tab-btn.active {
+            border-bottom-color: var(--primary-color);
+            font-weight: bold;
         }
         
         input[type="text"], 
@@ -158,16 +332,24 @@
         select {
             padding: 10px;
             margin: 10px 0;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 5px;
             width: 100%;
             font-size: 16px;
+            background-color: var(--panel-color);
+            color: var(--text-color);
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: var(--focus-glow);
         }
         
         .status {
             margin: 10px 0;
             font-size: 14px;
-            color: #666;
+            color: var(--text-light);
         }
         
         .file-button {
@@ -180,6 +362,12 @@
             margin-right: 10px;
             cursor: pointer;
             font-size: 16px;
+            transition: all var(--transition-speed) var(--transition-easing);
+        }
+        
+        .file-button:hover {
+            background-color: var(--secondary-color);
+            transform: rotate(15deg) scale(var(--button-hover-scale));
         }
         
         .file-input {
@@ -192,26 +380,30 @@
             margin-top: 5px;
             border-radius: 5px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s var(--transition-easing);
+            border: 1px solid var(--border-color);
         }
         
         .media-preview:hover {
             transform: scale(1.05);
+            box-shadow: 0 2px 8px var(--shadow-color);
         }
         
         .document {
             display: flex;
             align-items: center;
-            background-color: white;
+            background-color: var(--panel-color);
             padding: 10px;
             border-radius: 5px;
             margin-top: 5px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all var(--transition-speed) var(--transition-easing);
+            border: 1px solid var(--border-color);
         }
         
         .document:hover {
-            background-color: #f0f0f0;
+            background-color: var(--hover-color);
+            transform: translateX(3px);
         }
         
         .document-icon {
@@ -230,11 +422,17 @@
             height: 30px;
             border-radius: 50%;
             margin-right: 10px;
-            background-color: #ddd;
+            background-color: var(--secondary-color);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            color: white;
+            transition: transform 0.2s var(--transition-easing);
+        }
+        
+        .profile-pic:hover {
+            transform: scale(1.1);
         }
         
         .hidden {
@@ -243,24 +441,25 @@
         
         .user-suggestions {
             position: absolute;
-            background: white;
-            border: 1px solid #ddd;
+            background: var(--panel-color);
+            border: 1px solid var(--border-color);
             border-radius: 5px;
             width: 200px;
             max-height: 200px;
             overflow-y: auto;
             z-index: 100;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px var(--shadow-color);
         }
         
         .suggestion-item {
             padding: 8px 12px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color var(--transition-speed) var(--transition-easing);
+            color: var(--text-color);
         }
         
         .suggestion-item:hover {
-            background-color: #f0f0f0;
+            background-color: var(--hover-color);
         }
         
         .suggestion-container {
@@ -277,21 +476,44 @@
             color: white;
             padding: 15px;
             border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 10px var(--shadow-color);
             z-index: 1000;
             display: flex;
             align-items: center;
-            animation: slideIn 0.3s ease;
+            animation: slideIn 0.3s var(--transition-easing);
+            transition: all var(--transition-speed) var(--transition-easing);
+        }
+        
+        .notification.error {
+            background-color: var(--danger-color);
+        }
+        
+        .notification.success {
+            background-color: var(--success-color);
+        }
+        
+        .notification.warning {
+            background-color: var(--warning-color);
+        }
+        
+        .notification.info {
+            background-color: var(--info-color);
         }
         
         @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         
         .notification-close {
             margin-left: 10px;
             cursor: pointer;
+            font-size: 18px;
+            transition: transform 0.2s ease;
+        }
+        
+        .notification-close:hover {
+            transform: scale(1.2);
         }
         
         .settings-panel {
@@ -300,13 +522,14 @@
             right: 0;
             width: 300px;
             height: 100%;
-            background-color: white;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            background-color: var(--panel-color);
+            box-shadow: -2px 0 10px var(--shadow-color);
             padding: 20px;
             z-index: 100;
             transform: translateX(100%);
-            transition: transform 0.3s ease;
+            transition: transform var(--transition-speed) var(--transition-easing);
             overflow-y: auto;
+            border-left: 1px solid var(--border-color);
         }
         
         .settings-panel.open {
@@ -329,19 +552,52 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all var(--transition-speed) var(--transition-easing);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .settings-toggle:hover {
+            transform: rotate(30deg) scale(var(--button-hover-scale));
+            background-color: var(--secondary-color);
+        }
+        
+        .settings-toggle.open {
+            right: 315px;
+            transform: rotate(90deg);
+        }
+        
+        .setting-group {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .setting-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-color);
         }
         
         .emoji-picker {
             position: absolute;
             bottom: 60px;
             right: 10px;
-            background-color: white;
-            border: 1px solid #ddd;
+            background-color: var(--panel-color);
+            border: 1px solid var(--border-color);
             border-radius: 5px;
             padding: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px var(--shadow-color);
             z-index: 10;
             display: none;
+            max-height: 300px;
+            overflow-y: auto;
+            width: 250px;
+        }
+        
+        .emoji-picker.show {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
         }
         
         .emoji-btn {
@@ -351,32 +607,48 @@
             cursor: pointer;
             padding: 5px;
             margin: 2px;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .emoji-btn:hover {
+            background-color: var(--hover-color);
+            transform: scale(1.2);
         }
         
         .typing-indicator {
             font-size: 12px;
-            color: #666;
+            color: var(--text-light);
             margin-left: 10px;
             font-style: italic;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
         
         .context-menu {
             position: absolute;
-            background-color: white;
-            border: 1px solid #ddd;
+            background-color: var(--panel-color);
+            border: 1px solid var(--border-color);
             border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px var(--shadow-color);
             z-index: 1000;
             display: none;
+            min-width: 150px;
         }
         
         .context-menu-item {
             padding: 8px 12px;
             cursor: pointer;
+            color: var(--text-color);
+            transition: background-color var(--transition-speed) var(--transition-easing);
         }
         
         .context-menu-item:hover {
-            background-color: #f0f0f0;
+            background-color: var(--hover-color);
         }
         
         .fullscreen-image {
@@ -390,11 +662,25 @@
             align-items: center;
             justify-content: center;
             z-index: 2000;
+            opacity: 0;
+            transition: opacity var(--transition-speed) var(--transition-easing);
+            pointer-events: none;
+        }
+        
+        .fullscreen-image.show {
+            opacity: 1;
+            pointer-events: all;
         }
         
         .fullscreen-image img {
             max-width: 90%;
             max-height: 90%;
+            transform: scale(0.9);
+            transition: transform var(--transition-speed) var(--transition-easing);
+        }
+        
+        .fullscreen-image.show img {
+            transform: scale(1);
         }
         
         .fullscreen-close {
@@ -404,6 +690,101 @@
             color: white;
             font-size: 30px;
             cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .fullscreen-close:hover {
+            transform: scale(1.2);
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Theme selector buttons */
+        .theme-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .theme-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+            transition: transform 0.2s ease;
+        }
+        
+        .theme-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .theme-option.active {
+            transform: scale(1.1);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px var(--accent-color);
+        }
+        
+        /* Dark theme button */
+        .theme-dark {
+            background: linear-gradient(135deg, #1e2a30 50%, #0d1418 50%);
+        }
+        
+        /* Light theme button */
+        .theme-light {
+            background: linear-gradient(135deg, #ffffff 50%, #e5ddd5 50%);
+        }
+        
+        /* High contrast theme button */
+        .theme-high-contrast {
+            background: linear-gradient(135deg, #ffffff 50%, #0057b7 50%);
+        }
+        
+        /* Pink theme button */
+        .theme-pink {
+            background: linear-gradient(135deg, #ffffff 50%, #fce4ec 50%);
+        }
+        
+        /* Danger button */
+        .danger {
+            background-color: var(--danger-color);
+        }
+        
+        .danger:hover {
+            background-color: #d32f2f;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .panel {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .settings-panel {
+                width: 85%;
+            }
+            
+            .settings-toggle.open {
+                right: calc(85% + 15px);
+            }
+            
+            .message {
+                max-width: 85%;
+            }
         }
     </style>
 </head>
@@ -474,1360 +855,7 @@
 
     <!-- Emoji Picker -->
     <div class="emoji-picker" id="emojiPicker">
-        <div class="emoji-category">
-            <button class="emoji-btn">😀</button>
-            <button class="emoji-btn">😁</button>
-            <button class="emoji-btn">😂</button>
-            <button class="emoji-btn">🤣</button>
-            <button class="emoji-btn">😃</button>
-            <button class="emoji-btn">😄</button>
-            <button class="emoji-btn">😅</button>
-            <button class="emoji-btn">😆</button>
-            <button class="emoji-btn">😉</button>
-            <button class="emoji-btn">😊</button>
-            <button class="emoji-btn">😋</button>
-            <button class="emoji-btn">😎</button>
-            <button class="emoji-btn">😍</button>
-            <button class="emoji-btn">😘</button>
-            <button class="emoji-btn">🥰</button>
-            <button class="emoji-btn">😗</button>
-            <button class="emoji-btn">😙</button>
-            <button class="emoji-btn">😚</button>
-            <button class="emoji-btn">☺️</button>
-            <button class="emoji-btn">🙂</button>
-            <button class="emoji-btn">🤗</button>
-            <button class="emoji-btn">🤩</button>
-            <button class="emoji-btn">🤔</button>
-            <button class="emoji-btn">🤨</button>
-            <button class="emoji-btn">😐</button>
-            <button class="emoji-btn">😑</button>
-            <button class="emoji-btn">😶</button>
-            <button class="emoji-btn">🙄</button>
-            <button class="emoji-btn">😏</button>
-            <button class="emoji-btn">😣</button>
-            <button class="emoji-btn">😥</button>
-            <button class="emoji-btn">😮</button>
-            <button class="emoji-btn">🤐</button>
-            <button class="emoji-btn">😯</button>
-            <button class="emoji-btn">😪</button>
-            <button class="emoji-btn">😫</button>
-            <button class="emoji-btn">😴</button>
-            <button class="emoji-btn">😌</button>
-            <button class="emoji-btn">😛</button>
-            <button class="emoji-btn">😜</button>
-            <button class="emoji-btn">😝</button>
-            <button class="emoji-btn">🤤</button>
-            <button class="emoji-btn">😒</button>
-            <button class="emoji-btn">😓</button>
-            <button class="emoji-btn">😔</button>
-            <button class="emoji-btn">😕</button>
-            <button class="emoji-btn">🙃</button>
-            <button class="emoji-btn">🤑</button>
-            <button class="emoji-btn">😲</button>
-            <button class="emoji-btn">☹️</button>
-            <button class="emoji-btn">🙁</button>
-            <button class="emoji-btn">😖</button>
-            <button class="emoji-btn">😞</button>
-            <button class="emoji-btn">😟</button>
-            <button class="emoji-btn">😤</button>
-            <button class="emoji-btn">😢</button>
-            <button class="emoji-btn">😭</button>
-            <button class="emoji-btn">😦</button>
-            <button class="emoji-btn">😧</button>
-            <button class="emoji-btn">😨</button>
-            <button class="emoji-btn">😩</button>
-            <button class="emoji-btn">🤯</button>
-            <button class="emoji-btn">😬</button>
-            <button class="emoji-btn">😰</button>
-            <button class="emoji-btn">😱</button>
-            <button class="emoji-btn">🥵</button>
-            <button class="emoji-btn">🥶</button>
-            <button class="emoji-btn">😳</button>
-            <button class="emoji-btn">🤪</button>
-            <button class="emoji-btn">😵</button>
-            <button class="emoji-btn">🥴</button>
-            <button class="emoji-btn">😠</button>
-            <button class="emoji-btn">😡</button>
-            <button class="emoji-btn">🤬</button>
-            <button class="emoji-btn">😷</button>
-            <button class="emoji-btn">🤒</button>
-            <button class="emoji-btn">🤕</button>
-            <button class="emoji-btn">🤢</button>
-            <button class="emoji-btn">🤮</button>
-            <button class="emoji-btn">🤧</button>
-            <button class="emoji-btn">😇</button>
-            <button class="emoji-btn">🥳</button>
-            <button class="emoji-btn">🥺</button>
-            <button class="emoji-btn">🤠</button>
-            <button class="emoji-btn">🤡</button>
-            <button class="emoji-btn">👻</button>
-            <button class="emoji-btn">👽</button>
-            <button class="emoji-btn">🤖</button>
-            <button class="emoji-btn">😈</button>
-            <button class="emoji-btn">👿</button>
-            <button class="emoji-btn">💀</button>
-            <button class="emoji-btn">☠️</button>
-            <button class="emoji-btn">💋</button>
-            <button class="emoji-btn">👋</button>
-            <button class="emoji-btn">🤚</button>
-            <button class="emoji-btn">🖐️</button>
-            <button class="emoji-btn">✋</button>
-            <button class="emoji-btn">🖖</button>
-            <button class="emoji-btn">👌</button>
-            <button class="emoji-btn">🤏</button>
-            <button class="emoji-btn">✌️</button>
-            <button class="emoji-btn">🤞</button>
-            <button class="emoji-btn">🤟</button>
-            <button class="emoji-btn">🤘</button>
-            <button class="emoji-btn">🤙</button>
-            <button class="emoji-btn">👈</button>
-            <button class="emoji-btn">👉</button>
-            <button class="emoji-btn">👆</button>
-            <button class="emoji-btn">🖕</button>
-            <button class="emoji-btn">👇</button>
-            <button class="emoji-btn">👍</button>
-            <button class="emoji-btn">👎</button>
-            <button class="emoji-btn">✊</button>
-            <button class="emoji-btn">👊</button>
-            <button class="emoji-btn">🤛</button>
-            <button class="emoji-btn">🤜</button>
-            <button class="emoji-btn">🤚</button>
-            <button class="emoji-btn">👏</button>
-            <button class="emoji-btn">🙌</button>
-            <button class="emoji-btn">👐</button>
-            <button class="emoji-btn">🤲</button>
-            <button class="emoji-btn">🤝</button>
-            <button class="emoji-btn">🙏</button>
-            <button class="emoji-btn">✍️</button>
-            <button class="emoji-btn">💅</button>
-            <button class="emoji-btn">🤳</button>
-            <button class="emoji-btn">💪</button>
-            <button class="emoji-btn">🦾</button>
-            <button class="emoji-btn">🦿</button>
-            <button class="emoji-btn">🦵</button>
-            <button class="emoji-btn">🦶</button>
-            <button class="emoji-btn">👂</button>
-            <button class="emoji-btn">🦻</button>
-            <button class="emoji-btn">👃</button>
-            <button class="emoji-btn">🧠</button>
-            <button class="emoji-btn">🦷</button>
-            <button class="emoji-btn">🦴</button>
-            <button class="emoji-btn">👀</button>
-            <button class="emoji-btn">👁️</button>
-            <button class="emoji-btn">👅</button>
-            <button class="emoji-btn">👄</button>
-            <button class="emoji-btn">👶</button>
-            <button class="emoji-btn">🧒</button>
-            <button class="emoji-btn">👦</button>
-            <button class="emoji-btn">👧</button>
-            <button class="emoji-btn">🧑</button>
-            <button class="emoji-btn">👨</button>
-            <button class="emoji-btn">👩</button>
-            <button class="emoji-btn">🧔</button>
-            <button class="emoji-btn">👵</button>
-            <button class="emoji-btn">👴</button>
-            <button class="emoji-btn">👲</button>
-            <button class="emoji-btn">👳</button>
-            <button class="emoji-btn">👮</button>
-            <button class="emoji-btn">👷</button>
-            <button class="emoji-btn">💂</button>
-            <button class="emoji-btn">🕵️</button>
-            <button class="emoji-btn">👩‍⚕️</button>
-            <button class="emoji-btn">👨‍⚕️</button>
-            <button class="emoji-btn">👩‍🌾</button>
-            <button class="emoji-btn">👨‍🌾</button>
-            <button class="emoji-btn">👩‍🍳</button>
-            <button class="emoji-btn">👨‍🍳</button>
-            <button class="emoji-btn">👩‍🎓</button>
-            <button class="emoji-btn">👨‍🎓</button>
-            <button class="emoji-btn">👩‍🎤</button>
-            <button class="emoji-btn">👨‍🎤</button>
-            <button class="emoji-btn">👩‍🏫</button>
-            <button class="emoji-btn">👨‍🏫</button>
-            <button class="emoji-btn">👩‍🏭</button>
-            <button class="emoji-btn">👨‍🏭</button>
-            <button class="emoji-btn">👩‍💻</button>
-            <button class="emoji-btn">👨‍💻</button>
-            <button class="emoji-btn">👩‍💼</button>
-            <button class="emoji-btn">👨‍💼</button>
-            <button class="emoji-btn">👩‍🔧</button>
-            <button class="emoji-btn">👨‍🔧</button>
-            <button class="emoji-btn">👩‍🔬</button>
-            <button class="emoji-btn">👨‍🔬</button>
-            <button class="emoji-btn">👩‍🎨</button>
-            <button class="emoji-btn">👨‍🎨</button>
-            <button class="emoji-btn">👩‍🚒</button>
-            <button class="emoji-btn">👨‍🚒</button>
-            <button class="emoji-btn">👩‍✈️</button>
-            <button class="emoji-btn">👨‍✈️</button>
-            <button class="emoji-btn">👩‍🚀</button>
-            <button class="emoji-btn">👨‍🚀</button>
-            <button class="emoji-btn">👩‍⚖️</button>
-            <button class="emoji-btn">👨‍⚖️</button>
-            <button class="emoji-btn">👰</button>
-            <button class="emoji-btn">🤵</button>
-            <button class="emoji-btn">👸</button>
-            <button class="emoji-btn">🤴</button>
-            <button class="emoji-btn">🦸</button>
-            <button class="emoji-btn">🦹</button>
-            <button class="emoji-btn">🤶</button>
-            <button class="emoji-btn">🎅</button>
-            <button class="emoji-btn">🧙</button>
-            <button class="emoji-btn">🧚</button>
-            <button class="emoji-btn">🧛</button>
-            <button class="emoji-btn">🧜</button>
-            <button class="emoji-btn">🧝</button>
-            <button class="emoji-btn">🧞</button>
-            <button class="emoji-btn">🧟</button>
-            <button class="emoji-btn">💆</button>
-            <button class="emoji-btn">💇</button>
-            <button class="emoji-btn">🚶</button>
-            <button class="emoji-btn">🏃</button>
-            <button class="emoji-btn">💃</button>
-            <button class="emoji-btn">🕺</button>
-            <button class="emoji-btn">🕴️</button>
-            <button class="emoji-btn">🧖</button>
-            <button class="emoji-btn">🧗</button>
-            <button class="emoji-btn">🧘</button>
-            <button class="emoji-btn">🛀</button>
-            <button class="emoji-btn">🛌</button>
-            <button class="emoji-btn">🧑‍🤝‍🧑</button>
-            <button class="emoji-btn">👭</button>
-            <button class="emoji-btn">👫</button>
-            <button class="emoji-btn">👬</button>
-            <button class="emoji-btn">💏</button>
-            <button class="emoji-btn">💑</button>
-            <button class="emoji-btn">👪</button>
-            <button class="emoji-btn">🗣️</button>
-            <button class="emoji-btn">👤</button>
-            <button class="emoji-btn">👥</button>
-            <button class="emoji-btn">🫂</button>
-            <button class="emoji-btn">👣</button>
-            <button class="emoji-btn">🦰</button>
-            <button class="emoji-btn">🦱</button>
-            <button class="emoji-btn">🦳</button>
-            <button class="emoji-btn">🦲</button>
-            <button class="emoji-btn">🐵</button>
-            <button class="emoji-btn">🐒</button>
-            <button class="emoji-btn">🦍</button>
-            <button class="emoji-btn">🦧</button>
-            <button class="emoji-btn">🐶</button>
-            <button class="emoji-btn">🐕</button>
-            <button class="emoji-btn">🦮</button>
-            <button class="emoji-btn">🐕‍🦺</button>
-            <button class="emoji-btn">🐩</button>
-            <button class="emoji-btn">🐺</button>
-            <button class="emoji-btn">🦊</button>
-            <button class="emoji-btn">🦝</button>
-            <button class="emoji-btn">🐱</button>
-            <button class="emoji-btn">🐈</button>
-            <button class="emoji-btn">🐈‍⬛</button>
-            <button class="emoji-btn">🦁</button>
-            <button class="emoji-btn">🐯</button>
-            <button class="emoji-btn">🐅</button>
-            <button class="emoji-btn">🐆</button>
-            <button class="emoji-btn">🐴</button>
-            <button class="emoji-btn">🐎</button>
-            <button class="emoji-btn">🦄</button>
-            <button class="emoji-btn">🦓</button>
-            <button class="emoji-btn">🦌</button>
-            <button class="emoji-btn">🦬</button>
-            <button class="emoji-btn">🐮</button>
-            <button class="emoji-btn">🐂</button>
-            <button class="emoji-btn">🐃</button>
-            <button class="emoji-btn">🐄</button>
-            <button class="emoji-btn">🐷</button>
-            <button class="emoji-btn">🐖</button>
-            <button class="emoji-btn">🐗</button>
-            <button class="emoji-btn">🐽</button>
-            <button class="emoji-btn">🐏</button>
-            <button class="emoji-btn">🐑</button>
-            <button class="emoji-btn">🐐</button>
-            <button class="emoji-btn">🐪</button>
-            <button class="emoji-btn">🐫</button>
-            <button class="emoji-btn">🦙</button>
-            <button class="emoji-btn">🦒</button>
-            <button class="emoji-btn">🐘</button>
-            <button class="emoji-btn">🦣</button>
-            <button class="emoji-btn">🦏</button>
-            <button class="emoji-btn">🦛</button>
-            <button class="emoji-btn">🐭</button>
-            <button class="emoji-btn">🐁</button>
-            <button class="emoji-btn">🐀</button>
-            <button class="emoji-btn">🐹</button>
-            <button class="emoji-btn">🐰</button>
-            <button class="emoji-btn">🐇</button>
-            <button class="emoji-btn">🐿️</button>
-            <button class="emoji-btn">🦫</button>
-            <button class="emoji-btn">🦔</button>
-            <button class="emoji-btn">🦇</button>
-            <button class="emoji-btn">🐻</button>
-            <button class="emoji-btn">🐻‍❄️</button>
-            <button class="emoji-btn">🐨</button>
-            <button class="emoji-btn">🐼</button>
-            <button class="emoji-btn">🦥</button>
-            <button class="emoji-btn">🦦</button>
-            <button class="emoji-btn">🦨</button>
-            <button class="emoji-btn">🦘</button>
-            <button class="emoji-btn">🦡</button>
-            <button class="emoji-btn">🐾</button>
-            <button class="emoji-btn">🦃</button>
-            <button class="emoji-btn">🐔</button>
-            <button class="emoji-btn">🐓</button>
-            <button class="emoji-btn">🐣</button>
-            <button class="emoji-btn">🐤</button>
-            <button class="emoji-btn">🐥</button>
-            <button class="emoji-btn">🐦</button>
-            <button class="emoji-btn">🐧</button>
-            <button class="emoji-btn">🕊️</button>
-            <button class="emoji-btn">🦅</button>
-            <button class="emoji-btn">🦆</button>
-            <button class="emoji-btn">🦢</button>
-            <button class="emoji-btn">🦉</button>
-            <button class="emoji-btn">🦤</button>
-            <button class="emoji-btn">🪶</button>
-            <button class="emoji-btn">🦩</button>
-            <button class="emoji-btn">🦜</button>
-            <button class="emoji-btn">🐸</button>
-            <button class="emoji-btn">🐊</button>
-            <button class="emoji-btn">🐢</button>
-            <button class="emoji-btn">🦎</button>
-            <button class="emoji-btn">🐍</button>
-            <button class="emoji-btn">🐲</button>
-            <button class="emoji-btn">🐉</button>
-            <button class="emoji-btn">🦕</button>
-            <button class="emoji-btn">🦖</button>
-            <button class="emoji-btn">🐳</button>
-            <button class="emoji-btn">🐋</button>
-            <button class="emoji-btn">🐬</button>
-            <button class="emoji-btn">🦭</button>
-            <button class="emoji-btn">🐟</button>
-            <button class="emoji-btn">🐠</button>
-            <button class="emoji-btn">🐡</button>
-            <button class="emoji-btn">🦈</button>
-            <button class="emoji-btn">🐙</button>
-            <button class="emoji-btn">🐚</button>
-            <button class="emoji-btn">🪸</button>
-            <button class="emoji-btn">🦀</button>
-            <button class="emoji-btn">🦞</button>
-            <button class="emoji-btn">🦐</button>
-            <button class="emoji-btn">🦑</button>
-            <button class="emoji-btn">🦪</button>
-            <button class="emoji-btn">🐌</button>
-            <button class="emoji-btn">🦋</button>
-            <button class="emoji-btn">🐛</button>
-            <button class="emoji-btn">🐜</button>
-            <button class="emoji-btn">🐝</button>
-            <button class="emoji-btn">🪲</button>
-            <button class="emoji-btn">🐞</button>
-            <button class="emoji-btn">🦗</button>
-            <button class="emoji-btn">🪳</button>
-            <button class="emoji-btn">🕷️</button>
-            <button class="emoji-btn">🕸️</button>
-            <button class="emoji-btn">🦂</button>
-            <button class="emoji-btn">🦟</button>
-            <button class="emoji-btn">🦠</button>
-            <button class="emoji-btn">💐</button>
-            <button class="emoji-btn">🌸</button>
-            <button class="emoji-btn">💮</button>
-            <button class="emoji-btn">🏵️</button>
-            <button class="emoji-btn">🌹</button>
-            <button class="emoji-btn">🥀</button>
-            <button class="emoji-btn">🌺</button>
-            <button class="emoji-btn">🌻</button>
-            <button class="emoji-btn">🌼</button>
-            <button class="emoji-btn">🌷</button>
-            <button class="emoji-btn">🌱</button>
-            <button class="emoji-btn">🪴</button>
-            <button class="emoji-btn">🌲</button>
-            <button class="emoji-btn">🌳</button>
-            <button class="emoji-btn">🌴</button>
-            <button class="emoji-btn">🌵</button>
-            <button class="emoji-btn">🌾</button>
-            <button class="emoji-btn">🌿</button>
-            <button class="emoji-btn">☘️</button>
-            <button class="emoji-btn">🍀</button>
-            <button class="emoji-btn">🍁</button>
-            <button class="emoji-btn">🍂</button>
-            <button class="emoji-btn">🍃</button>
-            <button class="emoji-btn">🍄</button>
-            <button class="emoji-btn">🍇</button>
-            <button class="emoji-btn">🍈</button>
-            <button class="emoji-btn">🍉</button>
-            <button class="emoji-btn">🍊</button>
-            <button class="emoji-btn">🍋</button>
-            <button class="emoji-btn">🍌</button>
-            <button class="emoji-btn">🍍</button>
-            <button class="emoji-btn">🥭</button>
-            <button class="emoji-btn">🍎</button>
-            <button class="emoji-btn">🍏</button>
-            <button class="emoji-btn">🍐</button>
-            <button class="emoji-btn">🍑</button>
-            <button class="emoji-btn">🍒</button>
-            <button class="emoji-btn">🍓</button>
-            <button class="emoji-btn">🫐</button>
-            <button class="emoji-btn">🥝</button>
-            <button class="emoji-btn">🍅</button>
-            <button class="emoji-btn">🫒</button>
-            <button class="emoji-btn">🥥</button>
-            <button class="emoji-btn">🥑</button>
-            <button class="emoji-btn">🍆</button>
-            <button class="emoji-btn">🥔</button>
-            <button class="emoji-btn">🥕</button>
-            <button class="emoji-btn">🌽</button>
-            <button class="emoji-btn">🌶️</button>
-            <button class="emoji-btn">🫑</button>
-            <button class="emoji-btn">🥒</button>
-            <button class="emoji-btn">🥬</button>
-            <button class="emoji-btn">🥦</button>
-            <button class="emoji-btn">🧄</button>
-            <button class="emoji-btn">🧅</button>
-            <button class="emoji-btn">🍠</button>
-            <button class="emoji-btn">🥐</button>
-            <button class="emoji-btn">🍞</button>
-            <button class="emoji-btn">🥖</button>
-            <button class="emoji-btn">🥨</button>
-            <button class="emoji-btn">🥯</button>
-            <button class="emoji-btn">🥞</button>
-            <button class="emoji-btn">🧇</button>
-            <button class="emoji-btn">🧀</button>
-            <button class="emoji-btn">🍖</button>
-            <button class="emoji-btn">🍗</button>
-            <button class="emoji-btn">🥩</button>
-            <button class="emoji-btn">🥓</button>
-            <button class="emoji-btn">🍔</button>
-            <button class="emoji-btn">🍟</button>
-            <button class="emoji-btn">🍕</button>
-            <button class="emoji-btn">🌭</button>
-            <button class="emoji-btn">🥪</button>
-            <button class="emoji-btn">🌮</button>
-            <button class="emoji-btn">🌯</button>
-            <button class="emoji-btn">🫔</button>
-            <button class="emoji-btn">🥙</button>
-            <button class="emoji-btn">🧆</button>
-            <button class="emoji-btn">🥚</button>
-            <button class="emoji-btn">🍳</button>
-            <button class="emoji-btn">🥘</button>
-            <button class="emoji-btn">🍲</button>
-            <button class="emoji-btn">🫕</button>
-            <button class="emoji-btn">🥣</button>
-            <button class="emoji-btn">🥗</button>
-            <button class="emoji-btn">🍿</button>
-            <button class="emoji-btn">🧈</button>
-            <button class="emoji-btn">🧂</button>
-            <button class="emoji-btn">🥫</button>
-            <button class="emoji-btn">🍱</button>
-            <button class="emoji-btn">🍘</button>
-            <button class="emoji-btn">🍙</button>
-            <button class="emoji-btn">🍚</button>
-            <button class="emoji-btn">🍛</button>
-            <button class="emoji-btn">🍜</button>
-            <button class="emoji-btn">🍝</button>
-            <button class="emoji-btn">🍠</button>
-            <button class="emoji-btn">🍢</button>
-            <button class="emoji-btn">🍣</button>
-            <button class="emoji-btn">🍤</button>
-            <button class="emoji-btn">🍥</button>
-            <button class="emoji-btn">🥮</button>
-            <button class="emoji-btn">🍡</button>
-            <button class="emoji-btn">🥟</button>
-            <button class="emoji-btn">🥠</button>
-            <button class="emoji-btn">🥡</button>
-            <button class="emoji-btn">🦀</button>
-            <button class="emoji-btn">🦞</button>
-            <button class="emoji-btn">🦐</button>
-            <button class="emoji-btn">🦑</button>
-            <button class="emoji-btn">🦪</button>
-            <button class="emoji-btn">🍦</button>
-            <button class="emoji-btn">🍧</button>
-            <button class="emoji-btn">🍨</button>
-            <button class="emoji-btn">🍩</button>
-            <button class="emoji-btn">🍪</button>
-            <button class="emoji-btn">🎂</button>
-            <button class="emoji-btn">🍰</button>
-            <button class="emoji-btn">🧁</button>
-            <button class="emoji-btn">🥧</button>
-            <button class="emoji-btn">🍫</button>
-            <button class="emoji-btn">🍬</button>
-            <button class="emoji-btn">🍭</button>
-            <button class="emoji-btn">🍮</button>
-            <button class="emoji-btn">🍯</button>
-            <button class="emoji-btn">🥛</button>
-            <button class="emoji-btn">🍼</button>
-            <button class="emoji-btn">🫖</button>
-            <button class="emoji-btn">☕</button>
-            <button class="emoji-btn">🍵</button>
-            <button class="emoji-btn">🍶</button>
-            <button class="emoji-btn">🍾</button>
-            <button class="emoji-btn">🍷</button>
-            <button class="emoji-btn">🍸</button>
-            <button class="emoji-btn">🍹</button>
-            <button class="emoji-btn">🍺</button>
-            <button class="emoji-btn">🍻</button>
-            <button class="emoji-btn">🥂</button>
-            <button class="emoji-btn">🥃</button>
-            <button class="emoji-btn">🥤</button>
-            <button class="emoji-btn">🧃</button>
-            <button class="emoji-btn">🧉</button>
-            <button class="emoji-btn">🧊</button>
-            <button class="emoji-btn">🥢</button>
-            <button class="emoji-btn">🍽️</button>
-            <button class="emoji-btn">🍴</button>
-            <button class="emoji-btn">🥄</button>
-            <button class="emoji-btn">🔪</button>
-            <button class="emoji-btn">🏺</button>
-            <button class="emoji-btn">🌍</button>
-            <button class="emoji-btn">🌎</button>
-            <button class="emoji-btn">🌏</button>
-            <button class="emoji-btn">🌐</button>
-            <button class="emoji-btn">🗺️</button>
-            <button class="emoji-btn">🗾</button>
-            <button class="emoji-btn">🧭</button>
-            <button class="emoji-btn">🏔️</button>
-            <button class="emoji-btn">⛰️</button>
-            <button class="emoji-btn">🌋</button>
-            <button class="emoji-btn">🗻</button>
-            <button class="emoji-btn">🏕️</button>
-            <button class="emoji-btn">🏖️</button>
-            <button class="emoji-btn">🏜️</button>
-            <button class="emoji-btn">🏝️</button>
-            <button class="emoji-btn">🏞️</button>
-            <button class="emoji-btn">🏟️</button>
-            <button class="emoji-btn">🏛️</button>
-            <button class="emoji-btn">🏗️</button>
-            <button class="emoji-btn">🧱</button>
-            <button class="emoji-btn">🪨</button>
-            <button class="emoji-btn">🪵</button>
-            <button class="emoji-btn">🛖</button>
-            <button class="emoji-btn">🏘️</button>
-            <button class="emoji-btn">🏚️</button>
-            <button class="emoji-btn">🏠</button>
-            <button class="emoji-btn">🏡</button>
-            <button class="emoji-btn">🏢</button>
-            <button class="emoji-btn">🏣</button>
-            <button class="emoji-btn">🏤</button>
-            <button class="emoji-btn">🏥</button>
-            <button class="emoji-btn">🏦</button>
-            <button class="emoji-btn">🏨</button>
-            <button class="emoji-btn">🏩</button>
-            <button class="emoji-btn">🏪</button>
-            <button class="emoji-btn">🏫</button>
-            <button class="emoji-btn">🏬</button>
-            <button class="emoji-btn">🏭</button>
-            <button class="emoji-btn">🏯</button>
-            <button class="emoji-btn">🏰</button>
-            <button class="emoji-btn">💒</button>
-            <button class="emoji-btn">🗼</button>
-            <button class="emoji-btn">🗽</button>
-            <button class="emoji-btn">⛪</button>
-            <button class="emoji-btn">🕌</button>
-            <button class="emoji-btn">🛕</button>
-            <button class="emoji-btn">🕍</button>
-            <button class="emoji-btn">⛩️</button>
-            <button class="emoji-btn">🕋</button>
-            <button class="emoji-btn">⛲</button>
-            <button class="emoji-btn">⛺</button>
-            <button class="emoji-btn">🌁</button>
-            <button class="emoji-btn">🌃</button>
-            <button class="emoji-btn">🏙️</button>
-            <button class="emoji-btn">🌄</button>
-            <button class="emoji-btn">🌅</button>
-            <button class="emoji-btn">🌆</button>
-            <button class="emoji-btn">🌇</button>
-            <button class="emoji-btn">🌉</button>
-            <button class="emoji-btn">♨️</button>
-            <button class="emoji-btn">🎠</button>
-            <button class="emoji-btn">🎡</button>
-            <button class="emoji-btn">🎢</button>
-            <button class="emoji-btn">💈</button>
-            <button class="emoji-btn">🎪</button>
-            <button class="emoji-btn">🚂</button>
-            <button class="emoji-btn">🚃</button>
-            <button class="emoji-btn">🚄</button>
-            <button class="emoji-btn">🚅</button>
-            <button class="emoji-btn">🚆</button>
-            <button class="emoji-btn">🚇</button>
-            <button class="emoji-btn">🚈</button>
-            <button class="emoji-btn">🚉</button>
-            <button class="emoji-btn">🚊</button>
-            <button class="emoji-btn">🚝</button>
-            <button class="emoji-btn">🚞</button>
-            <button class="emoji-btn">🚋</button>
-            <button class="emoji-btn">🚌</button>
-            <button class="emoji-btn">🚍</button>
-            <button class="emoji-btn">🚎</button>
-            <button class="emoji-btn">🚐</button>
-            <button class="emoji-btn">🚑</button>
-            <button class="emoji-btn">🚒</button>
-            <button class="emoji-btn">🚓</button>
-            <button class="emoji-btn">🚔</button>
-            <button class="emoji-btn">🚕</button>
-            <button class="emoji-btn">🚖</button>
-            <button class="emoji-btn">🚗</button>
-            <button class="emoji-btn">🚘</button>
-            <button class="emoji-btn">🚙</button>
-            <button class="emoji-btn">🛻</button>
-            <button class="emoji-btn">🚚</button>
-            <button class="emoji-btn">🚛</button>
-            <button class="emoji-btn">🚜</button>
-            <button class="emoji-btn">🏎️</button>
-            <button class="emoji-btn">🏍️</button>
-            <button class="emoji-btn">🛵</button>
-            <button class="emoji-btn">🦽</button>
-            <button class="emoji-btn">🦼</button>
-            <button class="emoji-btn">🛺</button>
-            <button class="emoji-btn">🚲</button>
-            <button class="emoji-btn">🛴</button>
-            <button class="emoji-btn">🛹</button>
-            <button class="emoji-btn">🛼</button>
-            <button class="emoji-btn">🚏</button>
-            <button class="emoji-btn">🛣️</button>
-            <button class="emoji-btn">🛤️</button>
-            <button class="emoji-btn">🛢️</button>
-            <button class="emoji-btn">⛽</button>
-            <button class="emoji-btn">🚨</button>
-            <button class="emoji-btn">🚥</button>
-            <button class="emoji-btn">🚦</button>
-            <button class="emoji-btn">🛑</button>
-            <button class="emoji-btn">🚧</button>
-            <button class="emoji-btn">⚓</button>
-            <button class="emoji-btn">⛵</button>
-            <button class="emoji-btn">🛶</button>
-            <button class="emoji-btn">🚤</button>
-            <button class="emoji-btn">🛳️</button>
-            <button class="emoji-btn">⛴️</button>
-            <button class="emoji-btn">🛥️</button>
-            <button class="emoji-btn">🚢</button>
-            <button class="emoji-btn">✈️</button>
-            <button class="emoji-btn">🛩️</button>
-            <button class="emoji-btn">🛫</button>
-            <button class="emoji-btn">🛬</button>
-            <button class="emoji-btn">🪂</button>
-            <button class="emoji-btn">💺</button>
-            <button class="emoji-btn">🚁</button>
-            <button class="emoji-btn">🚟</button>
-            <button class="emoji-btn">🚠</button>
-            <button class="emoji-btn">🚡</button>
-            <button class="emoji-btn">🛰️</button>
-            <button class="emoji-btn">🚀</button>
-            <button class="emoji-btn">🛸</button>
-            <button class="emoji-btn">🛎️</button>
-            <button class="emoji-btn">🧳</button>
-            <button class="emoji-btn">⌛</button>
-            <button class="emoji-btn">⏳</button>
-            <button class="emoji-btn">⌚</button>
-            <button class="emoji-btn">⏰</button>
-            <button class="emoji-btn">⏱️</button>
-            <button class="emoji-btn">⏲️</button>
-            <button class="emoji-btn">🕰️</button>
-            <button class="emoji-btn">🕛</button>
-            <button class="emoji-btn">🕧</button>
-            <button class="emoji-btn">🕐</button>
-            <button class="emoji-btn">🕜</button>
-            <button class="emoji-btn">🕑</button>
-            <button class="emoji-btn">🕝</button>
-            <button class="emoji-btn">🕒</button>
-            <button class="emoji-btn">🕞</button>
-            <button class="emoji-btn">🕓</button>
-            <button class="emoji-btn">🕟</button>
-            <button class="emoji-btn">🕔</button>
-            <button class="emoji-btn">🕠</button>
-            <button class="emoji-btn">🕕</button>
-            <button class="emoji-btn">🕡</button>
-            <button class="emoji-btn">🕖</button>
-            <button class="emoji-btn">🕢</button>
-            <button class="emoji-btn">🕗</button>
-            <button class="emoji-btn">🕣</button>
-            <button class="emoji-btn">🕘</button>
-            <button class="emoji-btn">🕤</button>
-            <button class="emoji-btn">🕙</button>
-            <button class="emoji-btn">🕥</button>
-            <button class="emoji-btn">🕚</button>
-            <button class="emoji-btn">🕦</button>
-            <button class="emoji-btn">🌑</button>
-            <button class="emoji-btn">🌒</button>
-            <button class="emoji-btn">🌓</button>
-            <button class="emoji-btn">🌔</button>
-            <button class="emoji-btn">🌕</button>
-            <button class="emoji-btn">🌖</button>
-            <button class="emoji-btn">🌗</button>
-            <button class="emoji-btn">🌘</button>
-            <button class="emoji-btn">🌙</button>
-            <button class="emoji-btn">🌚</button>
-            <button class="emoji-btn">🌛</button>
-            <button class="emoji-btn">🌜</button>
-            <button class="emoji-btn">🌡️</button>
-            <button class="emoji-btn">☀️</button>
-            <button class="emoji-btn">🌝</button>
-            <button class="emoji-btn">🌞</button>
-            <button class="emoji-btn">🪐</button>
-            <button class="emoji-btn">⭐</button>
-            <button class="emoji-btn">🌟</button>
-            <button class="emoji-btn">🌠</button>
-            <button class="emoji-btn">🌌</button>
-            <button class="emoji-btn">☁️</button>
-            <button class="emoji-btn">⛅</button>
-            <button class="emoji-btn">⛈️</button>
-            <button class="emoji-btn">🌤️</button>
-            <button class="emoji-btn">🌥️</button>
-            <button class="emoji-btn">🌦️</button>
-            <button class="emoji-btn">🌧️</button>
-            <button class="emoji-btn">🌨️</button>
-            <button class="emoji-btn">🌩️</button>
-            <button class="emoji-btn">🌪️</button>
-            <button class="emoji-btn">🌫️</button>
-            <button class="emoji-btn">🌬️</button>
-            <button class="emoji-btn">🌀</button>
-            <button class="emoji-btn">🌈</button>
-            <button class="emoji-btn">🌂</button>
-            <button class="emoji-btn">☂️</button>
-            <button class="emoji-btn">☔</button>
-            <button class="emoji-btn">⛱️</button>
-            <button class="emoji-btn">⚡</button>
-            <button class="emoji-btn">❄️</button>
-            <button class="emoji-btn">☃️</button>
-            <button class="emoji-btn">⛄</button>
-            <button class="emoji-btn">☄️</button>
-            <button class="emoji-btn">🔥</button>
-            <button class="emoji-btn">💧</button>
-            <button class="emoji-btn">🌊</button>
-            <button class="emoji-btn">🎄</button>
-            <button class="emoji-btn">🎆</button>
-            <button class="emoji-btn">🎇</button>
-            <button class="emoji-btn">🧨</button>
-            <button class="emoji-btn">✨</button>
-            <button class="emoji-btn">🎈</button>
-            <button class="emoji-btn">🎉</button>
-            <button class="emoji-btn">🎊</button>
-            <button class="emoji-btn">🎋</button>
-            <button class="emoji-btn">🎍</button>
-            <button class="emoji-btn">🎎</button>
-            <button class="emoji-btn">🎏</button>
-            <button class="emoji-btn">🎐</button>
-            <button class="emoji-btn">🎑</button>
-            <button class="emoji-btn">🧧</button>
-            <button class="emoji-btn">🎀</button>
-            <button class="emoji-btn">🎁</button>
-            <button class="emoji-btn">🎗️</button>
-            <button class="emoji-btn">🎟️</button>
-            <button class="emoji-btn">🎫</button>
-            <button class="emoji-btn">🎖️</button>
-            <button class="emoji-btn">🏆</button>
-            <button class="emoji-btn">🏅</button>
-            <button class="emoji-btn">🥇</button>
-            <button class="emoji-btn">🥈</button>
-            <button class="emoji-btn">🥉</button>
-            <button class="emoji-btn">⚽</button>
-            <button class="emoji-btn">⚾</button>
-            <button class="emoji-btn">🥎</button>
-            <button class="emoji-btn">🏀</button>
-            <button class="emoji-btn">🏐</button>
-            <button class="emoji-btn">🏈</button>
-            <button class="emoji-btn">🏉</button>
-            <button class="emoji-btn">🎾</button>
-            <button class="emoji-btn">🥏</button>
-            <button class="emoji-btn">🎳</button>
-            <button class="emoji-btn">🏏</button>
-            <button class="emoji-btn">🏑</button>
-            <button class="emoji-btn">🏒</button>
-            <button class="emoji-btn">🥍</button>
-            <button class="emoji-btn">🏓</button>
-            <button class="emoji-btn">🏸</button>
-            <button class="emoji-btn">🥊</button>
-            <button class="emoji-btn">🥋</button>
-            <button class="emoji-btn">🥅</button>
-            <button class="emoji-btn">⛳</button>
-            <button class="emoji-btn">🎯</button>
-            <button class="emoji-btn">🪀</button>
-            <button class="emoji-btn">🪁</button>
-            <button class="emoji-btn">🎱</button>
-            <button class="emoji-btn">🔮</button>
-            <button class="emoji-btn">🪄</button>
-            <button class="emoji-btn">🧿</button>
-            <button class="emoji-btn">🎮</button>
-            <button class="emoji-btn">🕹️</button>
-            <button class="emoji-btn">🎰</button>
-            <button class="emoji-btn">🎲</button>
-            <button class="emoji-btn">🧩</button>
-            <button class="emoji-btn">🧸</button>
-            <button class="emoji-btn">🪅</button>
-            <button class="emoji-btn">🪆</button>
-            <button class="emoji-btn">♠️</button>
-            <button class="emoji-btn">♥️</button>
-            <button class="emoji-btn">♦️</button>
-            <button class="emoji-btn">♣️</button>
-            <button class="emoji-btn">♟️</button>
-            <button class="emoji-btn">🃏</button>
-            <button class="emoji-btn">🀄</button>
-            <button class="emoji-btn">🎴</button>
-            <button class="emoji-btn">🎭</button>
-            <button class="emoji-btn">🖼️</button>
-            <button class="emoji-btn">🎨</button>
-            <button class="emoji-btn">🧵</button>
-            <button class="emoji-btn">🪡</button>
-            <button class="emoji-btn">🧶</button>
-            <button class="emoji-btn">🪢</button>
-            <button class="emoji-btn">👓</button>
-            <button class="emoji-btn">🕶️</button>
-            <button class="emoji-btn">🥽</button>
-            <button class="emoji-btn">🥼</button>
-            <button class="emoji-btn">🦺</button>
-            <button class="emoji-btn">👔</button>
-            <button class="emoji-btn">👕</button>
-            <button class="emoji-btn">👖</button>
-            <button class="emoji-btn">🧣</button>
-            <button class="emoji-btn">🧤</button>
-            <button class="emoji-btn">🧥</button>
-            <button class="emoji-btn">🧦</button>
-            <button class="emoji-btn">👗</button>
-            <button class="emoji-btn">👘</button>
-            <button class="emoji-btn">🥻</button>
-            <button class="emoji-btn">🩱</button>
-            <button class="emoji-btn">🩲</button>
-            <button class="emoji-btn">🩳</button>
-            <button class="emoji-btn">👙</button>
-            <button class="emoji-btn">👚</button>
-            <button class="emoji-btn">👛</button>
-            <button class="emoji-btn">👜</button>
-            <button class="emoji-btn">👝</button>
-            <button class="emoji-btn">🛍️</button>
-            <button class="emoji-btn">🎒</button>
-            <button class="emoji-btn">🩴</button>
-            <button class="emoji-btn">👞</button>
-            <button class="emoji-btn">👟</button>
-            <button class="emoji-btn">🥾</button>
-            <button class="emoji-btn">🥿</button>
-            <button class="emoji-btn">👠</button>
-            <button class="emoji-btn">👡</button>
-            <button class="emoji-btn">🩰</button>
-            <button class="emoji-btn">👢</button>
-            <button class="emoji-btn">👑</button>
-            <button class="emoji-btn">👒</button>
-            <button class="emoji-btn">🎩</button>
-            <button class="emoji-btn">🎓</button>
-            <button class="emoji-btn">🧢</button>
-            <button class="emoji-btn">🪖</button>
-            <button class="emoji-btn">⛑️</button>
-            <button class="emoji-btn">💄</button>
-            <button class="emoji-btn">💍</button>
-            <button class="emoji-btn">💼</button>
-            <button class="emoji-btn">🩸</button>
-            <button class="emoji-btn">💌</button>
-            <button class="emoji-btn">🕳️</button>
-            <button class="emoji-btn">💣</button>
-            <button class="emoji-btn">🛀</button>
-            <button class="emoji-btn">🛌</button>
-            <button class="emoji-btn">🔪</button>
-            <button class="emoji-btn">🏺</button>
-            <button class="emoji-btn">🗺️</button>
-            <button class="emoji-btn">🧭</button>
-            <button class="emoji-btn">🧱</button>
-            <button class="emoji-btn">💈</button>
-            <button class="emoji-btn">🛢️</button>
-            <button class="emoji-btn">🛎️</button>
-            <button class="emoji-btn">🧳</button>
-            <button class="emoji-btn">⌛</button>
-            <button class="emoji-btn">⏳</button>
-            <button class="emoji-btn">⌚</button>
-            <button class="emoji-btn">⏰</button>
-            <button class="emoji-btn">⏱️</button>
-            <button class="emoji-btn">⏲️</button>
-            <button class="emoji-btn">🕰️</button>
-            <button class="emoji-btn">🌡️</button>
-            <button class="emoji-btn">⛱️</button>
-            <button class="emoji-btn">🧨</button>
-            <button class="emoji-btn">🎈</button>
-            <button class="emoji-btn">🎉</button>
-            <button class="emoji-btn">🎊</button>
-            <button class="emoji-btn">🎀</button>
-            <button class="emoji-btn">🎁</button>
-            <button class="emoji-btn">🎗️</button>
-            <button class="emoji-btn">🎟️</button>
-            <button class="emoji-btn">🎫</button>
-            <button class="emoji-btn">🎖️</button>
-            <button class="emoji-btn">🏆</button>
-            <button class="emoji-btn">🏅</button>
-            <button class="emoji-btn">🥇</button>
-            <button class="emoji-btn">🥈</button>
-            <button class="emoji-btn">🥉</button>
-            <button class="emoji-btn">⚽</button>
-            <button class="emoji-btn">⚾</button>
-            <button class="emoji-btn">🥎</button>
-            <button class="emoji-btn">🏀</button>
-            <button class="emoji-btn">🏐</button>
-            <button class="emoji-btn">🏈</button>
-            <button class="emoji-btn">🏉</button>
-            <button class="emoji-btn">🎾</button>
-            <button class="emoji-btn">🥏</button>
-            <button class="emoji-btn">🎳</button>
-            <button class="emoji-btn">🏏</button>
-            <button class="emoji-btn">🏑</button>
-            <button class="emoji-btn">🏒</button>
-            <button class="emoji-btn">🥍</button>
-            <button class="emoji-btn">🏓</button>
-            <button class="emoji-btn">🏸</button>
-            <button class="emoji-btn">🥊</button>
-            <button class="emoji-btn">🥋</button>
-            <button class="emoji-btn">🥅</button>
-            <button class="emoji-btn">⛳</button>
-            <button class="emoji-btn">🎯</button>
-            <button class="emoji-btn">🪀</button>
-            <button class="emoji-btn">🪁</button>
-            <button class="emoji-btn">🎱</button>
-            <button class="emoji-btn">🔮</button>
-            <button class="emoji-btn">🪄</button>
-            <button class="emoji-btn">🧿</button>
-            <button class="emoji-btn">🎮</button>
-            <button class="emoji-btn">🕹️</button>
-            <button class="emoji-btn">🎰</button>
-            <button class="emoji-btn">🎲</button>
-            <button class="emoji-btn">🧩</button>
-            <button class="emoji-btn">🧸</button>
-            <button class="emoji-btn">🪅</button>
-            <button class="emoji-btn">🪆</button>
-            <button class="emoji-btn">♠️</button>
-            <button class="emoji-btn">♥️</button>
-            <button class="emoji-btn">♦️</button>
-            <button class="emoji-btn">♣️</button>
-            <button class="emoji-btn">♟️</button>
-            <button class="emoji-btn">🃏</button>
-            <button class="emoji-btn">🀄</button>
-            <button class="emoji-btn">🎴</button>
-            <button class="emoji-btn">🎭</button>
-            <button class="emoji-btn">🖼️</button>
-            <button class="emoji-btn">🎨</button>
-            <button class="emoji-btn">🧵</button>
-            <button class="emoji-btn">🪡</button>
-            <button class="emoji-btn">🧶</button>
-            <button class="emoji-btn">🪢</button>
-            <button class="emoji-btn">📷</button>
-            <button class="emoji-btn">📸</button>
-            <button class="emoji-btn">📹</button>
-            <button class="emoji-btn">🎥</button>
-            <button class="emoji-btn">📽️</button>
-            <button class="emoji-btn">🎞️</button>
-            <button class="emoji-btn">📞</button>
-            <button class="emoji-btn">☎️</button>
-            <button class="emoji-btn">📟</button>
-            <button class="emoji-btn">📠</button>
-            <button class="emoji-btn">📺</button>
-            <button class="emoji-btn">📻</button>
-            <button class="emoji-btn">🎙️</button>
-            <button class="emoji-btn">🎚️</button>
-            <button class="emoji-btn">🎛️</button>
-            <button class="emoji-btn">🧭</button>
-            <button class="emoji-btn">⏱️</button>
-            <button class="emoji-btn">⏲️</button>
-            <button class="emoji-btn">⏰</button>
-            <button class="emoji-btn">🕰️</button>
-            <button class="emoji-btn">⌛</button>
-            <button class="emoji-btn">⏳</button>
-            <button class="emoji-btn">📡</button>
-            <button class="emoji-btn">🔋</button>
-            <button class="emoji-btn">🔌</button>
-            <button class="emoji-btn">💻</button>
-            <button class="emoji-btn">🖥️</button>
-            <button class="emoji-btn">🖨️</button>
-            <button class="emoji-btn">⌨️</button>
-            <button class="emoji-btn">🖱️</button>
-            <button class="emoji-btn">🖲️</button>
-            <button class="emoji-btn">💽</button>
-            <button class="emoji-btn">💾</button>
-            <button class="emoji-btn">💿</button>
-            <button class="emoji-btn">📀</button>
-            <button class="emoji-btn">🧮</button>
-            <button class="emoji-btn">🎥</button>
-            <button class="emoji-btn">🎞️</button>
-            <button class="emoji-btn">📽️</button>
-            <button class="emoji-btn">🎬</button>
-            <button class="emoji-btn">📺</button>
-            <button class="emoji-btn">📷</button>
-            <button class="emoji-btn">📸</button>
-            <button class="emoji-btn">📹</button>
-            <button class="emoji-btn">📼</button>
-            <button class="emoji-btn">🔍</button>
-            <button class="emoji-btn">🔎</button>
-            <button class="emoji-btn">🕯️</button>
-            <button class="emoji-btn">💡</button>
-            <button class="emoji-btn">🔦</button>
-            <button class="emoji-btn">🏮</button>
-            <button class="emoji-btn">🪔</button>
-            <button class="emoji-btn">📔</button>
-            <button class="emoji-btn">📕</button>
-            <button class="emoji-btn">📖</button>
-            <button class="emoji-btn">📗</button>
-            <button class="emoji-btn">📘</button>
-            <button class="emoji-btn">📙</button>
-            <button class="emoji-btn">📚</button>
-            <button class="emoji-btn">📓</button>
-            <button class="emoji-btn">📒</button>
-            <button class="emoji-btn">📃</button>
-            <button class="emoji-btn">📜</button>
-            <button class="emoji-btn">📄</button>
-            <button class="emoji-btn">📰</button>
-            <button class="emoji-btn">🗞️</button>
-            <button class="emoji-btn">📑</button>
-            <button class="emoji-btn">🔖</button>
-            <button class="emoji-btn">🏷️</button>
-            <button class="emoji-btn">💰</button>
-            <button class="emoji-btn">🪙</button>
-            <button class="emoji-btn">💴</button>
-            <button class="emoji-btn">💵</button>
-            <button class="emoji-btn">💶</button>
-            <button class="emoji-btn">💷</button>
-            <button class="emoji-btn">💸</button>
-            <button class="emoji-btn">💳</button>
-            <button class="emoji-btn">🧾</button>
-            <button class="emoji-btn">💹</button>
-            <button class="emoji-btn">✉️</button>
-            <button class="emoji-btn">📧</button>
-            <button class="emoji-btn">📨</button>
-            <button class="emoji-btn">📩</button>
-            <button class="emoji-btn">📤</button>
-            <button class="emoji-btn">📥</button>
-            <button class="emoji-btn">📦</button>
-            <button class="emoji-btn">📫</button>
-            <button class="emoji-btn">📪</button>
-            <button class="emoji-btn">📬</button>
-            <button class="emoji-btn">📭</button>
-            <button class="emoji-btn">📮</button>
-            <button class="emoji-btn">🗳️</button>
-            <button class="emoji-btn">✏️</button>
-            <button class="emoji-btn">✒️</button>
-            <button class="emoji-btn">🖋️</button>
-            <button class="emoji-btn">🖊️</button>
-            <button class="emoji-btn">🖌️</button>
-            <button class="emoji-btn">🖍️</button>
-            <button class="emoji-btn">📝</button>
-            <button class="emoji-btn">💼</button>
-            <button class="emoji-btn">📁</button>
-            <button class="emoji-btn">📂</button>
-            <button class="emoji-btn">🗂️</button>
-            <button class="emoji-btn">📅</button>
-            <button class="emoji-btn">📆</button>
-            <button class="emoji-btn">🗒️</button>
-            <button class="emoji-btn">🗓️</button>
-            <button class="emoji-btn">📇</button>
-            <button class="emoji-btn">📈</button>
-            <button class="emoji-btn">📉</button>
-            <button class="emoji-btn">📊</button>
-            <button class="emoji-btn">📋</button>
-            <button class="emoji-btn">📌</button>
-            <button class="emoji-btn">📍</button>
-            <button class="emoji-btn">📎</button>
-            <button class="emoji-btn">🖇️</button>
-            <button class="emoji-btn">📏</button>
-            <button class="emoji-btn">📐</button>
-            <button class="emoji-btn">✂️</button>
-            <button class="emoji-btn">🗃️</button>
-            <button class="emoji-btn">🗄️</button>
-            <button class="emoji-btn">🗑️</button>
-            <button class="emoji-btn">🔒</button>
-            <button class="emoji-btn">🔓</button>
-            <button class="emoji-btn">🔏</button>
-            <button class="emoji-btn">🔐</button>
-            <button class="emoji-btn">🔑</button>
-            <button class="emoji-btn">🗝️</button>
-            <button class="emoji-btn">🔨</button>
-            <button class="emoji-btn">🪓</button>
-            <button class="emoji-btn">⛏️</button>
-            <button class="emoji-btn">⚒️</button>
-            <button class="emoji-btn">🛠️</button>
-            <button class="emoji-btn">🗡️</button>
-            <button class="emoji-btn">⚔️</button>
-            <button class="emoji-btn">🔫</button>
-            <button class="emoji-btn">🪃</button>
-            <button class="emoji-btn">🏹</button>
-            <button class="emoji-btn">🛡️</button>
-            <button class="emoji-btn">🪚</button>
-            <button class="emoji-btn">🔧</button>
-            <button class="emoji-btn">🪛</button>
-            <button class="emoji-btn">🔩</button>
-            <button class="emoji-btn">⚙️</button>
-            <button class="emoji-btn">🗜️</button>
-            <button class="emoji-btn">⚖️</button>
-            <button class="emoji-btn">🦯</button>
-            <button class="emoji-btn">🔗</button>
-            <button class="emoji-btn">⛓️</button>
-            <button class="emoji-btn">🪝</button>
-            <button class="emoji-btn">🧰</button>
-            <button class="emoji-btn">🧲</button>
-            <button class="emoji-btn">🪜</button>
-            <button class="emoji-btn">⚗️</button>
-            <button class="emoji-btn">🧪</button>
-            <button class="emoji-btn">🧫</button>
-            <button class="emoji-btn">🧬</button>
-            <button class="emoji-btn">🔬</button>
-            <button class="emoji-btn">🔭</button>
-            <button class="emoji-btn">📡</button>
-            <button class="emoji-btn">💉</button>
-            <button class="emoji-btn">🩸</button>
-            <button class="emoji-btn">💊</button>
-            <button class="emoji-btn">🩹</button>
-            <button class="emoji-btn">🩺</button>
-            <button class="emoji-btn">🚪</button>
-            <button class="emoji-btn">🛗</button>
-            <button class="emoji-btn">🪞</button>
-            <button class="emoji-btn">🪟</button>
-            <button class="emoji-btn">🛏️</button>
-            <button class="emoji-btn">🛋️</button>
-            <button class="emoji-btn">🪑</button>
-            <button class="emoji-btn">🚽</button>
-            <button class="emoji-btn">🪠</button>
-            <button class="emoji-btn">🚿</button>
-            <button class="emoji-btn">🛁</button>
-            <button class="emoji-btn">🪤</button>
-            <button class="emoji-btn">🪒</button>
-            <button class="emoji-btn">🧴</button>
-            <button class="emoji-btn">🧷</button>
-            <button class="emoji-btn">🧹</button>
-            <button class="emoji-btn">🧺</button>
-            <button class="emoji-btn">🧻</button>
-            <button class="emoji-btn">🪣</button>
-            <button class="emoji-btn">🧼</button>
-            <button class="emoji-btn">🫧</button>
-            <button class="emoji-btn">🪥</button>
-            <button class="emoji-btn">🧽</button>
-            <button class="emoji-btn">🧯</button>
-            <button class="emoji-btn">🛒</button>
-            <button class="emoji-btn">🚬</button>
-            <button class="emoji-btn">⚰️</button>
-            <button class="emoji-btn">🪦</button>
-            <button class="emoji-btn">⚱️</button>
-            <button class="emoji-btn">🧿</button>
-            <button class="emoji-btn">🪬</button>
-            <button class="emoji-btn">🗿</button>
-            <button class="emoji-btn">🪧</button>
-            <button class="emoji-btn">🪪</button>
-            <button class="emoji-btn">🏧</button>
-            <button class="emoji-btn">🚮</button>
-            <button class="emoji-btn">🚰</button>
-            <button class="emoji-btn">♿</button>
-            <button class="emoji-btn">🚹</button>
-            <button class="emoji-btn">🚺</button>
-            <button class="emoji-btn">🚻</button>
-            <button class="emoji-btn">🚼</button>
-            <button class="emoji-btn">🚾</button>
-            <button class="emoji-btn">🛂</button>
-            <button class="emoji-btn">🛃</button>
-            <button class="emoji-btn">🛄</button>
-            <button class="emoji-btn">🛅</button>
-            <button class="emoji-btn">⚠️</button>
-            <button class="emoji-btn">🚸</button>
-            <button class="emoji-btn">⛔</button>
-            <button class="emoji-btn">🚫</button>
-            <button class="emoji-btn">🚳</button>
-            <button class="emoji-btn">🚭</button>
-            <button class="emoji-btn">🚯</button>
-            <button class="emoji-btn">🚱</button>
-            <button class="emoji-btn">🚷</button>
-            <button class="emoji-btn">📵</button>
-            <button class="emoji-btn">🔞</button>
-            <button class="emoji-btn">☢️</button>
-            <button class="emoji-btn">☣️</button>
-            <button class="emoji-btn">⬆️</button>
-            <button class="emoji-btn">↗️</button>
-            <button class="emoji-btn">➡️</button>
-            <button class="emoji-btn">↘️</button>
-            <button class="emoji-btn">⬇️</button>
-            <button class="emoji-btn">↙️</button>
-            <button class="emoji-btn">⬅️</button>
-            <button class="emoji-btn">↖️</button>
-            <button class="emoji-btn">↕️</button>
-            <button class="emoji-btn">↔️</button>
-            <button class="emoji-btn">↩️</button>
-            <button class="emoji-btn">↪️</button>
-            <button class="emoji-btn">⤴️</button>
-            <button class="emoji-btn">⤵️</button>
-            <button class="emoji-btn">🔃</button>
-            <button class="emoji-btn">🔄</button>
-            <button class="emoji-btn">🔙</button>
-            <button class="emoji-btn">🔚</button>
-            <button class="emoji-btn">🔛</button>
-            <button class="emoji-btn">🔜</button>
-            <button class="emoji-btn">🔝</button>
-            <button class="emoji-btn">🛐</button>
-            <button class="emoji-btn">⚛️</button>
-            <button class="emoji-btn">🕉️</button>
-            <button class="emoji-btn">✡️</button>
-            <button class="emoji-btn">☸️</button>
-            <button class="emoji-btn">☯️</button>
-            <button class="emoji-btn">✝️</button>
-            <button class="emoji-btn">☦️</button>
-            <button class="emoji-btn">☪️</button>
-            <button class="emoji-btn">☮️</button>
-            <button class="emoji-btn">🕎</button>
-            <button class="emoji-btn">🔯</button>
-            <button class="emoji-btn">♈</button>
-            <button class="emoji-btn">♉</button>
-            <button class="emoji-btn">♊</button>
-            <button class="emoji-btn">♋</button>
-            <button class="emoji-btn">♌</button>
-            <button class="emoji-btn">♍</button>
-            <button class="emoji-btn">♎</button>
-            <button class="emoji-btn">♏</button>
-            <button class="emoji-btn">♐</button>
-            <button class="emoji-btn">♑</button>
-            <button class="emoji-btn">♒</button>
-            <button class="emoji-btn">♓</button>
-            <button class="emoji-btn">⛎</button>
-            <button class="emoji-btn">🔀</button>
-            <button class="emoji-btn">🔁</button>
-            <button class="emoji-btn">🔂</button>
-            <button class="emoji-btn">▶️</button>
-            <button class="emoji-btn">⏩</button>
-            <button class="emoji-btn">⏭️</button>
-            <button class="emoji-btn">⏯️</button>
-            <button class="emoji-btn">◀️</button>
-            <button class="emoji-btn">⏪</button>
-            <button class="emoji-btn">⏮️</button>
-            <button class="emoji-btn">🔼</button>
-            <button class="emoji-btn">⏫</button>
-            <button class="emoji-btn">🔽</button>
-            <button class="emoji-btn">⏬</button>
-            <button class="emoji-btn">⏸️</button>
-            <button class="emoji-btn">⏹️</button>
-            <button class="emoji-btn">⏺️</button>
-            <button class="emoji-btn">⏏️</button>
-            <button class="emoji-btn">🎦</button>
-            <button class="emoji-btn">🔅</button>
-            <button class="emoji-btn">🔆</button>
-            <button class="emoji-btn">📶</button>
-            <button class="emoji-btn">📳</button>
-            <button class="emoji-btn">📴</button>
-            <button class="emoji-btn">♀️</button>
-            <button class="emoji-btn">♂️</button>
-            <button class="emoji-btn">⚧️</button>
-            <button class="emoji-btn">✖️</button>
-            <button class="emoji-btn">➕</button>
-            <button class="emoji-btn">➖</button>
-            <button class="emoji-btn">➗</button>
-            <button class="emoji-btn">♾️</button>
-            <button class="emoji-btn">‼️</button>
-            <button class="emoji-btn">⁉️</button>
-            <button class="emoji-btn">❓</button>
-            <button class="emoji-btn">❔</button>
-            <button class="emoji-btn">❕</button>
-            <button class="emoji-btn">❗</button>
-            <button class="emoji-btn">〰️</button>
-            <button class="emoji-btn">💱</button>
-            <button class="emoji-btn">💲</button>
-            <button class="emoji-btn">⚕️</button>
-            <button class="emoji-btn">♻️</button>
-            <button class="emoji-btn">⚜️</button>
-            <button class="emoji-btn">🔱</button>
-            <button class="emoji-btn">📛</button>
-            <button class="emoji-btn">🔰</button>
-            <button class="emoji-btn">⭕</button>
-            <button class="emoji-btn">✅</button>
-            <button class="emoji-btn">☑️</button>
-            <button class="emoji-btn">✔️</button>
-            <button class="emoji-btn">❌</button>
-            <button class="emoji-btn">❎</button>
-            <button class="emoji-btn">➰</button>
-            <button class="emoji-btn">➿</button>
-            <button class="emoji-btn">〽️</button>
-            <button class="emoji-btn">✳️</button>
-            <button class="emoji-btn">✴️</button>
-            <button class="emoji-btn">❇️</button>
-            <button class="emoji-btn">©️</button>
-            <button class="emoji-btn">®️</button>
-            <button class="emoji-btn">™️</button>
-            <button class="emoji-btn">#️⃣</button>
-            <button class="emoji-btn">*️⃣</button>
-            <button class="emoji-btn">0️⃣</button>
-            <button class="emoji-btn">1️⃣</button>
-            <button class="emoji-btn">2️⃣</button>
-            <button class="emoji-btn">3️⃣</button>
-            <button class="emoji-btn">4️⃣</button>
-            <button class="emoji-btn">5️⃣</button>
-            <button class="emoji-btn">6️⃣</button>
-            <button class="emoji-btn">7️⃣</button>
-            <button class="emoji-btn">8️⃣</button>
-            <button class="emoji-btn">9️⃣</button>
-            <button class="emoji-btn">🔟</button>
-            <button class="emoji-btn">🔠</button>
-            <button class="emoji-btn">🔡</button>
-            <button class="emoji-btn">🔢</button>
-            <button class="emoji-btn">🔣</button>
-            <button class="emoji-btn">🔤</button>
-            <button class="emoji-btn">🅰️</button>
-            <button class="emoji-btn">🆎</button>
-            <button class="emoji-btn">🅱️</button>
-            <button class="emoji-btn">🆑</button>
-            <button class="emoji-btn">🆒</button>
-            <button class="emoji-btn">🆓</button>
-            <button class="emoji-btn">ℹ️</button>
-            <button class="emoji-btn">🆔</button>
-            <button class="emoji-btn">Ⓜ️</button>
-            <button class="emoji-btn">🆕</button>
-            <button class="emoji-btn">🆖</button>
-            <button class="emoji-btn">🅾️</button>
-            <button class="emoji-btn">🆗</button>
-            <button class="emoji-btn">🅿️</button>
-            <button class="emoji-btn">🆘</button>
-            <button class="emoji-btn">🆙</button>
-            <button class="emoji-btn">🆚</button>
-            <button class="emoji-btn">🈁</button>
-            <button class="emoji-btn">🈂️</button>
-            <button class="emoji-btn">🈷️</button>
-            <button class="emoji-btn">🈶</button>
-            <button class="emoji-btn">🈯</button>
-            <button class="emoji-btn">🉐</button>
-            <button class="emoji-btn">🈹</button>
-            <button class="emoji-btn">🈚</button>
-            <button class="emoji-btn">🈲</button>
-            <button class="emoji-btn">🉑</button>
-            <button class="emoji-btn">🈸</button>
-            <button class="emoji-btn">🈴</button>
-            <button class="emoji-btn">🈳</button>
-            <button class="emoji-btn">㊗️</button>
-            <button class="emoji-btn">㊙️</button>
-            <button class="emoji-btn">🈺</button>
-            <button class="emoji-btn">🈵</button>
-            <button class="emoji-btn">🔴</button>
-            <button class="emoji-btn">🟠</button>
-            <button class="emoji-btn">🟡</button>
-            <button class="emoji-btn">🟢</button>
-            <button class="emoji-btn">🔵</button>
-            <button class="emoji-btn">🟣</button>
-            <button class="emoji-btn">🟤</button>
-            <button class="emoji-btn">⚫</button>
-            <button class="emoji-btn">⚪</button>
-            <button class="emoji-btn">🟥</button>
-            <button class="emoji-btn">🟧</button>
-            <button class="emoji-btn">🟨</button>
-            <button class="emoji-btn">🟩</button>
-            <button class="emoji-btn">🟦</button>
-            <button class="emoji-btn">🟪</button>
-            <button class="emoji-btn">🟫</button>
-            <button class="emoji-btn">⬛</button>
-            <button class="emoji-btn">⬜</button>
-            <button class="emoji-btn">◼️</button>
-            <button class="emoji-btn">◻️</button>
-            <button class="emoji-btn">◾</button>
-            <button class="emoji-btn">◽</button>
-            <button class="emoji-btn">▪️</button>
-            <button class="emoji-btn">▫️</button>
-            <button class="emoji-btn">🔶</button>
-            <button class="emoji-btn">🔷</button>
-            <button class="emoji-btn">🔸</button>
-            <button class="emoji-btn">🔹</button>
-            <button class="emoji-btn">🔺</button>
-            <button class="emoji-btn">🔻</button>
-            <button class="emoji-btn">💠</button>
-            <button class="emoji-btn">🔘</button>
-            <button class="emoji-btn">🔳</button>
-            <button class="emoji-btn">🔲</button>
-            <button class="emoji-btn">🏁</button>
-            <button class="emoji-btn">🚩</button>
-            <button class="emoji-btn">🎌</button>
-            <button class="emoji-btn">🏴</button>
-            <button class="emoji-btn">🏳️</button>
-            <button class="emoji-btn">🏳️‍🌈</button>
-            <button class="emoji-btn">🏳️‍⚧️</button>
-            <button class="emoji-btn">🏴‍☠️</button>
-                    </div>
+        <!-- Emoji buttons will be generated by JavaScript -->
     </div>
 
     <!-- Notification -->
@@ -1846,8 +874,17 @@
             <select id="themeSelect">
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
+                <option value="high-contrast">High Contrast</option>
+                <option value="pink">Pink</option>
                 <option value="system">System Default</option>
             </select>
+            
+            <div class="theme-selector">
+                <div class="theme-option theme-light" data-theme="light" title="Light Theme"></div>
+                <div class="theme-option theme-dark" data-theme="dark" title="Dark Theme"></div>
+                <div class="theme-option theme-high-contrast" data-theme="high-contrast" title="High Contrast"></div>
+                <div class="theme-option theme-pink" data-theme="pink" title="Pink Theme"></div>
+            </div>
         </div>
         
         <div class="setting-group">
@@ -1952,6 +989,7 @@
             const notification = document.getElementById('notification');
             const notificationText = document.getElementById('notificationText');
             const notificationClose = document.getElementById('notificationClose');
+            const emojiPicker = document.getElementById('emojiPicker');
             
             // PeerJS elements
             let peer;
@@ -1968,6 +1006,9 @@
             
             // Event listeners
             setupEventListeners();
+            
+            // Generate emoji picker buttons
+            generateEmojiPicker();
             
             function initializeStorage() {
                 if (!localStorage.getItem('p2pChatUsers')) {
@@ -2035,9 +1076,6 @@
                 
                 // Emoji picker
                 document.getElementById('emojiButton').addEventListener('click', toggleEmojiPicker);
-                document.querySelectorAll('.emoji-btn').forEach(btn => {
-                    btn.addEventListener('click', () => insertEmoji(btn.textContent));
-                });
                 
                 // Notifications
                 notificationClose.addEventListener('click', () => notification.classList.add('hidden'));
@@ -2045,6 +1083,12 @@
                 // Settings
                 settingsToggle.addEventListener('click', toggleSettingsPanel);
                 document.getElementById('themeSelect').addEventListener('change', updateTheme);
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.addEventListener('click', function() {
+                        document.getElementById('themeSelect').value = this.dataset.theme;
+                        updateTheme();
+                    });
+                });
                 document.getElementById('densitySelect').addEventListener('change', updateDensity);
                 document.getElementById('notificationsToggle').addEventListener('change', toggleNotifications);
                 document.getElementById('soundToggle').addEventListener('change', toggleSounds);
@@ -2069,7 +1113,140 @@
                 
                 // Fullscreen image
                 document.getElementById('fullscreenClose').addEventListener('click', () => {
-                    document.getElementById('fullscreenImage').classList.add('hidden');
+                    document.getElementById('fullscreenImage').classList.remove('show');
+                });
+                
+                // Ripple effect for buttons
+                document.querySelectorAll('button').forEach(button => {
+                    button.addEventListener('click', createRipple);
+                });
+                
+                // System theme change detection
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                    const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                    if (settings.theme === 'system') {
+                        updateTheme();
+                    }
+                });
+            }
+            
+            function generateEmojiPicker() {
+                const emojis = [
+                    '😀', '😁', '😂', '🤣', '😃', '😄', '😅', '😆', '😉', '😊', '😋', '😎', 
+                    '😍', '😘', '🥰', '😗', '😙', '😚', '☺️', '🙂', '🤗', '🤩', '🤔', '🤨', 
+                    '😐', '😑', '😶', '🙄', '😏', '😣', '😥', '😮', '🤐', '😯', '😪', '😫', 
+                    '😴', '😌', '😛', '😜', '😝', '🤤', '😒', '😓', '😔', '😕', '🙃', '🤑', 
+                    '😲', '☹️', '🙁', '😖', '😞', '😟', '😤', '😢', '😭', '😦', '😧', '😨', 
+                    '😩', '🤯', '😬', '😰', '😱', '🥵', '🥶', '😳', '🤪', '😵', '🥴', '😠', 
+                    '😡', '🤬', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '😇', '🥳', '🥺', '🤠', 
+                    '🤡', '👻', '👽', '🤖', '😈', '👿', '💀', '☠️', '💋', '👋', '🤚', '🖐️', 
+                    '✋', '🖖', '👌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', 
+                    '🖕', '👇', '👍', '👎', '✊', '👊', '🤛', '🤜', '🤚', '👏', '🙌', '👐', 
+                    '🤲', '🤝', '🙏', '✍️', '💅', '🤳', '💪', '🦾', '🦿', '🦵', '🦶', '👂', 
+                    '🦻', '👃', '🧠', '🦷', '🦴', '👀', '👁️', '👅', '👄', '👶', '🧒', '👦', 
+                    '👧', '🧑', '👨', '👩', '🧔', '👵', '👴', '👲', '👳', '👮', '👷', '💂', 
+                    '🕵️', '👩‍⚕️', '👨‍⚕️', '👩‍🌾', '👨‍🌾', '👩‍🍳', '👨‍🍳', '👩‍🎓', '👨‍🎓', '👩‍🎤', '👨‍🎤', 
+                    '👩‍🏫', '👨‍🏫', '👩‍🏭', '👨‍🏭', '👩‍💻', '👨‍💻', '👩‍💼', '👨‍💼', '👩‍🔧', '👨‍🔧', '👩‍🔬', '👨‍🔬', 
+                    '👩‍🎨', '👨‍🎨', '👩‍🚒', '👨‍🚒', '👩‍✈️', '👨‍✈️', '👩‍🚀', '👨‍🚀', '👩‍⚖️', '👨‍⚖️', '👰', '🤵', 
+                    '👸', '🤴', '🦸', '🦹', '🤶', '🎅', '🧙', '🧚', '🧛', '🧜', '🧝', '🧞', 
+                    '🧟', '💆', '💇', '🚶', '🏃', '💃', '🕺', '🕴️', '🧖', '🧗', '🧘', '🛀', 
+                    '🛌', '🧑‍🤝‍🧑', '👭', '👫', '👬', '💏', '💑', '👪', '🗣️', '👤', '👥', '🫂', 
+                    '👣', '🦰', '🦱', '🦳', '🦲', '🐵', '🐒', '🦍', '🦧', '🐶', '🐕', '🦮', 
+                    '🐕‍🦺', '🐩', '🐺', '🦊', '🦝', '🐱', '🐈', '🐈‍⬛', '🦁', '🐯', '🐅', '🐆', 
+                    '🐴', '🐎', '🦄', '🦓', '🦌', '🦬', '🐮', '🐂', '🐃', '🐄', '🐷', '🐖', 
+                    '🐗', '🐽', '🐏', '🐑', '🐐', '🐪', '🐫', '🦙', '🦒', '🐘', '🦣', '🦏', 
+                    '🦛', '🐭', '🐁', '🐀', '🐹', '🐰', '🐇', '🐿️', '🦫', '🦔', '🦇', '🐻', 
+                    '🐻‍❄️', '🐨', '🐼', '🦥', '🦦', '🦨', '🦘', '🦡', '🐾', '🦃', '🐔', '🐓', 
+                    '🐣', '🐤', '🐥', '🐦', '🐧', '🕊️', '🦅', '🦆', '🦢', '🦉', '🦤', '🪶', 
+                    '🦩', '🦜', '🐸', '🐊', '🐢', '🦎', '🐍', '🐲', '🐉', '🦕', '🦖', '🐳', 
+                    '🐋', '🐬', '🦭', '🐟', '🐠', '🐡', '🦈', '🐙', '🐚', '🪸', '🦀', '🦞', 
+                    '🦐', '🦑', '🦪', '🐌', '🦋', '🐛', '🐜', '🐝', '🪲', '🐞', '🦗', '🪳', 
+                    '🕷️', '🕸️', '🦂', '🦟', '🦠', '💐', '🌸', '💮', '🏵️', '🌹', '🥀', '🌺', 
+                    '🌻', '🌼', '🌷', '🌱', '🪴', '🌲', '🌳', '🌴', '🌵', '🌾', '🌿', '☘️', 
+                    '🍀', '🍁', '🍂', '🍃', '🍄', '🍇', '🍈', '🍉', '🍊', '🍋', '🍌', '🍍', 
+                    '🥭', '🍎', '🍏', '🍐', '🍑', '🍒', '🍓', '🫐', '🥝', '🍅', '🫒', '🥥', 
+                    '🥑', '🍆', '🥔', '🥕', '🌽', '🌶️', '🫑', '🥒', '🥬', '🥦', '🧄', '🧅', 
+                    '🍠', '🥐', '🍞', '🥖', '🥨', '🥯', '🥞', '🧇', '🧀', '🍖', '🍗', '🥩', 
+                    '🥓', '🍔', '🍟', '🍕', '🌭', '🥪', '🌮', '🌯', '🫔', '🥙', '🧆', '🥚', 
+                    '🍳', '🥘', '🍲', '🫕', '🥣', '🥗', '🍿', '🧈', '🧂', '🥫', '🍱', '🍘', 
+                    '🍙', '🍚', '🍛', '🍜', '🍝', '🍠', '🍢', '🍣', '🍤', '🍥', '🥮', '🍡', 
+                    '🥟', '🥠', '🥡', '🍦', '🍧', '🍨', '🍩', '🍪', '🎂', '🍰', '🧁', '🥧', 
+                    '🍫', '🍬', '🍭', '🍮', '🍯', '🥛', '🍼', '🫖', '☕', '🍵', '🍶', '🍾', 
+                    '🍷', '🍸', '🍹', '🍺', '🍻', '🥂', '🥃', '🥤', '🧃', '🧉', '🧊', '🥢', 
+                    '🍽️', '🍴', '🥄', '🔪', '🏺', '🌍', '🌎', '🌏', '🌐', '🗺️', '🗾', '🧭', 
+                    '🏔️', '⛰️', '🌋', '🗻', '🏕️', '🏖️', '🏜️', '🏝️', '🏞️', '🏟️', '🏛️', '🏗️', 
+                    '🧱', '🪨', '🪵', '🛖', '🏘️', '🏚️', '🏠', '🏡', '🏢', '🏣', '🏤', '🏥', 
+                    '🏦', '🏨', '🏩', '🏪', '🏫', '🏬', '🏭', '🏯', '🏰', '💒', '🗼', '🗽', 
+                    '⛪', '🕌', '🛕', '🕍', '⛩️', '🕋', '⛲', '⛺', '🌁', '🌃', '🏙️', '🌄', 
+                    '🌅', '🌆', '🌇', '🌉', '♨️', '🎠', '🎡', '🎢', '💈', '🎪', '🚂', '🚃', 
+                    '🚄', '🚅', '🚆', '🚇', '🚈', '🚉', '🚊', '🚝', '🚞', '🚋', '🚌', '🚍', 
+                    '🚎', '🚐', '🚑', '🚒', '🚓', '🚔', '🚕', '🚖', '🚗', '🚘', '🚙', '🛻', 
+                    '🚚', '🚛', '🚜', '🏎️', '🏍️', '🛵', '🦽', '🦼', '🛺', '🚲', '🛴', '🛹', 
+                    '🛼', '🚏', '🛣️', '🛤️', '🛢️', '⛽', '🚨', '🚥', '🚦', '🛑', '🚧', '⚓', 
+                    '⛵', '🛶', '🚤', '🛳️', '⛴️', '🛥️', '🚢', '✈️', '🛩️', '🛫', '🛬', '🪂', 
+                    '💺', '🚁', '🚟', '🚠', '🚡', '🛰️', '🚀', '🛸', '🛎️', '🧳', '⌛', '⏳', 
+                    '⌚', '⏰', '⏱️', '⏲️', '🕰️', '🌡️', '⛱️', '🧨', '🎈', '🎉', '🎊', '🎀', 
+                    '🎁', '🎗️', '🎟️', '🎫', '🎖️', '🏆', '🏅', '🥇', '🥈', '🥉', '⚽', '⚾', 
+                    '🥎', '🏀', '🏐', '🏈', '🏉', '🎾', '🥏', '🎳', '🏏', '🏑', '🏒', '🥍', 
+                    '🏓', '🏸', '🥊', '🥋', '🥅', '⛳', '🎯', '🪀', '🪁', '🎱', '🔮', '🪄', 
+                    '🧿', '🎮', '🕹️', '🎰', '🎲', '🧩', '🧸', '🪅', '🪆', '♠️', '♥️', '♦️', 
+                    '♣️', '♟️', '🃏', '🀄', '🎴', '🎭', '🖼️', '🎨', '🧵', '🪡', '🧶', '🪢', 
+                    '👓', '🕶️', '🥽', '🥼', '🦺', '👔', '👕', '👖', '🧣', '🧤', '🧥', '🧦', 
+                    '👗', '👘', '🥻', '🩱', '🩲', '🩳', '👙', '👚', '👛', '👜', '👝', '🛍️', 
+                    '🎒', '🩴', '👞', '👟', '🥾', '🥿', '👠', '👡', '🩰', '👢', '👑', '👒', 
+                    '🎩', '🎓', '🧢', '🪖', '⛑️', '💄', '💍', '💼', '🩸', '💌', '🕳️', '💣', 
+                    '🛀', '🛌', '🔪', '🏺', '🗺️', '🧭', '🧱', '💈', '🛢️', '🛎️', '🧳', '⌛', 
+                    '⏳', '⌚', '⏰', '⏱️', '⏲️', '🕰️', '🌡️', '⛱️', '🧨', '🎈', '🎉', '🎊', 
+                    '🎀', '🎁', '🎗️', '🎟️', '🎫', '🎖️', '🏆', '🏅', '🥇', '🥈', '🥉', '⚽', 
+                    '⚾', '🥎', '🏀', '🏐', '🏈', '🏉', '🎾', '🥏', '🎳', '🏏', '🏑', '🏒', 
+                    '🥍', '🏓', '🏸', '🥊', '🥋', '🥅', '⛳', '🎯', '🪀', '🪁', '🎱', '🔮', 
+                    '🪄', '🧿', '🎮', '🕹️', '🎰', '🎲', '🧩', '🧸', '🪅', '🪆', '♠️', '♥️', 
+                    '♦️', '♣️', '♟️', '🃏', '🀄', '🎴', '🎭', '🖼️', '🎨', '🧵', '🪡', '🧶', 
+                    '🪢', '📷', '📸', '📹', '🎥', '📽️', '🎞️', '📞', '☎️', '📟', '📠', '📺', 
+                    '📻', '🎙️', '🎚️', '🎛️', '🧭', '⏱️', '⏲️', '⏰', '🕰️', '⌛', '⏳', '📡', 
+                    '🔋', '🔌', '💻', '🖥️', '🖨️', '⌨️', '🖱️', '🖲️', '💽', '💾', '💿', '📀', 
+                    '🧮', '🎥', '🎞️', '📽️', '🎬', '📺', '📷', '📸', '📹', '📼', '🔍', '🔎', 
+                    '🕯️', '💡', '🔦', '🏮', '🪔', '📔', '📕', '📖', '📗', '📘', '📙', '📚', 
+                    '📓', '📒', '📃', '📜', '📄', '📰', '🗞️', '📑', '🔖', '🏷️', '💰', '🪙', 
+                    '💴', '💵', '💶', '💷', '💸', '💳', '🧾', '💹', '✉️', '📧', '📨', '📩', 
+                    '📤', '📥', '📦', '📫', '📪', '📬', '📭', '📮', '🗳️', '✏️', '✒️', '🖋️', 
+                    '🖊️', '🖌️', '🖍️', '📝', '💼', '📁', '📂', '🗂️', '📅', '📆', '🗒️', '🗓️', 
+                    '📇', '📈', '📉', '📊', '📋', '📌', '📍', '📎', '🖇️', '📏', '📐', '✂️', 
+                    '🗃️', '🗄️', '🗑️', '🔒', '🔓', '🔏', '🔐', '🔑', '🗝️', '🔨', '🪓', '⛏️', 
+                    '⚒️', '🛠️', '🗡️', '⚔️', '🔫', '🪃', '🏹', '🛡️', '🪚', '🔧', '🪛', '🔩', 
+                    '⚙️', '🗜️', '⚖️', '🦯', '🔗', '⛓️', '🪝', '🧰', '🧲', '🪜', '⚗️', '🧪', 
+                    '🧫', '🧬', '🔬', '🔭', '📡', '💉', '🩸', '💊', '🩹', '🩺', '🚪', '🛗', 
+                    '🪞', '🪟', '🛏️', '🛋️', '🪑', '🚽', '🪠', '🚿', '🛁', '🪤', '🪒', '🧴', 
+                    '🧷', '🧹', '🧺', '🧻', '🪣', '🧼', '🫧', '🪥', '🧽', '🧯', '🛒', '🚬', 
+                    '⚰️', '🪦', '⚱️', '🧿', '🪬', '🗿', '🪧', '🪪', '🏧', '🚮', '🚰', '♿', 
+                    '🚹', '🚺', '🚻', '🚼', '🚾', '🛂', '🛃', '🛄', '🛅', '⚠️', '🚸', '⛔', 
+                    '🚫', '🚳', '🚭', '🚯', '🚱', '🚷', '📵', '🔞', '☢️', '☣️', '⬆️', '↗️', 
+                    '➡️', '↘️', '⬇️', '↙️', '⬅️', '↖️', '↕️', '↔️', '↩️', '↪️', '⤴️', '⤵️', 
+                    '🔃', '🔄', '🔙', '🔚', '🔛', '🔜', '🔝', '🛐', '⚛️', '🕉️', '✡️', '☸️', 
+                    '☯️', '✝️', '☦️', '☪️', '☮️', '🕎', '🔯', '♈', '♉', '♊', '♋', '♌', '♍', 
+                    '♎', '♏', '♐', '♑', '♒', '♓', '⛎', '🔀', '🔁', '🔂', '▶️', '⏩', '⏭️', 
+                    '⏯️', '◀️', '⏪', '⏮️', '🔼', '⏫', '🔽', '⏬', '⏸️', '⏹️', '⏺️', '⏏️', 
+                    '🎦', '🔅', '🔆', '📶', '📳', '📴', '♀️', '♂️', '⚧️', '✖️', '➕', '➖', 
+                    '➗', '♾️', '‼️', '⁉️', '❓', '❔', '❕', '❗', '〰️', '💱', '💲', '⚕️', '♻️', 
+                    '⚜️', '🔱', '📛', '🔰', '⭕', '✅', '☑️', '✔️', '❌', '❎', '➰', '➿', '〽️', 
+                    '✳️', '✴️', '❇️', '©️', '®️', '™️', '#️⃣', '*️⃣', '0️⃣', '1️⃣', '2️⃣', '3️⃣', 
+                    '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '🔠', '🔡', '🔢', '🔣', '🔤', 
+                    '🅰️', '🆎', '🅱️', '🆑', '🆒', '🆓', 'ℹ️', '🆔', 'Ⓜ️', '🆕', '🆖', '🅾️', 
+                    '🆗', '🅿️', '🆘', '🆙', '🆚', '🈁', '🈂️', '🈷️', '🈶', '🈯', '🉐', '🈹', 
+                    '🈚', '🈲', '🉑', '🈸', '🈴', '🈳', '㊗️', '㊙️', '🈺', '🈵', '🔴', '🟠', 
+                    '🟡', '🟢', '🔵', '🟣', '🟤', '⚫', '⚪', '🟥', '🟧', '🟨', '🟩', '🟦', 
+                    '🟪', '🟫', '⬛', '⬜', '◼️', '◻️', '◾', '◽', '▪️', '▫️', '🔶', '🔷', '🔸', 
+                    '🔹', '🔺', '🔻', '💠', '🔘', '🔳', '🔲', '🏁', '🚩', '🎌', '🏴', '🏳️', 
+                    '🏳️‍🌈', '🏳️‍⚧️', '🏴‍☠️'
+                ];
+                
+                emojis.forEach(emoji => {
+                    const btn = document.createElement('button');
+                    btn.className = 'emoji-btn';
+                    btn.textContent = emoji;
+                    btn.title = emoji;
+                    btn.addEventListener('click', () => insertEmoji(emoji));
+                    emojiPicker.appendChild(btn);
                 });
             }
             
@@ -2078,7 +1255,7 @@
                 const password = document.getElementById('passwordInput').value.trim();
                 
                 if (!username || !password) {
-                    showNotification('Please enter both username and password');
+                    showNotification('Please enter both username and password', 'error');
                     return;
                 }
                 
@@ -2102,8 +1279,9 @@
                     initializePeer();
                     showChatInterface();
                     loadSettings();
+                    showNotification('Login successful!', 'success');
                 } else {
-                    showNotification('Invalid username or password');
+                    showNotification('Invalid username or password', 'error');
                 }
             }
             
@@ -2113,13 +1291,13 @@
                 const email = document.getElementById('regEmailInput').value.trim();
                 
                 if (!username || !password) {
-                    showNotification('Please enter both username and password');
+                    showNotification('Please enter both username and password', 'error');
                     return;
                 }
                 
                 const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
                 if (users[username]) {
-                    showNotification('Username already exists');
+                    showNotification('Username already exists', 'error');
                     return;
                 }
                 
@@ -2145,7 +1323,7 @@
                 initializePeer();
                 showChatInterface();
                 loadSettings();
-                showNotification('Account created successfully!');
+                showNotification('Account created successfully!', 'success');
             }
             
             function logout() {
@@ -2163,11 +1341,12 @@
                 inputArea.classList.add('hidden');
                 header.classList.add('hidden');
                 settingsPanel.classList.remove('open');
+                settingsToggle.classList.remove('open');
                 
                 document.getElementById('usernameInput').value = '';
                 document.getElementById('passwordInput').value = '';
                 
-                showNotification('Logged out successfully');
+                showNotification('Logged out successfully', 'success');
             }
             
             function generatePeerId() {
@@ -2199,7 +1378,7 @@
                         // Play connection sound
                         playSound('connection');
                         
-                        showNotification(`Connected to ${conn.peer}`);
+                        showNotification(`Connected to ${conn.peer}`, 'success');
                     });
                     
                     conn.on('data', (data) => {
@@ -2219,14 +1398,14 @@
                     conn.on('close', () => {
                         document.getElementById('connectionStatus').textContent = 'Connection closed';
                         inputArea.classList.add('hidden');
-                        showNotification(`Disconnected from ${conn.peer}`);
+                        showNotification(`Disconnected from ${conn.peer}`, 'error');
                     });
                 });
                 
                 peer.on('error', (err) => {
                     console.error('Peer error:', err);
                     document.getElementById('connectionStatus').textContent = 'Error: ' + err.message;
-                    showNotification('Connection error: ' + err.message, true);
+                    showNotification('Connection error: ' + err.message, 'error');
                 });
             }
             
@@ -2248,7 +1427,7 @@
                     // Play connection sound
                     playSound('connection');
                     
-                    showNotification(`Connected to ${remoteId}`);
+                    showNotification(`Connected to ${remoteId}`, 'success');
                 });
                 
                 conn.on('data', (data) => {
@@ -2268,7 +1447,7 @@
                 conn.on('close', () => {
                     document.getElementById('connectionStatus').textContent = 'Connection closed';
                     inputArea.classList.add('hidden');
-                    showNotification(`Disconnected from ${remoteId}`);
+                    showNotification(`Disconnected from ${remoteId}`, 'error');
                 });
             }
             
@@ -2386,7 +1565,7 @@
                             <div class="document-icon">📄</div>
                             <div>
                                 <div>${fileData.name}</div>
-                                <div style="font-size: 12px; color: #666;">${formatFileSize(fileData.size)} • ${fileData.mimeType}</div>
+                                <div style="font-size: 12px; color: var(--text-light);">${formatFileSize(fileData.size)} • ${fileData.mimeType}</div>
                             </div>
                         </div>
                         <div class="message-time">${new Date().toLocaleTimeString()}</div>
@@ -2544,23 +1723,30 @@
             }
             
             function toggleEmojiPicker() {
-                const picker = document.getElementById('emojiPicker');
-                picker.style.display = picker.style.display === 'block' ? 'none' : 'block';
+                emojiPicker.classList.toggle('show');
             }
             
             function insertEmoji(emoji) {
                 const input = document.getElementById('messageInput');
                 input.value += emoji;
                 input.focus();
-                document.getElementById('emojiPicker').style.display = 'none';
+                emojiPicker.classList.remove('show');
             }
             
-            function showNotification(message, isError = false) {
+            function showNotification(message, type = 'info') {
                 const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
                 if (!settings.notifications) return;
                 
                 notificationText.textContent = message;
-                notification.style.backgroundColor = isError ? '#ff4444' : '#075e54';
+                
+                // Reset all classes
+                notification.className = 'notification';
+                
+                // Add appropriate class based on type
+                if (type) {
+                    notification.classList.add(type);
+                }
+                
                 notification.classList.remove('hidden');
                 
                 if (settings.sounds) {
@@ -2587,17 +1773,30 @@
                         break;
                     case 'notification':
                         sound = document.getElementById('notificationSound');
+                        // Update sound source based on settings
+                        switch(settings.soundType) {
+                            case 'chime':
+                                sound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3';
+                                break;
+                            case 'ding':
+                                sound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3';
+                                break;
+                            case 'pop':
+                                sound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.mp3';
+                                break;
+                        }
                         break;
                     default:
                         return;
                 }
                 
                 sound.currentTime = 0;
-                sound.play();
+                sound.play().catch(e => console.log('Audio play failed:', e));
             }
             
             function toggleSettingsPanel() {
                 settingsPanel.classList.toggle('open');
+                settingsToggle.classList.toggle('open');
             }
             
             function loadSettings() {
@@ -2606,6 +1805,11 @@
                 // Apply theme
                 document.getElementById('themeSelect').value = settings.theme;
                 updateTheme();
+                
+                // Highlight active theme option
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.toggle('active', option.dataset.theme === settings.theme);
+                });
                 
                 // Apply other settings
                 document.getElementById('densitySelect').value = settings.density;
@@ -2623,18 +1827,20 @@
                 settings.theme = theme;
                 localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
                 
-                if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.style.setProperty('--primary-color', '#128c7e');
-                    document.documentElement.style.setProperty('--background-color', '#0d1418');
-                    document.documentElement.style.setProperty('--panel-color', '#1e2a30');
-                    document.documentElement.style.setProperty('--light-color', '#005c4b');
-                    document.documentElement.style.setProperty('--dark-color', '#e9edef');
+                // Update theme-option active states
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.toggle('active', option.dataset.theme === theme);
+                });
+                
+                // Apply theme to body
+                if (theme === 'system') {
+                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        document.body.setAttribute('data-theme', 'dark');
+                    } else {
+                        document.body.removeAttribute('data-theme');
+                    }
                 } else {
-                    document.documentElement.style.setProperty('--primary-color', '#075e54');
-                    document.documentElement.style.setProperty('--background-color', '#e5ddd5');
-                    document.documentElement.style.setProperty('--panel-color', 'white');
-                    document.documentElement.style.setProperty('--light-color', '#dcf8c6');
-                    document.documentElement.style.setProperty('--dark-color', '#333');
+                    document.body.setAttribute('data-theme', theme);
                 }
             }
             
@@ -2670,20 +1876,6 @@
                 const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
                 settings.soundType = document.getElementById('soundSelect').value;
                 localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
-                
-                // Update sound source based on selection
-                const sound = document.getElementById('notificationSound');
-                switch(settings.soundType) {
-                    case 'chime':
-                        sound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3';
-                        break;
-                    case 'ding':
-                        sound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3';
-                        break;
-                    case 'pop':
-                        sound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.mp3';
-                        break;
-                }
             }
             
             function testSound() {
@@ -2718,7 +1910,7 @@
                         localStorage.removeItem(key);
                     });
                     
-                    showNotification('Chat history cleared');
+                    showNotification('Chat history cleared', 'success');
                 }
             }
             
@@ -2747,7 +1939,7 @@
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-                showNotification('Data exported successfully');
+                showNotification('Data exported successfully', 'success');
             }
             
             function importData(event) {
@@ -2775,9 +1967,9 @@
                             // Reload settings
                             loadSettings();
                             
-                            showNotification('Data imported successfully');
+                            showNotification('Data imported successfully', 'success');
                         } catch (err) {
-                            showNotification('Error importing data: ' + err.message, true);
+                            showNotification('Error importing data: ' + err.message, 'error');
                         }
                     };
                     reader.readAsText(file);
@@ -2794,7 +1986,7 @@
                     if (users[currentUser.username]) {
                         users[currentUser.username].password = newPassword;
                         localStorage.setItem('p2pChatUsers', JSON.stringify(users));
-                        showNotification('Password changed successfully');
+                        showNotification('Password changed successfully', 'success');
                     }
                 }
             }
@@ -2819,7 +2011,7 @@
                     // Logout
                     logout();
                     
-                    showNotification('Account deleted successfully');
+                    showNotification('Account deleted successfully', 'success');
                 }
             }
             
@@ -2844,18 +2036,18 @@
                 const contextMenu = document.getElementById('contextMenu');
                 navigator.clipboard.writeText(contextMenu.dataset.messageContent);
                 contextMenu.style.display = 'none';
-                showNotification('Message copied to clipboard');
+                showNotification('Message copied to clipboard', 'success');
             }
             
             function deleteMessage() {
                 // In a real app, you would need to implement message deletion logic
-                showNotification('Message deletion not implemented in this demo');
+                showNotification('Message deletion not implemented in this demo', 'warning');
                 document.getElementById('contextMenu').style.display = 'none';
             }
             
             function forwardMessage() {
                 // In a real app, you would implement message forwarding
-                showNotification('Message forwarding not implemented in this demo');
+                showNotification('Message forwarding not implemented in this demo', 'warning');
                 document.getElementById('contextMenu').style.display = 'none';
             }
             
@@ -2867,10 +2059,34 @@
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
             
+            function createRipple(event) {
+                const button = event.currentTarget;
+                const circle = document.createElement('span');
+                const diameter = Math.max(button.clientWidth, button.clientHeight);
+                const radius = diameter / 2;
+                
+                circle.style.width = circle.style.height = `${diameter}px`;
+                circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+                circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+                circle.classList.add('ripple');
+                
+                const ripple = button.getElementsByClassName('ripple')[0];
+                if (ripple) {
+                    ripple.remove();
+                }
+                
+                button.appendChild(circle);
+                
+                // Remove ripple after animation completes
+                setTimeout(() => {
+                    circle.remove();
+                }, 600);
+            }
+            
             // Make functions available globally for HTML onclick handlers
             window.showFullscreenImage = function(src) {
                 document.getElementById('fullscreenImageContent').src = src;
-                document.getElementById('fullscreenImage').classList.remove('hidden');
+                document.getElementById('fullscreenImage').classList.add('show');
             };
             
             window.downloadFile = function(filename, data) {
