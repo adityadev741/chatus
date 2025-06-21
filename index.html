@@ -3,92 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatus</title>
+    <title>SecureP2PChat - Private Peer-to-Peer Messaging</title>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             /* Light Theme - Default */
-            --primary-color: #075e54;
-            --secondary-color: #128c7e;
-            --accent-color: #25d366;
-            --light-color: #dcf8c6;
-            --dark-color: #333;
-            --background-color: #e5ddd5;
-            --panel-color: white;
-            --text-color: #333;
-            --text-light: #777;
-            --shadow-color: rgba(0,0,0,0.1);
-            --border-color: #ddd;
-            --hover-color: rgba(0,0,0,0.05);
-            --active-color: rgba(0,0,0,0.1);
+            --primary-color: #0026ffdc;
+            --secondary-color: #003882;
+            --accent-color: #7fdce2;
+            --light-color: #0004fc;
+            --dark-color: #2e2828;
+            --background-color: #e7f1f1;
+            --panel-color: #fdfdfd;
+            --text-color: #000000;
+            --text-light: #69919b;
+            --shadow-color: rgba(22, 23, 24, 0.2);
+            --border-color: #c5ebec;
+            --hover-color: rgba(24, 58, 56, 0.1);
+            --active-color: rgba(44, 30, 78, 0.2);
+            --ripple-color: rgba(110, 110, 110, 0.1);
             --success-color: #4CAF50;
             --warning-color: #FFC107;
             --danger-color: #F44336;
-            --info-color: #2196F3;
+            --info-color: #218ef3;
             
             /* Theme transition */
             --transition-speed: 0.3s;
             --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
             
-            /* New interactive elements */
-            --ripple-color: rgba(255,255,255,0.4);
+            /* Interactive elements */
             --focus-glow: 0 0 0 2px rgba(37, 211, 102, 0.3);
             --button-hover-scale: 1.03;
             --button-active-scale: 0.98;
-        }
-        
-        /* Dark Theme Variables */
-        [data-theme="dark"] {
-            --primary-color: #128c7e;
-            --secondary-color: #075e54;
-            --accent-color: #25d366;
-            --light-color: #005c4b;
-            --dark-color: #e9edef;
-            --background-color: #0d1418;
-            --panel-color: #1e2a30;
-            --text-color: #e9edef;
-            --text-light: #a6a6a6;
-            --shadow-color: rgba(0,0,0,0.3);
-            --border-color: #2d3a40;
-            --hover-color: rgba(255,255,255,0.05);
-            --active-color: rgba(255,255,255,0.1);
-            --ripple-color: rgba(0,0,0,0.2);
-        }
-        
-        /* High Contrast Theme */
-        [data-theme="high-contrast"] {
-            --primary-color: #0057b7;
-            --secondary-color: #003d82;
-            --accent-color: #ffd700;
-            --light-color: #e6f2ff;
-            --dark-color: #000;
-            --background-color: #fff;
-            --panel-color: #f0f0f0;
-            --text-color: #000;
-            --text-light: #444;
-            --shadow-color: rgba(0,0,0,0.2);
-            --border-color: #000;
-            --hover-color: rgba(0,0,0,0.1);
-            --active-color: rgba(0,0,0,0.2);
-            --ripple-color: rgba(0,0,0,0.1);
-        }
-        
-        /* Pink Theme */
-        [data-theme="pink"] {
-            --primary-color: #e91e63;
-            --secondary-color: #c2185b;
-            --accent-color: #ff4081;
-            --light-color: #f8bbd0;
-            --dark-color: #333;
-            --background-color: #fce4ec;
-            --panel-color: #fff;
-            --text-color: #333;
-            --text-light: #777;
-            --shadow-color: rgba(0,0,0,0.1);
-            --border-color: #f8bbd0;
-            --hover-color: rgba(233, 30, 99, 0.1);
-            --active-color: rgba(233, 30, 99, 0.2);
-            --ripple-color: rgba(255,255,255,0.4);
         }
         
         * {
@@ -108,13 +55,8 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            transition: background-color var(--transition-speed) var(--transition-easing);
             background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_a4be512e7195b6b733d9110b408f075d.png');
             background-repeat: repeat;
-        }
-        
-        [data-theme="dark"] body {
-            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-dark_04fcacde539a5823a1b1ae7eb9f4fa0b.png');
         }
         
         .header {
@@ -129,7 +71,6 @@
             align-items: center;
             position: relative;
             z-index: 10;
-            transition: all var(--transition-speed) var(--transition-easing);
         }
         
         .panel {
@@ -166,7 +107,7 @@
             border-radius: 7.5px;
             position: relative;
             word-wrap: break-word;
-            animation: fadeIn 0.3s var(--transition-easing);
+            animation: fadeIn 0.5s var(--transition-easing);
             box-shadow: 0 1px 1px var(--shadow-color);
             transition: transform 0.1s ease, box-shadow 0.1s ease;
         }
@@ -189,6 +130,7 @@
         
         .sent {
             background-color: var(--light-color);
+            color: white;
             align-self: flex-end;
             margin-left: auto;
             border-top-right-radius: 0;
@@ -200,6 +142,10 @@
             text-align: right;
             margin-top: 3px;
             opacity: 0.8;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 3px;
         }
         
         .input-area {
@@ -248,36 +194,6 @@
         
         .send-button:active {
             transform: scale(var(--button-active-scale));
-        }
-        
-        /* Ripple effect */
-        .send-button::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: var(--ripple-color);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%);
-            transform-origin: 50% 50%;
-        }
-        
-        .send-button:focus:not(:active)::after {
-            animation: ripple 0.6s ease-out;
-        }
-        
-        @keyframes ripple {
-            0% {
-                transform: scale(0, 0);
-                opacity: 0.5;
-            }
-            100% {
-                transform: scale(20, 20);
-                opacity: 0;
-            }
         }
         
         button {
@@ -566,56 +482,6 @@
             transform: rotate(90deg);
         }
         
-        .setting-group {
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .setting-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: var(--text-color);
-        }
-        
-        .emoji-picker {
-            position: absolute;
-            bottom: 60px;
-            right: 10px;
-            background-color: var(--panel-color);
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            padding: 10px;
-            box-shadow: 0 2px 10px var(--shadow-color);
-            z-index: 10;
-            display: none;
-            max-height: 300px;
-            overflow-y: auto;
-            width: 250px;
-        }
-        
-        .emoji-picker.show {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 5px;
-        }
-        
-        .emoji-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px;
-            margin: 2px;
-            border-radius: 5px;
-            transition: all 0.2s ease;
-        }
-        
-        .emoji-btn:hover {
-            background-color: var(--hover-color);
-            transform: scale(1.2);
-        }
-        
         .typing-indicator {
             font-size: 12px;
             color: var(--text-light);
@@ -697,68 +563,178 @@
             transform: scale(1.2);
         }
         
-        /* Loading spinner */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Theme selector buttons */
-        .theme-selector {
+        .fullscreen-toolbar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             gap: 10px;
-            margin-top: 10px;
         }
         
-        .theme-option {
-            width: 30px;
-            height: 30px;
+        .fullscreen-btn {
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
             border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            border: 2px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        
+        .fullscreen-btn:hover {
+            background-color: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        .recent-connections {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        .recent-connection {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: var(--hover-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .recent-connection:hover {
+            background-color: var(--active-color);
+            transform: translateX(3px);
+        }
+        
+        .recent-connection .profile-pic {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .recent-connection .username {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        
+        .recent-connection .peer-id {
+            font-size: 12px;
+            color: var(--text-light);
+            font-family: monospace;
+        }
+        
+        .recent-connection .last-seen {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 3px;
+        }
+        
+        .recent-connection .connection-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin-left: 10px;
+        }
+        
+        .recent-connection .online {
+            background-color: var(--accent-color);
+        }
+        
+        .recent-connection .offline {
+            background-color: var(--text-light);
+        }
+        
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .chat-header .profile-pic {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+        
+        .chat-header .username {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .chat-header .status {
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .back-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            margin-right: 15px;
+            cursor: pointer;
             transition: transform 0.2s ease;
         }
         
-        .theme-option:hover {
-            transform: scale(1.1);
+        .back-button:hover {
+            transform: scale(1.2);
         }
         
-        .theme-option.active {
-            transform: scale(1.1);
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 2px var(--accent-color);
+        .message-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: none;
+            gap: 5px;
         }
         
-        /* Dark theme button */
-        .theme-dark {
-            background: linear-gradient(135deg, #1e2a30 50%, #0d1418 50%);
+        .message:hover .message-actions {
+            display: flex;
         }
         
-        /* Light theme button */
-        .theme-light {
-            background: linear-gradient(135deg, #ffffff 50%, #e5ddd5 50%);
+        .message-action-btn {
+            background-color: rgba(0,0,0,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            color: white;
+            transition: all 0.2s ease;
         }
         
-        /* High contrast theme button */
-        .theme-high-contrast {
-            background: linear-gradient(135deg, #ffffff 50%, #0057b7 50%);
+        .message-action-btn:hover {
+            background-color: rgba(0,0,0,0.3);
+            transform: scale(1.2);
         }
         
-        /* Pink theme button */
-        .theme-pink {
-            background: linear-gradient(135deg, #ffffff 50%, #fce4ec 50%);
-        }
-        
-        /* Danger button */
         .danger {
             background-color: var(--danger-color);
         }
@@ -767,7 +743,226 @@
             background-color: #d32f2f;
         }
         
-        /* Responsive adjustments */
+        /* New styles for enhanced features */
+        .message-content a {
+            color: inherit;
+            text-decoration: underline;
+            word-break: break-all;
+        }
+        
+        .sent .message-content a {
+            color: #b3d4ff;
+        }
+        
+        .link-preview {
+            max-width: 300px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-top: 8px;
+            overflow: hidden;
+            background-color: var(--panel-color);
+        }
+        
+        .link-preview-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .link-preview-content {
+            padding: 10px;
+        }
+        
+        .link-preview-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .link-preview-description {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .link-preview-url {
+            font-size: 12px;
+            color: var(--text-light);
+            word-break: break-all;
+        }
+        
+        .message-reactions {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .reaction {
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 15px;
+            padding: 2px 6px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .reaction:hover {
+            background-color: rgba(0,0,0,0.15);
+        }
+        
+        .reaction-count {
+            font-size: 11px;
+        }
+        
+        .reaction-picker {
+            position: absolute;
+            background-color: var(--panel-color);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 5px;
+            display: flex;
+            gap: 5px;
+            z-index: 100;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transform: translateY(-100%);
+        }
+        
+        .reaction-emoji {
+            cursor: pointer;
+            font-size: 18px;
+            transition: transform 0.2s ease;
+        }
+        
+        .reaction-emoji:hover {
+            transform: scale(1.3);
+        }
+        
+        .search-container {
+            padding: 10px;
+            background-color: var(--panel-color);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .search-results {
+            position: absolute;
+            background-color: var(--panel-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            width: calc(100% - 20px);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            display: none;
+        }
+        
+        .search-result-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        
+        .search-result-item:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .search-result-highlight {
+            background-color: yellow;
+        }
+        
+        .pinned-message {
+            background-color: rgba(255, 255, 0, 0.1);
+            border-left: 3px solid var(--warning-color);
+            margin-bottom: 15px;
+        }
+        
+        .pinned-label {
+            font-size: 12px;
+            color: var(--warning-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .formatting-toolbar {
+            display: flex;
+            gap: 5px;
+            padding: 5px;
+            background-color: var(--panel-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .format-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 16px;
+        }
+        
+        .format-button:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .read-receipt {
+            font-size: 10px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        
+        .group-info {
+            padding: 15px;
+            background-color: var(--panel-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .group-members {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .group-member {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: var(--hover-color);
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+        
+        .group-member-pic {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
         @media (max-width: 600px) {
             .panel {
                 width: 95%;
@@ -784,6 +979,14 @@
             
             .message {
                 max-width: 85%;
+            }
+            
+            .recent-connection .peer-id {
+                font-size: 10px;
+            }
+            
+            .link-preview {
+                max-width: 250px;
             }
         }
     </style>
@@ -824,7 +1027,7 @@
 
     <!-- Connection Panel -->
     <div class="panel hidden" id="connectionPanel">
-        <h2>Connect to a Friend</h2>
+        <h2>Connect to a Friend</h2><p>warning group having error</p>
         <p>Your Peer ID: <strong id="peerIdDisplay"></strong></p>
         
         <div class="suggestion-container">
@@ -836,26 +1039,57 @@
         <div class="status" id="connectionStatus">Not connected</div>
         
         <h3>Recent Connections</h3>
-        <div id="recentConnections"></div>
+        <div class="recent-connections" id="recentConnections">
+            <!-- Recent connections will be added here dynamically -->
+        </div>
+        
+        <button id="createGroupBtn">Create Group</button>
     </div>
 
     <!-- Chat Interface -->
     <div class="chat-container hidden" id="chatContainer">
+        <!-- Chat header with profile info -->
+        <div class="chat-header" id="chatHeader">
+            <button class="back-button" id="backButton">←</button>
+            <div class="profile-pic" id="currentPeerPic"></div>
+            <div class="user-info">
+                <div class="username" id="currentPeerName"></div>
+                <div class="status" id="currentPeerStatus">Online</div>
+            </div>
+        </div>
+        
+        <!-- Group info section (hidden by default) -->
+        <div class="group-info hidden" id="groupInfo">
+            <h3 id="groupName"></h3>
+            <p id="groupDescription"></p>
+            <h4>Members</h4>
+            <div class="group-members" id="groupMembers">
+                <!-- Group members will be added here dynamically -->
+            </div>
+        </div>
+        
+        <!-- Search results container -->
+        <div class="search-results hidden" id="searchResults"></div>
+        
         <!-- Messages will appear here -->
     </div>
 
     <!-- Input Area -->
     <div class="input-area hidden" id="inputArea">
-        <button class="file-button" id="fileButton" title="Attach file">📎</button>
+        <button class="file-button" id="fileButton" title="Attach file"><i class="fas fa-paperclip"></i></button>
         <input type="file" id="fileInput" class="file-input" accept="image/*,.pdf,.doc,.docx,.txt,.mp3,.mp4">
-        <button class="emoji-button" id="emojiButton" title="Emoji">😊</button>
+        
+        <!-- Formatting toolbar (hidden by default) -->
+        <div class="formatting-toolbar hidden" id="formattingToolbar">
+            <button class="format-button" data-format="bold" title="Bold"><i class="fas fa-bold"></i></button>
+            <button class="format-button" data-format="italic" title="Italic"><i class="fas fa-italic"></i></button>
+            <button class="format-button" data-format="underline" title="Underline"><i class="fas fa-underline"></i></button>
+            <button class="format-button" data-format="code" title="Code"><i class="fas fa-code"></i></button>
+            <button class="format-button" id="toggleFormatting" title="Hide formatting"><i class="fas fa-chevron-up"></i></button>
+        </div>
+        
         <input type="text" class="message-input" id="messageInput" placeholder="Type a message...">
-        <button class="send-button" id="sendButton" title="Send">➤</button>
-    </div>
-
-    <!-- Emoji Picker -->
-    <div class="emoji-picker" id="emojiPicker">
-        <!-- Emoji buttons will be generated by JavaScript -->
+        <button class="send-button" id="sendButton" title="Send"><i class="fas fa-paper-plane"></i></button>
     </div>
 
     <!-- Notification -->
@@ -868,35 +1102,6 @@
     <div class="settings-panel" id="settingsPanel">
         <h2>Settings</h2>
         
-        <h3>Appearance</h3>
-        <div class="setting-group">
-            <label>Theme:</label>
-            <select id="themeSelect">
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-                <option value="high-contrast">High Contrast</option>
-                <option value="pink">Pink</option>
-                <option value="system">System Default</option>
-            </select>
-            
-            <div class="theme-selector">
-                <div class="theme-option theme-light" data-theme="light" title="Light Theme"></div>
-                <div class="theme-option theme-dark" data-theme="dark" title="Dark Theme"></div>
-                <div class="theme-option theme-high-contrast" data-theme="high-contrast" title="High Contrast"></div>
-                <div class="theme-option theme-pink" data-theme="pink" title="Pink Theme"></div>
-            </div>
-        </div>
-        
-        <div class="setting-group">
-            <label>Message Density:</label>
-            <select id="densitySelect">
-                <option value="compact">Compact</option>
-                <option value="normal" selected>Normal</option>
-                <option value="comfortable">Comfortable</option>
-            </select>
-        </div>
-        
-        <h3>Notifications</h3>
         <div class="setting-group">
             <label>
                 <input type="checkbox" id="notificationsToggle" checked>
@@ -912,35 +1117,16 @@
         </div>
         
         <div class="setting-group">
-            <label>Notification Sound:</label>
-            <select id="soundSelect">
-                <option value="chime">Chime</option>
-                <option value="ding">Ding</option>
-                <option value="pop">Pop</option>
-            </select>
-            <button id="testSoundBtn">Test Sound</button>
-        </div>
-        
-        <h3>Privacy</h3>
-        <div class="setting-group">
-            <label>
-                <input type="checkbox" id="typingIndicatorToggle" checked>
-                Show Typing Indicator
-            </label>
-        </div>
-        
-        <div class="setting-group">
-            <label>
-                <input type="checkbox" id="readReceiptsToggle" checked>
-                Send Read Receipts
-            </label>
-        </div>
-        
-        <h3>Data</h3>
-        <div class="setting-group">
             <label>
                 <input type="checkbox" id="saveHistoryToggle" checked>
                 Save Chat History
+            </label>
+        </div>
+        
+        <div class="setting-group">
+            <label>
+                <input type="checkbox" id="autoPreviewLinksToggle" checked>
+                Auto-preview links
             </label>
         </div>
         
@@ -954,19 +1140,45 @@
         <button id="deleteAccountBtn" class="danger">Delete Account</button>
     </div>
 
-    <button class="settings-toggle" id="settingsToggle">⚙️</button>
+    <button class="settings-toggle" id="settingsToggle"><i class="fas fa-cog"></i></button>
 
     <!-- Context Menu -->
     <div class="context-menu" id="contextMenu">
         <div class="context-menu-item" id="copyMessage">Copy</div>
-        <div class="context-menu-item" id="deleteMessage">Delete</div>
+        <div class="context-menu-item" id="saveMessage">Save</div>
         <div class="context-menu-item" id="forwardMessage">Forward</div>
+        <div class="context-menu-item" id="pinMessage">Pin</div>
+        <div class="context-menu-item" id="reactToMessage">React</div>
+        <div class="context-menu-item" id="deleteMessage">Delete</div>
     </div>
 
     <!-- Fullscreen Image Viewer -->
     <div class="fullscreen-image hidden" id="fullscreenImage">
         <span class="fullscreen-close" id="fullscreenClose">&times;</span>
         <img id="fullscreenImageContent">
+        <div class="fullscreen-toolbar">
+            <button class="fullscreen-btn" id="downloadImageBtn" title="Download"><i class="fas fa-download"></i></button>
+            <button class="fullscreen-btn" id="saveImageBtn" title="Save"><i class="fas fa-save"></i></button>
+        </div>
+    </div>
+
+    <!-- Group Creation Modal -->
+    <div class="modal hidden" id="groupModal">
+        <div class="modal-content">
+            <h2>Create New Group</h2>
+            <input type="text" id="groupNameInput" placeholder="Group name" required>
+            <textarea id="groupDescriptionInput" placeholder="Group description (optional)"></textarea>
+            
+            <h3>Add Members</h3>
+            <div class="user-list" id="groupUserList">
+                <!-- Users will be added here dynamically -->
+            </div>
+            
+            <div class="modal-actions">
+                <button id="cancelGroupBtn">Cancel</button>
+                <button id="createGroupConfirmBtn">Create Group</button>
+            </div>
+        </div>
     </div>
 
     <!-- Audio Elements for Sounds -->
@@ -989,7 +1201,13 @@
             const notification = document.getElementById('notification');
             const notificationText = document.getElementById('notificationText');
             const notificationClose = document.getElementById('notificationClose');
-            const emojiPicker = document.getElementById('emojiPicker');
+            const recentConnections = document.getElementById('recentConnections');
+            const backButton = document.getElementById('backButton');
+            const currentPeerName = document.getElementById('currentPeerName');
+            const currentPeerPic = document.getElementById('currentPeerPic');
+            const currentPeerStatus = document.getElementById('currentPeerStatus');
+            const formattingToolbar = document.getElementById('formattingToolbar');
+            const toggleFormattingBtn = document.getElementById('toggleFormatting');
             
             // PeerJS elements
             let peer;
@@ -997,6 +1215,11 @@
             let currentUser = null;
             let isTyping = false;
             let typingTimeout;
+            let lastActivityTime = Date.now();
+            let currentPeer = null;
+            let messageCounter = 0;
+            let currentGroup = null;
+            let pendingReactionMessageId = null;
             
             // Initialize local storage for user data
             initializeStorage();
@@ -1007,8 +1230,9 @@
             // Event listeners
             setupEventListeners();
             
-            // Generate emoji picker buttons
-            generateEmojiPicker();
+            // Track user activity to update last seen
+            document.addEventListener('mousemove', updateUserActivity);
+            document.addEventListener('keydown', updateUserActivity);
             
             function initializeStorage() {
                 if (!localStorage.getItem('p2pChatUsers')) {
@@ -1021,15 +1245,19 @@
                 
                 if (!localStorage.getItem('p2pChatSettings')) {
                     localStorage.setItem('p2pChatSettings', JSON.stringify({
-                        theme: 'light',
-                        density: 'normal',
                         notifications: true,
                         sounds: true,
-                        soundType: 'chime',
-                        typingIndicator: true,
-                        readReceipts: true,
-                        saveHistory: true
+                        saveHistory: true,
+                        autoPreviewLinks: true
                     }));
+                }
+                
+                if (!localStorage.getItem('p2pChatSavedItems')) {
+                    localStorage.setItem('p2pChatSavedItems', JSON.stringify([]));
+                }
+                
+                if (!localStorage.getItem('p2pChatGroups')) {
+                    localStorage.setItem('p2pChatGroups', JSON.stringify({}));
                 }
             }
             
@@ -1069,34 +1297,21 @@
                     if (e.key === 'Enter') sendMessage();
                 });
                 document.getElementById('messageInput').addEventListener('input', handleTyping);
+                backButton.addEventListener('click', disconnectAndGoBack);
                 
                 // File sharing
                 document.getElementById('fileButton').addEventListener('click', () => document.getElementById('fileInput').click());
                 document.getElementById('fileInput').addEventListener('change', handleFileUpload);
-                
-                // Emoji picker
-                document.getElementById('emojiButton').addEventListener('click', toggleEmojiPicker);
                 
                 // Notifications
                 notificationClose.addEventListener('click', () => notification.classList.add('hidden'));
                 
                 // Settings
                 settingsToggle.addEventListener('click', toggleSettingsPanel);
-                document.getElementById('themeSelect').addEventListener('change', updateTheme);
-                document.querySelectorAll('.theme-option').forEach(option => {
-                    option.addEventListener('click', function() {
-                        document.getElementById('themeSelect').value = this.dataset.theme;
-                        updateTheme();
-                    });
-                });
-                document.getElementById('densitySelect').addEventListener('change', updateDensity);
                 document.getElementById('notificationsToggle').addEventListener('change', toggleNotifications);
                 document.getElementById('soundToggle').addEventListener('change', toggleSounds);
-                document.getElementById('soundSelect').addEventListener('change', updateSound);
-                document.getElementById('testSoundBtn').addEventListener('click', testSound);
-                document.getElementById('typingIndicatorToggle').addEventListener('change', toggleTypingIndicator);
-                document.getElementById('readReceiptsToggle').addEventListener('change', toggleReadReceipts);
                 document.getElementById('saveHistoryToggle').addEventListener('change', toggleSaveHistory);
+                document.getElementById('autoPreviewLinksToggle').addEventListener('change', toggleAutoPreviewLinks);
                 document.getElementById('clearHistoryBtn').addEventListener('click', clearHistory);
                 document.getElementById('exportDataBtn').addEventListener('click', exportData);
                 document.getElementById('importDataBtn').addEventListener('click', () => document.getElementById('importDataInput').click());
@@ -1106,147 +1321,45 @@
                 
                 // Context menu
                 document.addEventListener('contextmenu', handleContextMenu);
-                document.addEventListener('click', () => document.getElementById('contextMenu').style.display = 'none');
+                document.addEventListener('click', () => {
+                    document.getElementById('contextMenu').style.display = 'none';
+                    const reactionPicker = document.querySelector('.reaction-picker');
+                    if (reactionPicker) reactionPicker.remove();
+                });
                 document.getElementById('copyMessage').addEventListener('click', copyMessage);
-                document.getElementById('deleteMessage').addEventListener('click', deleteMessage);
+                document.getElementById('saveMessage').addEventListener('click', saveMessageToStorage);
                 document.getElementById('forwardMessage').addEventListener('click', forwardMessage);
+                document.getElementById('pinMessage').addEventListener('click', pinMessage);
+                document.getElementById('reactToMessage').addEventListener('click', showReactionPicker);
+                document.getElementById('deleteMessage').addEventListener('click', deleteMessage);
                 
                 // Fullscreen image
                 document.getElementById('fullscreenClose').addEventListener('click', () => {
                     document.getElementById('fullscreenImage').classList.remove('show');
                 });
+                document.getElementById('downloadImageBtn').addEventListener('click', downloadCurrentImage);
+                document.getElementById('saveImageBtn').addEventListener('click', saveCurrentImage);
+                
+                // Formatting toolbar
+                document.querySelectorAll('.format-button[data-format]').forEach(button => {
+                    button.addEventListener('click', () => applyFormatting(button.dataset.format));
+                });
+                toggleFormattingBtn.addEventListener('click', () => {
+                    formattingToolbar.classList.toggle('hidden');
+                    toggleFormattingBtn.innerHTML = formattingToolbar.classList.contains('hidden') ? 
+                        '<i class="fas fa-chevron-down"></i>' : '<i class="fas fa-chevron-up"></i>';
+                });
+                
+                // Group chat
+                document.getElementById('createGroupBtn').addEventListener('click', showGroupCreationModal);
+                document.getElementById('cancelGroupBtn').addEventListener('click', () => {
+                    document.getElementById('groupModal').classList.add('hidden');
+                });
+                document.getElementById('createGroupConfirmBtn').addEventListener('click', createGroup);
                 
                 // Ripple effect for buttons
                 document.querySelectorAll('button').forEach(button => {
                     button.addEventListener('click', createRipple);
-                });
-                
-                // System theme change detection
-                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                    const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
-                    if (settings.theme === 'system') {
-                        updateTheme();
-                    }
-                });
-            }
-            
-            function generateEmojiPicker() {
-                const emojis = [
-                    '😀', '😁', '😂', '🤣', '😃', '😄', '😅', '😆', '😉', '😊', '😋', '😎', 
-                    '😍', '😘', '🥰', '😗', '😙', '😚', '☺️', '🙂', '🤗', '🤩', '🤔', '🤨', 
-                    '😐', '😑', '😶', '🙄', '😏', '😣', '😥', '😮', '🤐', '😯', '😪', '😫', 
-                    '😴', '😌', '😛', '😜', '😝', '🤤', '😒', '😓', '😔', '😕', '🙃', '🤑', 
-                    '😲', '☹️', '🙁', '😖', '😞', '😟', '😤', '😢', '😭', '😦', '😧', '😨', 
-                    '😩', '🤯', '😬', '😰', '😱', '🥵', '🥶', '😳', '🤪', '😵', '🥴', '😠', 
-                    '😡', '🤬', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '😇', '🥳', '🥺', '🤠', 
-                    '🤡', '👻', '👽', '🤖', '😈', '👿', '💀', '☠️', '💋', '👋', '🤚', '🖐️', 
-                    '✋', '🖖', '👌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', 
-                    '🖕', '👇', '👍', '👎', '✊', '👊', '🤛', '🤜', '🤚', '👏', '🙌', '👐', 
-                    '🤲', '🤝', '🙏', '✍️', '💅', '🤳', '💪', '🦾', '🦿', '🦵', '🦶', '👂', 
-                    '🦻', '👃', '🧠', '🦷', '🦴', '👀', '👁️', '👅', '👄', '👶', '🧒', '👦', 
-                    '👧', '🧑', '👨', '👩', '🧔', '👵', '👴', '👲', '👳', '👮', '👷', '💂', 
-                    '🕵️', '👩‍⚕️', '👨‍⚕️', '👩‍🌾', '👨‍🌾', '👩‍🍳', '👨‍🍳', '👩‍🎓', '👨‍🎓', '👩‍🎤', '👨‍🎤', 
-                    '👩‍🏫', '👨‍🏫', '👩‍🏭', '👨‍🏭', '👩‍💻', '👨‍💻', '👩‍💼', '👨‍💼', '👩‍🔧', '👨‍🔧', '👩‍🔬', '👨‍🔬', 
-                    '👩‍🎨', '👨‍🎨', '👩‍🚒', '👨‍🚒', '👩‍✈️', '👨‍✈️', '👩‍🚀', '👨‍🚀', '👩‍⚖️', '👨‍⚖️', '👰', '🤵', 
-                    '👸', '🤴', '🦸', '🦹', '🤶', '🎅', '🧙', '🧚', '🧛', '🧜', '🧝', '🧞', 
-                    '🧟', '💆', '💇', '🚶', '🏃', '💃', '🕺', '🕴️', '🧖', '🧗', '🧘', '🛀', 
-                    '🛌', '🧑‍🤝‍🧑', '👭', '👫', '👬', '💏', '💑', '👪', '🗣️', '👤', '👥', '🫂', 
-                    '👣', '🦰', '🦱', '🦳', '🦲', '🐵', '🐒', '🦍', '🦧', '🐶', '🐕', '🦮', 
-                    '🐕‍🦺', '🐩', '🐺', '🦊', '🦝', '🐱', '🐈', '🐈‍⬛', '🦁', '🐯', '🐅', '🐆', 
-                    '🐴', '🐎', '🦄', '🦓', '🦌', '🦬', '🐮', '🐂', '🐃', '🐄', '🐷', '🐖', 
-                    '🐗', '🐽', '🐏', '🐑', '🐐', '🐪', '🐫', '🦙', '🦒', '🐘', '🦣', '🦏', 
-                    '🦛', '🐭', '🐁', '🐀', '🐹', '🐰', '🐇', '🐿️', '🦫', '🦔', '🦇', '🐻', 
-                    '🐻‍❄️', '🐨', '🐼', '🦥', '🦦', '🦨', '🦘', '🦡', '🐾', '🦃', '🐔', '🐓', 
-                    '🐣', '🐤', '🐥', '🐦', '🐧', '🕊️', '🦅', '🦆', '🦢', '🦉', '🦤', '🪶', 
-                    '🦩', '🦜', '🐸', '🐊', '🐢', '🦎', '🐍', '🐲', '🐉', '🦕', '🦖', '🐳', 
-                    '🐋', '🐬', '🦭', '🐟', '🐠', '🐡', '🦈', '🐙', '🐚', '🪸', '🦀', '🦞', 
-                    '🦐', '🦑', '🦪', '🐌', '🦋', '🐛', '🐜', '🐝', '🪲', '🐞', '🦗', '🪳', 
-                    '🕷️', '🕸️', '🦂', '🦟', '🦠', '💐', '🌸', '💮', '🏵️', '🌹', '🥀', '🌺', 
-                    '🌻', '🌼', '🌷', '🌱', '🪴', '🌲', '🌳', '🌴', '🌵', '🌾', '🌿', '☘️', 
-                    '🍀', '🍁', '🍂', '🍃', '🍄', '🍇', '🍈', '🍉', '🍊', '🍋', '🍌', '🍍', 
-                    '🥭', '🍎', '🍏', '🍐', '🍑', '🍒', '🍓', '🫐', '🥝', '🍅', '🫒', '🥥', 
-                    '🥑', '🍆', '🥔', '🥕', '🌽', '🌶️', '🫑', '🥒', '🥬', '🥦', '🧄', '🧅', 
-                    '🍠', '🥐', '🍞', '🥖', '🥨', '🥯', '🥞', '🧇', '🧀', '🍖', '🍗', '🥩', 
-                    '🥓', '🍔', '🍟', '🍕', '🌭', '🥪', '🌮', '🌯', '🫔', '🥙', '🧆', '🥚', 
-                    '🍳', '🥘', '🍲', '🫕', '🥣', '🥗', '🍿', '🧈', '🧂', '🥫', '🍱', '🍘', 
-                    '🍙', '🍚', '🍛', '🍜', '🍝', '🍠', '🍢', '🍣', '🍤', '🍥', '🥮', '🍡', 
-                    '🥟', '🥠', '🥡', '🍦', '🍧', '🍨', '🍩', '🍪', '🎂', '🍰', '🧁', '🥧', 
-                    '🍫', '🍬', '🍭', '🍮', '🍯', '🥛', '🍼', '🫖', '☕', '🍵', '🍶', '🍾', 
-                    '🍷', '🍸', '🍹', '🍺', '🍻', '🥂', '🥃', '🥤', '🧃', '🧉', '🧊', '🥢', 
-                    '🍽️', '🍴', '🥄', '🔪', '🏺', '🌍', '🌎', '🌏', '🌐', '🗺️', '🗾', '🧭', 
-                    '🏔️', '⛰️', '🌋', '🗻', '🏕️', '🏖️', '🏜️', '🏝️', '🏞️', '🏟️', '🏛️', '🏗️', 
-                    '🧱', '🪨', '🪵', '🛖', '🏘️', '🏚️', '🏠', '🏡', '🏢', '🏣', '🏤', '🏥', 
-                    '🏦', '🏨', '🏩', '🏪', '🏫', '🏬', '🏭', '🏯', '🏰', '💒', '🗼', '🗽', 
-                    '⛪', '🕌', '🛕', '🕍', '⛩️', '🕋', '⛲', '⛺', '🌁', '🌃', '🏙️', '🌄', 
-                    '🌅', '🌆', '🌇', '🌉', '♨️', '🎠', '🎡', '🎢', '💈', '🎪', '🚂', '🚃', 
-                    '🚄', '🚅', '🚆', '🚇', '🚈', '🚉', '🚊', '🚝', '🚞', '🚋', '🚌', '🚍', 
-                    '🚎', '🚐', '🚑', '🚒', '🚓', '🚔', '🚕', '🚖', '🚗', '🚘', '🚙', '🛻', 
-                    '🚚', '🚛', '🚜', '🏎️', '🏍️', '🛵', '🦽', '🦼', '🛺', '🚲', '🛴', '🛹', 
-                    '🛼', '🚏', '🛣️', '🛤️', '🛢️', '⛽', '🚨', '🚥', '🚦', '🛑', '🚧', '⚓', 
-                    '⛵', '🛶', '🚤', '🛳️', '⛴️', '🛥️', '🚢', '✈️', '🛩️', '🛫', '🛬', '🪂', 
-                    '💺', '🚁', '🚟', '🚠', '🚡', '🛰️', '🚀', '🛸', '🛎️', '🧳', '⌛', '⏳', 
-                    '⌚', '⏰', '⏱️', '⏲️', '🕰️', '🌡️', '⛱️', '🧨', '🎈', '🎉', '🎊', '🎀', 
-                    '🎁', '🎗️', '🎟️', '🎫', '🎖️', '🏆', '🏅', '🥇', '🥈', '🥉', '⚽', '⚾', 
-                    '🥎', '🏀', '🏐', '🏈', '🏉', '🎾', '🥏', '🎳', '🏏', '🏑', '🏒', '🥍', 
-                    '🏓', '🏸', '🥊', '🥋', '🥅', '⛳', '🎯', '🪀', '🪁', '🎱', '🔮', '🪄', 
-                    '🧿', '🎮', '🕹️', '🎰', '🎲', '🧩', '🧸', '🪅', '🪆', '♠️', '♥️', '♦️', 
-                    '♣️', '♟️', '🃏', '🀄', '🎴', '🎭', '🖼️', '🎨', '🧵', '🪡', '🧶', '🪢', 
-                    '👓', '🕶️', '🥽', '🥼', '🦺', '👔', '👕', '👖', '🧣', '🧤', '🧥', '🧦', 
-                    '👗', '👘', '🥻', '🩱', '🩲', '🩳', '👙', '👚', '👛', '👜', '👝', '🛍️', 
-                    '🎒', '🩴', '👞', '👟', '🥾', '🥿', '👠', '👡', '🩰', '👢', '👑', '👒', 
-                    '🎩', '🎓', '🧢', '🪖', '⛑️', '💄', '💍', '💼', '🩸', '💌', '🕳️', '💣', 
-                    '🛀', '🛌', '🔪', '🏺', '🗺️', '🧭', '🧱', '💈', '🛢️', '🛎️', '🧳', '⌛', 
-                    '⏳', '⌚', '⏰', '⏱️', '⏲️', '🕰️', '🌡️', '⛱️', '🧨', '🎈', '🎉', '🎊', 
-                    '🎀', '🎁', '🎗️', '🎟️', '🎫', '🎖️', '🏆', '🏅', '🥇', '🥈', '🥉', '⚽', 
-                    '⚾', '🥎', '🏀', '🏐', '🏈', '🏉', '🎾', '🥏', '🎳', '🏏', '🏑', '🏒', 
-                    '🥍', '🏓', '🏸', '🥊', '🥋', '🥅', '⛳', '🎯', '🪀', '🪁', '🎱', '🔮', 
-                    '🪄', '🧿', '🎮', '🕹️', '🎰', '🎲', '🧩', '🧸', '🪅', '🪆', '♠️', '♥️', 
-                    '♦️', '♣️', '♟️', '🃏', '🀄', '🎴', '🎭', '🖼️', '🎨', '🧵', '🪡', '🧶', 
-                    '🪢', '📷', '📸', '📹', '🎥', '📽️', '🎞️', '📞', '☎️', '📟', '📠', '📺', 
-                    '📻', '🎙️', '🎚️', '🎛️', '🧭', '⏱️', '⏲️', '⏰', '🕰️', '⌛', '⏳', '📡', 
-                    '🔋', '🔌', '💻', '🖥️', '🖨️', '⌨️', '🖱️', '🖲️', '💽', '💾', '💿', '📀', 
-                    '🧮', '🎥', '🎞️', '📽️', '🎬', '📺', '📷', '📸', '📹', '📼', '🔍', '🔎', 
-                    '🕯️', '💡', '🔦', '🏮', '🪔', '📔', '📕', '📖', '📗', '📘', '📙', '📚', 
-                    '📓', '📒', '📃', '📜', '📄', '📰', '🗞️', '📑', '🔖', '🏷️', '💰', '🪙', 
-                    '💴', '💵', '💶', '💷', '💸', '💳', '🧾', '💹', '✉️', '📧', '📨', '📩', 
-                    '📤', '📥', '📦', '📫', '📪', '📬', '📭', '📮', '🗳️', '✏️', '✒️', '🖋️', 
-                    '🖊️', '🖌️', '🖍️', '📝', '💼', '📁', '📂', '🗂️', '📅', '📆', '🗒️', '🗓️', 
-                    '📇', '📈', '📉', '📊', '📋', '📌', '📍', '📎', '🖇️', '📏', '📐', '✂️', 
-                    '🗃️', '🗄️', '🗑️', '🔒', '🔓', '🔏', '🔐', '🔑', '🗝️', '🔨', '🪓', '⛏️', 
-                    '⚒️', '🛠️', '🗡️', '⚔️', '🔫', '🪃', '🏹', '🛡️', '🪚', '🔧', '🪛', '🔩', 
-                    '⚙️', '🗜️', '⚖️', '🦯', '🔗', '⛓️', '🪝', '🧰', '🧲', '🪜', '⚗️', '🧪', 
-                    '🧫', '🧬', '🔬', '🔭', '📡', '💉', '🩸', '💊', '🩹', '🩺', '🚪', '🛗', 
-                    '🪞', '🪟', '🛏️', '🛋️', '🪑', '🚽', '🪠', '🚿', '🛁', '🪤', '🪒', '🧴', 
-                    '🧷', '🧹', '🧺', '🧻', '🪣', '🧼', '🫧', '🪥', '🧽', '🧯', '🛒', '🚬', 
-                    '⚰️', '🪦', '⚱️', '🧿', '🪬', '🗿', '🪧', '🪪', '🏧', '🚮', '🚰', '♿', 
-                    '🚹', '🚺', '🚻', '🚼', '🚾', '🛂', '🛃', '🛄', '🛅', '⚠️', '🚸', '⛔', 
-                    '🚫', '🚳', '🚭', '🚯', '🚱', '🚷', '📵', '🔞', '☢️', '☣️', '⬆️', '↗️', 
-                    '➡️', '↘️', '⬇️', '↙️', '⬅️', '↖️', '↕️', '↔️', '↩️', '↪️', '⤴️', '⤵️', 
-                    '🔃', '🔄', '🔙', '🔚', '🔛', '🔜', '🔝', '🛐', '⚛️', '🕉️', '✡️', '☸️', 
-                    '☯️', '✝️', '☦️', '☪️', '☮️', '🕎', '🔯', '♈', '♉', '♊', '♋', '♌', '♍', 
-                    '♎', '♏', '♐', '♑', '♒', '♓', '⛎', '🔀', '🔁', '🔂', '▶️', '⏩', '⏭️', 
-                    '⏯️', '◀️', '⏪', '⏮️', '🔼', '⏫', '🔽', '⏬', '⏸️', '⏹️', '⏺️', '⏏️', 
-                    '🎦', '🔅', '🔆', '📶', '📳', '📴', '♀️', '♂️', '⚧️', '✖️', '➕', '➖', 
-                    '➗', '♾️', '‼️', '⁉️', '❓', '❔', '❕', '❗', '〰️', '💱', '💲', '⚕️', '♻️', 
-                    '⚜️', '🔱', '📛', '🔰', '⭕', '✅', '☑️', '✔️', '❌', '❎', '➰', '➿', '〽️', 
-                    '✳️', '✴️', '❇️', '©️', '®️', '™️', '#️⃣', '*️⃣', '0️⃣', '1️⃣', '2️⃣', '3️⃣', 
-                    '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '🔠', '🔡', '🔢', '🔣', '🔤', 
-                    '🅰️', '🆎', '🅱️', '🆑', '🆒', '🆓', 'ℹ️', '🆔', 'Ⓜ️', '🆕', '🆖', '🅾️', 
-                    '🆗', '🅿️', '🆘', '🆙', '🆚', '🈁', '🈂️', '🈷️', '🈶', '🈯', '🉐', '🈹', 
-                    '🈚', '🈲', '🉑', '🈸', '🈴', '🈳', '㊗️', '㊙️', '🈺', '🈵', '🔴', '🟠', 
-                    '🟡', '🟢', '🔵', '🟣', '🟤', '⚫', '⚪', '🟥', '🟧', '🟨', '🟩', '🟦', 
-                    '🟪', '🟫', '⬛', '⬜', '◼️', '◻️', '◾', '◽', '▪️', '▫️', '🔶', '🔷', '🔸', 
-                    '🔹', '🔺', '🔻', '💠', '🔘', '🔳', '🔲', '🏁', '🚩', '🎌', '🏴', '🏳️', 
-                    '🏳️‍🌈', '🏳️‍⚧️', '🏴‍☠️'
-                ];
-                
-                emojis.forEach(emoji => {
-                    const btn = document.createElement('button');
-                    btn.className = 'emoji-btn';
-                    btn.textContent = emoji;
-                    btn.title = emoji;
-                    btn.addEventListener('click', () => insertEmoji(emoji));
-                    emojiPicker.appendChild(btn);
                 });
             }
             
@@ -1354,168 +1467,404 @@
             }
             
             function initializePeer() {
-                peer = new Peer(currentUser.peerId);
-                
-                peer.on('open', (id) => {
-                    document.getElementById('peerIdDisplay').textContent = id;
-                    document.getElementById('connectionStatus').textContent = 'Ready to connect';
-                    updateUserLastSeen();
-                    loadRecentConnections();
-                });
-                
-                peer.on('connection', (connection) => {
-                    conn = connection;
+                try {
+                    peer = new Peer(currentUser.peerId);
                     
-                    conn.on('open', () => {
-                        document.getElementById('connectionStatus').textContent = `Connected to ${conn.peer}`;
-                        inputArea.classList.remove('hidden');
-                        chatContainer.classList.remove('hidden');
-                        
-                        // Save this connection
-                        saveConnection(conn.peer);
-                        loadChatHistory(conn.peer);
-                        
-                        // Play connection sound
-                        playSound('connection');
-                        
-                        showNotification(`Connected to ${conn.peer}`, 'success');
+                    peer.on('open', (id) => {
+                        document.getElementById('peerIdDisplay').textContent = id;
+                        document.getElementById('connectionStatus').textContent = 'Ready to connect';
+                        updateUserLastSeen();
+                        loadRecentConnections();
                     });
                     
-                    conn.on('data', (data) => {
-                        if (data.type === 'message') {
-                            addMessage('received', data.content);
-                            playSound('message');
-                        } else if (data.type === 'file') {
-                            addFileMessage('received', data);
-                            playSound('message');
-                        } else if (data.type === 'typing') {
-                            showTypingIndicator(data.isTyping);
-                        } else if (data.type === 'read') {
-                            // Handle read receipts
-                        }
+                    peer.on('connection', (connection) => {
+                        conn = connection;
+                        
+                        // Get peer info
+                        const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                        const peerInfo = Object.values(users).find(u => u.peerId === conn.peer);
+                        
+                        // Set current peer
+                        currentPeer = {
+                            peerId: conn.peer,
+                            username: peerInfo ? peerInfo.username : conn.peer,
+                            profilePic: peerInfo ? peerInfo.profilePic : conn.peer.charAt(0).toUpperCase()
+                        };
+                        
+                        // Update UI
+                        updateChatHeader();
+                        
+                        conn.on('open', () => {
+                            document.getElementById('connectionStatus').textContent = `Connected to ${currentPeer.username}`;
+                            inputArea.classList.remove('hidden');
+                            chatContainer.classList.remove('hidden');
+                            
+                            // Save this connection for both peers
+                            saveConnection(conn.peer);
+                            loadChatHistory(conn.peer);
+                            
+                            // Play connection sound
+                            playSound('connection');
+                            
+                            showNotification(`Connected to ${currentPeer.username}`, 'success');
+                        });
+                        
+                        conn.on('data', (data) => {
+                            if (data.type === 'message') {
+                                addMessage('received', data.content, data.metadata);
+                                playSound('message');
+                            } else if (data.type === 'file') {
+                                addFileMessage('received', data);
+                                playSound('message');
+                            } else if (data.type === 'typing') {
+                                showTypingIndicator(data.isTyping);
+                            } else if (data.type === 'reaction') {
+                                addReactionToMessage(data.messageId, data.reaction);
+                            } else if (data.type === 'forward') {
+                                addForwardedMessage('received', data.content, data.originalSender);
+                            } else if (data.type === 'pinned') {
+                                updatePinnedMessage(data.messageId, data.pinned);
+                            } else if (data.type === 'read-receipt') {
+                                updateReadReceipt(data.messageId);
+                            }
+                        });
+                        
+                        conn.on('close', () => {
+                            document.getElementById('connectionStatus').textContent = 'Connection closed';
+                            inputArea.classList.add('hidden');
+                            showNotification(`Disconnected from ${currentPeer.username}`, 'error');
+                            currentPeer = null;
+                        });
+                        
+                        conn.on('error', (err) => {
+                            console.error('Connection error:', err);
+                            showNotification(`Connection error: ${err.message}`, 'error');
+                        });
                     });
                     
-                    conn.on('close', () => {
-                        document.getElementById('connectionStatus').textContent = 'Connection closed';
-                        inputArea.classList.add('hidden');
-                        showNotification(`Disconnected from ${conn.peer}`, 'error');
+                    peer.on('error', (err) => {
+                        console.error('Peer error:', err);
+                        document.getElementById('connectionStatus').textContent = 'Error: ' + err.message;
+                        showNotification('Peer error: ' + err.message, 'error');
                     });
-                });
-                
-                peer.on('error', (err) => {
-                    console.error('Peer error:', err);
-                    document.getElementById('connectionStatus').textContent = 'Error: ' + err.message;
-                    showNotification('Connection error: ' + err.message, 'error');
-                });
+                } catch (err) {
+                    console.error('Peer initialization error:', err);
+                    showNotification('Failed to initialize peer connection', 'error');
+                }
             }
             
             function connectToPeer() {
                 const remoteId = remoteIdInput.value.trim();
                 if (!remoteId) return;
                 
-                conn = peer.connect(remoteId);
-                
-                conn.on('open', () => {
-                    document.getElementById('connectionStatus').textContent = `Connected to ${remoteId}`;
-                    inputArea.classList.remove('hidden');
-                    chatContainer.classList.remove('hidden');
+                try {
+                    // Get peer info
+                    const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                    const peerInfo = Object.values(users).find(u => u.peerId === remoteId);
                     
-                    // Save this connection
-                    saveConnection(remoteId);
-                    loadChatHistory(remoteId);
+                    // Set current peer
+                    currentPeer = {
+                        peerId: remoteId,
+                        username: peerInfo ? peerInfo.username : remoteId,
+                        profilePic: peerInfo ? peerInfo.profilePic : remoteId.charAt(0).toUpperCase()
+                    };
                     
-                    // Play connection sound
-                    playSound('connection');
+                    // Update UI
+                    updateChatHeader();
                     
-                    showNotification(`Connected to ${remoteId}`, 'success');
-                });
-                
-                conn.on('data', (data) => {
-                    if (data.type === 'message') {
-                        addMessage('received', data.content);
-                        playSound('message');
-                    } else if (data.type === 'file') {
-                        addFileMessage('received', data);
-                        playSound('message');
-                    } else if (data.type === 'typing') {
-                        showTypingIndicator(data.isTyping);
-                    } else if (data.type === 'read') {
-                        // Handle read receipts
+                    conn = peer.connect(remoteId);
+                    
+                    conn.on('open', () => {
+                        document.getElementById('connectionStatus').textContent = `Connected to ${currentPeer.username}`;
+                        inputArea.classList.remove('hidden');
+                        chatContainer.classList.remove('hidden');
+                        
+                        // Save this connection for both peers
+                        saveConnection(remoteId);
+                        loadChatHistory(remoteId);
+                        
+                        // Play connection sound
+                        playSound('connection');
+                        
+                        showNotification(`Connected to ${currentPeer.username}`, 'success');
+                    });
+                    
+                    conn.on('data', (data) => {
+                        if (data.type === 'message') {
+                            addMessage('received', data.content, data.metadata);
+                            playSound('message');
+                        } else if (data.type === 'file') {
+                            addFileMessage('received', data);
+                            playSound('message');
+                        } else if (data.type === 'typing') {
+                            showTypingIndicator(data.isTyping);
+                        } else if (data.type === 'reaction') {
+                            addReactionToMessage(data.messageId, data.reaction);
+                        } else if (data.type === 'forward') {
+                            addForwardedMessage('received', data.content, data.originalSender);
+                        } else if (data.type === 'pinned') {
+                            updatePinnedMessage(data.messageId, data.pinned);
+                        } else if (data.type === 'read-receipt') {
+                            updateReadReceipt(data.messageId);
+                        }
+                    });
+                    
+                    conn.on('close', () => {
+                        document.getElementById('connectionStatus').textContent = 'Connection closed';
+                        inputArea.classList.add('hidden');
+                        showNotification(`Disconnected from ${currentPeer.username}`, 'error');
+                        currentPeer = null;
+                    });
+                    
+                    conn.on('error', (err) => {
+                        console.error('Connection error:', err);
+                        showNotification(`Connection error: ${err.message}`, 'error');
+                    });
+                } catch (err) {
+                    console.error('Connection error:', err);
+                    showNotification('Failed to connect to peer: ' + err.message, 'error');
+                }
+            }
+            
+            function updateChatHeader() {
+                if (currentPeer) {
+                    currentPeerName.textContent = currentPeer.username;
+                    currentPeerPic.textContent = currentPeer.profilePic;
+                    currentPeerStatus.textContent = 'Online';
+                    
+                    // Hide group info if we're in a 1:1 chat
+                    document.getElementById('groupInfo').classList.add('hidden');
+                } else if (currentGroup) {
+                    currentPeerName.textContent = currentGroup.name;
+                    currentPeerPic.textContent = '👥';
+                    currentPeerStatus.textContent = `${currentGroup.members.length} members`;
+                    
+                    // Show group info
+                    const groupInfo = document.getElementById('groupInfo');
+                    groupInfo.classList.remove('hidden');
+                    document.getElementById('groupName').textContent = currentGroup.name;
+                    document.getElementById('groupDescription').textContent = currentGroup.description || 'No description';
+                    
+                    // Update group members
+                    const groupMembersEl = document.getElementById('groupMembers');
+                    groupMembersEl.innerHTML = '';
+                    
+                    currentGroup.members.forEach(memberId => {
+                        const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                        const member = Object.values(users).find(u => u.peerId === memberId);
+                        
+                        if (member) {
+                            const memberEl = document.createElement('div');
+                            memberEl.className = 'group-member';
+                            
+                            const picEl = document.createElement('div');
+                            picEl.className = 'group-member-pic';
+                            picEl.textContent = member.profilePic || member.username.charAt(0).toUpperCase();
+                            
+                            const nameEl = document.createElement('span');
+                            nameEl.textContent = member.username;
+                            
+                            memberEl.appendChild(picEl);
+                            memberEl.appendChild(nameEl);
+                            groupMembersEl.appendChild(memberEl);
+                        }
+                    });
+                }
+            }
+            
+            function disconnectAndGoBack() {
+                try {
+                    if (conn) {
+                        conn.close();
+                        conn = null;
                     }
-                });
-                
-                conn.on('close', () => {
-                    document.getElementById('connectionStatus').textContent = 'Connection closed';
+                    
+                    currentPeer = null;
+                    currentGroup = null;
+                    chatContainer.classList.add('hidden');
                     inputArea.classList.add('hidden');
-                    showNotification(`Disconnected from ${remoteId}`, 'error');
-                });
+                    connectionPanel.classList.remove('hidden');
+                    
+                    // Clear chat
+                    chatContainer.innerHTML = '';
+                } catch (err) {
+                    console.error('Disconnection error:', err);
+                    showNotification('Error disconnecting: ' + err.message, 'error');
+                }
             }
             
             function sendMessage() {
                 const messageInput = document.getElementById('messageInput');
-                const message = messageInput.value.trim();
+                let message = messageInput.value.trim();
                 
-                if (message && conn && conn.open) {
-                    addMessage('sent', message);
-                    conn.send({ type: 'message', content: message });
-                    messageInput.value = '';
-                    
-                    // Save message to history
-                    saveMessage(conn.peer, message);
-                    
-                    // Reset typing indicator
-                    if (isTyping) {
-                        isTyping = false;
-                        if (conn.open) {
-                            conn.send({ type: 'typing', isTyping: false });
+                if (message && (conn?.open || currentGroup)) {
+                    try {
+                        // Apply formatting if any
+                        message = formatMessageContent(message);
+                        
+                        // Check for links and create preview if enabled
+                        const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                        const metadata = {};
+                        
+                        if (settings.autoPreviewLinks) {
+                            const links = extractLinks(message);
+                            if (links.length > 0) {
+                                metadata.links = links;
+                            }
                         }
+                        
+                        if (currentGroup) {
+                            // Send to group members
+                            sendGroupMessage(message, metadata);
+                        } else {
+                            // 1:1 chat
+                            addMessage('sent', message, metadata);
+                            conn.send({ 
+                                type: 'message', 
+                                content: message,
+                                metadata: metadata
+                            });
+                            
+                            // Save message to history
+                            saveMessage(conn.peer, message, false, metadata);
+                        }
+                        
+                        messageInput.value = '';
+                        
+                        // Reset typing indicator
+                        if (isTyping) {
+                            isTyping = false;
+                            if (conn?.open) {
+                                conn.send({ type: 'typing', isTyping: false });
+                            }
+                        }
+                    } catch (err) {
+                        console.error('Error sending message:', err);
+                        showNotification('Failed to send message', 'error');
                     }
                 }
             }
             
+            function formatMessageContent(message) {
+                // Replace markdown-style formatting with HTML
+                message = message
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // bold
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>') // italic
+                    .replace(/_(.*?)_/g, '<u>$1</u>') // underline
+                    .replace(/```(.*?)```/gs, '<code>$1</code>'); // code blocks
+                
+                // Auto-link URLs
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                message = message.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
+                
+                return message;
+            }
+            
+            function extractLinks(text) {
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                const matches = text.match(urlRegex);
+                return matches ? matches : [];
+            }
+            
+            function applyFormatting(format) {
+                const input = document.getElementById('messageInput');
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                const selectedText = input.value.substring(start, end);
+                let before = input.value.substring(0, start);
+                let after = input.value.substring(end);
+                
+                switch(format) {
+                    case 'bold':
+                        input.value = before + '**' + selectedText + '**' + after;
+                        break;
+                    case 'italic':
+                        input.value = before + '*' + selectedText + '*' + after;
+                        break;
+                    case 'underline':
+                        input.value = before + '_' + selectedText + '_' + after;
+                        break;
+                    case 'code':
+                        input.value = before + '```' + selectedText + '```' + after;
+                        break;
+                }
+                
+                // Set cursor position
+                const newPos = format === 'code' ? start + 3 : start + 1;
+                input.setSelectionRange(newPos, newPos + selectedText.length);
+                input.focus();
+            }
+            
             function handleFileUpload(event) {
                 const file = event.target.files[0];
-                if (!file || !conn || !conn.open) return;
+                if (!file || !(conn?.open || currentGroup)) return;
+                
+                // Validate file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    showNotification('File size exceeds 10MB limit', 'error');
+                    event.target.value = '';
+                    return;
+                }
                 
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const fileData = {
-                        type: 'file',
-                        name: file.name,
-                        size: file.size,
-                        mimeType: file.type,
-                        data: e.target.result
-                    };
-                    
-                    addFileMessage('sent', fileData);
-                    conn.send(fileData);
-                    
-                    // Save file to history
-                    saveMessage(conn.peer, fileData, true);
-                    
-                    // Clear file input
+                    try {
+                        const fileData = {
+                            type: 'file',
+                            name: file.name,
+                            size: file.size,
+                            mimeType: file.type,
+                            data: e.target.result
+                        };
+                        
+                        if (currentGroup) {
+                            // Send to group members
+                            sendGroupFile(fileData);
+                        } else {
+                            // 1:1 chat
+                            addFileMessage('sent', fileData);
+                            conn.send(fileData);
+                            
+                            // Save file to history
+                            saveMessage(conn.peer, fileData, true);
+                        }
+                        
+                        // Clear file input
+                        event.target.value = '';
+                    } catch (err) {
+                        console.error('Error handling file upload:', err);
+                        showNotification('Failed to send file', 'error');
+                    }
+                };
+                
+                reader.onerror = function() {
+                    showNotification('Error reading file', 'error');
                     event.target.value = '';
                 };
                 
-                if (file.type.startsWith('image/')) {
-                    reader.readAsDataURL(file);
-                } else {
-                    reader.readAsBinaryString(file);
-                }
+                reader.readAsDataURL(file);
             }
             
             function handleTyping() {
-                if (!isTyping && conn && conn.open) {
+                if (!isTyping && conn?.open) {
                     isTyping = true;
-                    conn.send({ type: 'typing', isTyping: true });
+                    try {
+                        conn.send({ type: 'typing', isTyping: true });
+                    } catch (err) {
+                        console.error('Error sending typing indicator:', err);
+                    }
                 }
                 
                 // Reset typing indicator after 2 seconds of inactivity
                 clearTimeout(typingTimeout);
                 typingTimeout = setTimeout(() => {
-                    if (isTyping && conn && conn.open) {
+                    if (isTyping && conn?.open) {
                         isTyping = false;
-                        conn.send({ type: 'typing', isTyping: false });
+                        try {
+                            conn.send({ type: 'typing', isTyping: false });
+                        } catch (err) {
+                            console.error('Error sending typing indicator:', err);
+                        }
                     }
                 }, 2000);
             }
@@ -1527,8 +1876,9 @@
                         const div = document.createElement('div');
                         div.id = 'typingIndicator';
                         div.className = 'typing-indicator';
-                        div.textContent = 'Typing...';
+                        div.innerHTML = '<span></span><span></span><span></span>';
                         chatContainer.appendChild(div);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
                     }
                 } else {
                     if (typingIndicator) {
@@ -1537,165 +1887,849 @@
                 }
             }
             
-            function addMessage(type, content) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${type}`;
-                
-                messageDiv.innerHTML = `
-                    <div>${content}</div>
-                    <div class="message-time">${new Date().toLocaleTimeString()}</div>
-                `;
-                
-                chatContainer.appendChild(messageDiv);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+            function addMessage(type, content, metadata = {}) {
+                try {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${type}`;
+                    messageDiv.dataset.id = `msg-${messageCounter++}`;
+                    messageDiv.dataset.content = typeof content === 'string' ? content : content.name;
+                    messageDiv.dataset.timestamp = new Date().toISOString();
+                    
+                    if (metadata.pinned) {
+                        messageDiv.classList.add('pinned-message');
+                    }
+                    
+                    const messageContent = document.createElement('div');
+                    messageContent.className = 'message-content';
+                    messageContent.innerHTML = content;
+                    
+                    const timeDiv = document.createElement('div');
+                    timeDiv.className = 'message-time';
+                    
+                    const timeSpan = document.createElement('span');
+                    timeSpan.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    timeDiv.appendChild(timeSpan);
+                    
+                    // Add read receipt for sent messages
+                    if (type === 'sent') {
+                        const readReceipt = document.createElement('div');
+                        readReceipt.className = 'read-receipt';
+                        readReceipt.innerHTML = '<i class="fas fa-check"></i>';
+                        readReceipt.title = 'Sent';
+                        timeDiv.appendChild(readReceipt);
+                    }
+                    
+                    // Add message actions (save, delete, etc.)
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.className = 'message-actions';
+                    
+                    const saveBtn = document.createElement('button');
+                    saveBtn.className = 'message-action-btn';
+                    saveBtn.innerHTML = '<i class="fas fa-save"></i>';
+                    saveBtn.title = 'Save message';
+                    saveBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        saveMessageToStorage(messageDiv.dataset.id, content);
+                    });
+                    
+                    const forwardBtn = document.createElement('button');
+                    forwardBtn.className = 'message-action-btn';
+                    forwardBtn.innerHTML = '<i class="fas fa-share"></i>';
+                    forwardBtn.title = 'Forward message';
+                    forwardBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        forwardMessage(messageDiv.dataset.id, content);
+                    });
+                    
+                    const pinBtn = document.createElement('button');
+                    pinBtn.className = 'message-action-btn';
+                    pinBtn.innerHTML = '<i class="fas fa-thumbtack"></i>';
+                    pinBtn.title = 'Pin message';
+                    pinBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        pinMessage(messageDiv.dataset.id);
+                    });
+                    
+                    const reactBtn = document.createElement('button');
+                    reactBtn.className = 'message-action-btn';
+                    reactBtn.innerHTML = '<i class="far fa-smile"></i>';
+                    reactBtn.title = 'React to message';
+                    reactBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showReactionPicker(messageDiv.dataset.id, e);
+                    });
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'message-action-btn';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                    deleteBtn.title = 'Delete message';
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteMessage(messageDiv.dataset.id);
+                    });
+                    
+                    actionsDiv.appendChild(saveBtn);
+                    actionsDiv.appendChild(forwardBtn);
+                    actionsDiv.appendChild(pinBtn);
+                    actionsDiv.appendChild(reactBtn);
+                    actionsDiv.appendChild(deleteBtn);
+                    
+                    // Add link previews if available
+                    if (metadata.links && metadata.links.length > 0) {
+                        metadata.links.forEach(link => {
+                            // For demo purposes, we'll just show the link
+                            // In a real app, you'd fetch metadata for the link
+                            const linkPreview = document.createElement('div');
+                            linkPreview.className = 'link-preview';
+                            
+                            const linkContent = document.createElement('div');
+                            linkContent.className = 'link-preview-content';
+                            
+                            const linkTitle = document.createElement('div');
+                            linkTitle.className = 'link-preview-title';
+                            linkTitle.textContent = 'Link Preview';
+                            
+                            const linkUrl = document.createElement('div');
+                            linkUrl.className = 'link-preview-url';
+                            linkUrl.textContent = link;
+                            
+                            linkContent.appendChild(linkTitle);
+                            linkContent.appendChild(linkUrl);
+                            linkPreview.appendChild(linkContent);
+                            
+                            messageContent.appendChild(linkPreview);
+                        });
+                    }
+                    
+                    // Add pinned label if message is pinned
+                    if (metadata.pinned) {
+                        const pinnedLabel = document.createElement('div');
+                        pinnedLabel.className = 'pinned-label';
+                        pinnedLabel.innerHTML = '<i class="fas fa-thumbtack"></i> Pinned message';
+                        messageDiv.insertBefore(pinnedLabel, messageContent);
+                    }
+                    
+                    messageDiv.appendChild(messageContent);
+                    messageDiv.appendChild(timeDiv);
+                    messageDiv.appendChild(actionsDiv);
+                    
+                    chatContainer.appendChild(messageDiv);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    
+                    // If this is a received message, send read receipt
+                    if (type === 'received' && conn?.open) {
+                        conn.send({ 
+                            type: 'read-receipt', 
+                            messageId: messageDiv.dataset.id 
+                        });
+                    }
+                } catch (err) {
+                    console.error('Error adding message:', err);
+                }
             }
             
             function addFileMessage(type, fileData) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${type}`;
-                
-                if (fileData.mimeType.startsWith('image/')) {
-                    messageDiv.innerHTML = `
-                        <img src="${fileData.data}" class="media-preview" alt="${fileData.name}" onclick="showFullscreenImage('${fileData.data}')">
-                        <div class="message-time">${new Date().toLocaleTimeString()}</div>
-                    `;
-                } else {
-                    messageDiv.innerHTML = `
-                        <div class="document" onclick="downloadFile('${fileData.name}', '${fileData.data}')">
-                            <div class="document-icon">📄</div>
-                            <div>
-                                <div>${fileData.name}</div>
-                                <div style="font-size: 12px; color: var(--text-light);">${formatFileSize(fileData.size)} • ${fileData.mimeType}</div>
-                            </div>
-                        </div>
-                        <div class="message-time">${new Date().toLocaleTimeString()}</div>
-                    `;
+                try {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${type}`;
+                    messageDiv.dataset.id = `msg-${messageCounter++}`;
+                    messageDiv.dataset.content = fileData.name;
+                    messageDiv.dataset.timestamp = new Date().toISOString();
+                    
+                    // Add message actions (save, delete, etc.)
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.className = 'message-actions';
+                    
+                    const saveBtn = document.createElement('button');
+                    saveBtn.className = 'message-action-btn';
+                    saveBtn.innerHTML = '<i class="fas fa-save"></i>';
+                    saveBtn.title = 'Save file';
+                    saveBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        saveFileToStorage(fileData);
+                    });
+                    
+                    const forwardBtn = document.createElement('button');
+                    forwardBtn.className = 'message-action-btn';
+                    forwardBtn.innerHTML = '<i class="fas fa-share"></i>';
+                    forwardBtn.title = 'Forward file';
+                    forwardBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        forwardMessage(messageDiv.dataset.id, fileData);
+                    });
+                    
+                    const pinBtn = document.createElement('button');
+                    pinBtn.className = 'message-action-btn';
+                    pinBtn.innerHTML = '<i class="fas fa-thumbtack"></i>';
+                    pinBtn.title = 'Pin message';
+                    pinBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        pinMessage(messageDiv.dataset.id);
+                    });
+                    
+                    const reactBtn = document.createElement('button');
+                    reactBtn.className = 'message-action-btn';
+                    reactBtn.innerHTML = '<i class="far fa-smile"></i>';
+                    reactBtn.title = 'React to message';
+                    reactBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showReactionPicker(messageDiv.dataset.id, e);
+                    });
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'message-action-btn';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                    deleteBtn.title = 'Delete message';
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteMessage(messageDiv.dataset.id);
+                    });
+                    
+                    actionsDiv.appendChild(saveBtn);
+                    actionsDiv.appendChild(forwardBtn);
+                    actionsDiv.appendChild(pinBtn);
+                    actionsDiv.appendChild(reactBtn);
+                    actionsDiv.appendChild(deleteBtn);
+                    
+                    if (fileData.mimeType.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.src = fileData.data;
+                        img.alt = fileData.name;
+                        img.className = 'media-preview';
+                        img.addEventListener('click', () => showFullscreenImage(fileData.data, fileData.name));
+                        
+                        const timeDiv = document.createElement('div');
+                        timeDiv.className = 'message-time';
+                        
+                        const timeSpan = document.createElement('span');
+                        timeSpan.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        timeDiv.appendChild(timeSpan);
+                        
+                        // Add read receipt for sent messages
+                        if (type === 'sent') {
+                            const readReceipt = document.createElement('div');
+                            readReceipt.className = 'read-receipt';
+                            readReceipt.innerHTML = '<i class="fas fa-check"></i>';
+                            readReceipt.title = 'Sent';
+                            timeDiv.appendChild(readReceipt);
+                        }
+                        
+                        messageDiv.appendChild(img);
+                        messageDiv.appendChild(timeDiv);
+                        messageDiv.appendChild(actionsDiv);
+                    } else {
+                        const docDiv = document.createElement('div');
+                        docDiv.className = 'document';
+                        docDiv.addEventListener('click', () => downloadFile(fileData.name, fileData.data));
+                        
+                        const iconDiv = document.createElement('div');
+                        iconDiv.className = 'document-icon';
+                        iconDiv.textContent = '📄';
+                        
+                        const contentDiv = document.createElement('div');
+                        
+                        const nameDiv = document.createElement('div');
+                        nameDiv.textContent = fileData.name;
+                        
+                        const metaDiv = document.createElement('div');
+                        metaDiv.style.fontSize = '12px';
+                        metaDiv.style.color = 'var(--text-light)';
+                        metaDiv.textContent = `${formatFileSize(fileData.size)} • ${fileData.mimeType}`;
+                        
+                        contentDiv.appendChild(nameDiv);
+                        contentDiv.appendChild(metaDiv);
+                        
+                        docDiv.appendChild(iconDiv);
+                        docDiv.appendChild(contentDiv);
+                        
+                        const timeDiv = document.createElement('div');
+                        timeDiv.className = 'message-time';
+                        
+                        const timeSpan = document.createElement('span');
+                        timeSpan.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        timeDiv.appendChild(timeSpan);
+                        
+                        // Add read receipt for sent messages
+                        if (type === 'sent') {
+                            const readReceipt = document.createElement('div');
+                            readReceipt.className = 'read-receipt';
+                            readReceipt.innerHTML = '<i class="fas fa-check"></i>';
+                            readReceipt.title = 'Sent';
+                            timeDiv.appendChild(readReceipt);
+                        }
+                        
+                        messageDiv.appendChild(docDiv);
+                        messageDiv.appendChild(timeDiv);
+                        messageDiv.appendChild(actionsDiv);
+                    }
+                    
+                    chatContainer.appendChild(messageDiv);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    
+                    // If this is a received message, send read receipt
+                    if (type === 'received' && conn?.open) {
+                        conn.send({ 
+                            type: 'read-receipt', 
+                            messageId: messageDiv.dataset.id 
+                        });
+                    }
+                } catch (err) {
+                    console.error('Error adding file message:', err);
+                    showNotification('Failed to display file', 'error');
                 }
-                
-                chatContainer.appendChild(messageDiv);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            function addForwardedMessage(type, content, originalSender) {
+                try {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${type}`;
+                    messageDiv.dataset.id = `msg-${messageCounter++}`;
+                    messageDiv.dataset.content = typeof content === 'string' ? content : content.name;
+                    messageDiv.dataset.timestamp = new Date().toISOString();
+                    
+                    const forwardLabel = document.createElement('div');
+                    forwardLabel.className = 'forward-label';
+                    forwardLabel.textContent = `Forwarded from ${originalSender}`;
+                    forwardLabel.style.fontSize = '12px';
+                    forwardLabel.style.color = 'var(--text-light)';
+                    forwardLabel.style.marginBottom = '5px';
+                    
+                    const messageContent = document.createElement('div');
+                    messageContent.className = 'message-content';
+                    
+                    if (typeof content === 'string') {
+                        messageContent.innerHTML = content;
+                    } else {
+                        // Handle forwarded files
+                        if (content.mimeType.startsWith('image/')) {
+                            const img = document.createElement('img');
+                            img.src = content.data;
+                            img.alt = content.name;
+                            img.className = 'media-preview';
+                            img.addEventListener('click', () => showFullscreenImage(content.data, content.name));
+                            messageContent.appendChild(img);
+                        } else {
+                            const docDiv = document.createElement('div');
+                            docDiv.className = 'document';
+                            docDiv.addEventListener('click', () => downloadFile(content.name, content.data));
+                            
+                            const iconDiv = document.createElement('div');
+                            iconDiv.className = 'document-icon';
+                            iconDiv.textContent = '📄';
+                            
+                            const contentDiv = document.createElement('div');
+                            
+                            const nameDiv = document.createElement('div');
+                            nameDiv.textContent = content.name;
+                            
+                            const metaDiv = document.createElement('div');
+                            metaDiv.style.fontSize = '12px';
+                            metaDiv.style.color = 'var(--text-light)';
+                            metaDiv.textContent = `${formatFileSize(content.size)} • ${content.mimeType}`;
+                            
+                            contentDiv.appendChild(nameDiv);
+                            contentDiv.appendChild(metaDiv);
+                            
+                            docDiv.appendChild(iconDiv);
+                            docDiv.appendChild(contentDiv);
+                            messageContent.appendChild(docDiv);
+                        }
+                    }
+                    
+                    const timeDiv = document.createElement('div');
+                    timeDiv.className = 'message-time';
+                    timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    messageDiv.appendChild(forwardLabel);
+                    messageDiv.appendChild(messageContent);
+                    messageDiv.appendChild(timeDiv);
+                    
+                    chatContainer.appendChild(messageDiv);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                } catch (err) {
+                    console.error('Error adding forwarded message:', err);
+                }
+            }
+            
+            function addReactionToMessage(messageId, reaction) {
+                try {
+                    const messageDiv = document.querySelector(`.message[data-id="${messageId}"]`);
+                    if (!messageDiv) return;
+                    
+                    // Find or create reactions container
+                    let reactionsDiv = messageDiv.querySelector('.message-reactions');
+                    if (!reactionsDiv) {
+                        reactionsDiv = document.createElement('div');
+                        reactionsDiv.className = 'message-reactions';
+                        messageDiv.appendChild(reactionsDiv);
+                    }
+                    
+                    // Check if this reaction already exists
+                    const existingReaction = reactionsDiv.querySelector(`.reaction[data-reaction="${reaction}"]`);
+                    
+                    if (existingReaction) {
+                        // Increment count
+                        const countEl = existingReaction.querySelector('.reaction-count');
+                        const count = parseInt(countEl.textContent) + 1;
+                        countEl.textContent = count;
+                    } else {
+                        // Add new reaction
+                        const reactionEl = document.createElement('div');
+                        reactionEl.className = 'reaction';
+                        reactionEl.dataset.reaction = reaction;
+                        
+                        const emojiEl = document.createElement('span');
+                        emojiEl.textContent = reaction;
+                        
+                        const countEl = document.createElement('span');
+                        countEl.className = 'reaction-count';
+                        countEl.textContent = '1';
+                        
+                        reactionEl.appendChild(emojiEl);
+                        reactionEl.appendChild(countEl);
+                        reactionsDiv.appendChild(reactionEl);
+                        
+                        // Make reaction clickable to add/remove
+                        reactionEl.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            reactToMessage(messageId, reaction);
+                        });
+                    }
+                } catch (err) {
+                    console.error('Error adding reaction:', err);
+                }
+            }
+            
+            function showReactionPicker(messageId, event) {
+                try {
+                    // Remove any existing reaction picker
+                    const existingPicker = document.querySelector('.reaction-picker');
+                    if (existingPicker) existingPicker.remove();
+                    
+                    pendingReactionMessageId = messageId;
+                    
+                    const picker = document.createElement('div');
+                    picker.className = 'reaction-picker';
+                    picker.style.left = `${event.clientX}px`;
+                    picker.style.top = `${event.clientY}px`;
+                    
+                    const emojis = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
+                    emojis.forEach(emoji => {
+                        const emojiEl = document.createElement('span');
+                        emojiEl.className = 'reaction-emoji';
+                        emojiEl.textContent = emoji;
+                        emojiEl.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            reactToMessage(messageId, emoji);
+                            picker.remove();
+                        });
+                        picker.appendChild(emojiEl);
+                    });
+                    
+                    document.body.appendChild(picker);
+                } catch (err) {
+                    console.error('Error showing reaction picker:', err);
+                }
+            }
+            
+            function reactToMessage(messageId, reaction) {
+                try {
+                    if (currentGroup) {
+                        // In group chat, send reaction to all members
+                        sendGroupReaction(messageId, reaction);
+                    } else if (conn?.open) {
+                        // In 1:1 chat, send reaction to peer
+                        conn.send({ 
+                            type: 'reaction',
+                            messageId: messageId,
+                            reaction: reaction
+                        });
+                    }
+                    
+                    // Add reaction locally
+                    addReactionToMessage(messageId, reaction);
+                } catch (err) {
+                    console.error('Error reacting to message:', err);
+                }
+            }
+            
+            function pinMessage(messageId) {
+                try {
+                    const messageDiv = document.querySelector(`.message[data-id="${messageId}"]`);
+                    if (!messageDiv) return;
+                    
+                    const isPinned = messageDiv.classList.contains('pinned-message');
+                    
+                    if (currentGroup) {
+                        // In group chat, send pin status to all members
+                        sendGroupPin(messageId, !isPinned);
+                    } else if (conn?.open) {
+                        // In 1:1 chat, send pin status to peer
+                        conn.send({ 
+                            type: 'pinned',
+                            messageId: messageId,
+                            pinned: !isPinned
+                        });
+                    }
+                    
+                    // Update pin status locally
+                    updatePinnedMessage(messageId, !isPinned);
+                } catch (err) {
+                    console.error('Error pinning message:', err);
+                }
+            }
+            
+            function updatePinnedMessage(messageId, pinned) {
+                try {
+                    const messageDiv = document.querySelector(`.message[data-id="${messageId}"]`);
+                    if (!messageDiv) return;
+                    
+                    if (pinned) {
+                        messageDiv.classList.add('pinned-message');
+                        
+                        // Add pinned label if not already present
+                        if (!messageDiv.querySelector('.pinned-label')) {
+                            const pinnedLabel = document.createElement('div');
+                            pinnedLabel.className = 'pinned-label';
+                            pinnedLabel.innerHTML = '<i class="fas fa-thumbtack"></i> Pinned message';
+                            messageDiv.insertBefore(pinnedLabel, messageDiv.firstChild);
+                        }
+                    } else {
+                        messageDiv.classList.remove('pinned-message');
+                        const pinnedLabel = messageDiv.querySelector('.pinned-label');
+                        if (pinnedLabel) pinnedLabel.remove();
+                    }
+                } catch (err) {
+                    console.error('Error updating pinned message:', err);
+                }
+            }
+            
+            function updateReadReceipt(messageId) {
+                try {
+                    const messageDiv = document.querySelector(`.message[data-id="${messageId}"]`);
+                    if (!messageDiv || !messageDiv.classList.contains('sent')) return;
+                    
+                    const readReceipt = messageDiv.querySelector('.read-receipt');
+                    if (readReceipt) {
+                        readReceipt.innerHTML = '<i class="fas fa-check-double"></i>';
+                        readReceipt.title = 'Read';
+                    }
+                } catch (err) {
+                    console.error('Error updating read receipt:', err);
+                }
+            }
+            
+            function forwardMessage(messageId, content) {
+                try {
+                    // In a real app, you would show a UI to select recipients
+                    // For this demo, we'll just forward to the current chat if it's a different user
+                    
+                    if (currentGroup) {
+                        // Forward to group
+                        const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                        const originalSender = users[currentUser.username]?.username || 'You';
+                        
+                        sendGroupForward(content, originalSender);
+                        showNotification('Message forwarded to group', 'success');
+                    } else if (conn?.open) {
+                        // Forward to current peer
+                        const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                        const originalSender = users[currentUser.username]?.username || 'You';
+                        
+                        conn.send({
+                            type: 'forward',
+                            content: content,
+                            originalSender: originalSender
+                        });
+                        
+                        addForwardedMessage('sent', content, originalSender);
+                        showNotification('Message forwarded', 'success');
+                    }
+                } catch (err) {
+                    console.error('Error forwarding message:', err);
+                    showNotification('Failed to forward message', 'error');
+                }
             }
             
             function showUserSuggestions() {
-                const searchTerm = remoteIdInput.value.toLowerCase();
-                if (!searchTerm) {
-                    userSuggestions.classList.add('hidden');
-                    return;
-                }
-                
-                const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
-                const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
-                
-                userSuggestions.innerHTML = '';
-                
-                // Add previous connections first
-                connections.forEach(peerId => {
-                    const user = Object.values(users).find(u => u.peerId === peerId);
-                    if (user && (peerId.includes(searchTerm) || user.username.toLowerCase().includes(searchTerm))) {
-                        const div = document.createElement('div');
-                        div.className = 'suggestion-item';
-                        div.textContent = `${user.username} (${peerId})`;
-                        div.addEventListener('click', () => {
-                            remoteIdInput.value = peerId;
-                            userSuggestions.classList.add('hidden');
-                        });
-                        userSuggestions.appendChild(div);
+                try {
+                    const searchTerm = remoteIdInput.value.toLowerCase();
+                    if (!searchTerm) {
+                        userSuggestions.classList.add('hidden');
+                        return;
                     }
-                });
-                
-                // Add other users
-                Object.entries(users).forEach(([username, user]) => {
-                    if (user.peerId !== currentUser.peerId && 
-                        !connections.includes(user.peerId) &&
-                        (user.peerId.includes(searchTerm) || username.toLowerCase().includes(searchTerm))) {
-                        const div = document.createElement('div');
-                        div.className = 'suggestion-item';
-                        div.textContent = `${username} (${user.peerId})`;
-                        div.addEventListener('click', () => {
-                            remoteIdInput.value = user.peerId;
-                            userSuggestions.classList.add('hidden');
-                        });
-                        userSuggestions.appendChild(div);
+                    
+                    const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                    const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
+                    
+                    userSuggestions.innerHTML = '';
+                    
+                    // Add previous connections first
+                    connections.forEach(peerId => {
+                        const user = Object.values(users).find(u => u.peerId === peerId);
+                        if (user && (peerId.includes(searchTerm) || user.username.toLowerCase().includes(searchTerm))) {
+                            const div = document.createElement('div');
+                            div.className = 'suggestion-item';
+                            div.textContent = `${user.username} (${peerId})`;
+                            div.addEventListener('click', () => {
+                                remoteIdInput.value = peerId;
+                                userSuggestions.classList.add('hidden');
+                            });
+                            userSuggestions.appendChild(div);
+                        }
+                    });
+                    
+                    // Add other users
+                    Object.entries(users).forEach(([username, user]) => {
+                        if (user.peerId !== currentUser.peerId && 
+                            !connections.includes(user.peerId) &&
+                            (user.peerId.includes(searchTerm) || username.toLowerCase().includes(searchTerm))) {
+                            const div = document.createElement('div');
+                            div.className = 'suggestion-item';
+                            div.textContent = `${username} (${user.peerId})`;
+                            div.addEventListener('click', () => {
+                                remoteIdInput.value = user.peerId;
+                                userSuggestions.classList.add('hidden');
+                            });
+                            userSuggestions.appendChild(div);
+                        }
+                    });
+                    
+                    if (userSuggestions.children.length > 0) {
+                        userSuggestions.classList.remove('hidden');
+                    } else {
+                        userSuggestions.classList.add('hidden');
                     }
-                });
-                
-                if (userSuggestions.children.length > 0) {
-                    userSuggestions.classList.remove('hidden');
-                } else {
-                    userSuggestions.classList.add('hidden');
+                } catch (err) {
+                    console.error('Error showing user suggestions:', err);
                 }
             }
             
             function saveConnection(peerId) {
-                const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
-                if (!connections.includes(peerId)) {
-                    connections.push(peerId);
-                    localStorage.setItem('p2pChatConnections', JSON.stringify(connections));
-                    loadRecentConnections();
+                try {
+                    const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
+                    if (!connections.includes(peerId)) {
+                        connections.push(peerId);
+                        localStorage.setItem('p2pChatConnections', JSON.stringify(connections));
+                        loadRecentConnections();
+                        
+                        // Also save for the remote peer
+                        const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                        const remoteUser = Object.values(users).find(u => u.peerId === peerId);
+                        if (remoteUser) {
+                            const remoteConnections = [...new Set([...connections, currentUser.peerId])];
+                            localStorage.setItem('p2pChatConnections', JSON.stringify(remoteConnections));
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error saving connection:', err);
                 }
             }
             
-            function saveMessage(peerId, content, isFile = false) {
-                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
-                if (!settings.saveHistory) return;
-                
-                const chatKey = `chat_${currentUser.peerId}_${peerId}`;
-                const messages = JSON.parse(localStorage.getItem(chatKey)) || [];
-                
-                messages.push({
-                    type: isFile ? 'file' : 'message',
-                    content,
-                    timestamp: new Date().toISOString(),
-                    direction: 'outgoing'
-                });
-                
-                localStorage.setItem(chatKey, JSON.stringify(messages));
+            function saveMessage(peerId, content, isFile = false, metadata = {}) {
+                try {
+                    const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                    if (!settings.saveHistory) return;
+                    
+                    const chatKey = `chat_${currentUser.peerId}_${peerId}`;
+                    const messages = JSON.parse(localStorage.getItem(chatKey)) || [];
+                    
+                    messages.push({
+                        type: isFile ? 'file' : 'message',
+                        content,
+                        metadata,
+                        timestamp: new Date().toISOString(),
+                        direction: 'outgoing'
+                    });
+                    
+                    localStorage.setItem(chatKey, JSON.stringify(messages));
+                } catch (err) {
+                    console.error('Error saving message:', err);
+                }
             }
             
             function loadChatHistory(peerId) {
-                const chatKey = `chat_${currentUser.peerId}_${peerId}`;
-                const messages = JSON.parse(localStorage.getItem(chatKey)) || [];
-                
-                // Clear current chat
-                chatContainer.innerHTML = '';
-                
-                // Add all messages
-                messages.forEach(msg => {
-                    if (msg.type === 'message') {
-                        addMessage(msg.direction === 'outgoing' ? 'sent' : 'received', msg.content);
-                    } else if (msg.type === 'file') {
-                        addFileMessage(msg.direction === 'outgoing' ? 'sent' : 'received', msg.content);
-                    }
-                });
+                try {
+                    const chatKey = `chat_${currentUser.peerId}_${peerId}`;
+                    const messages = JSON.parse(localStorage.getItem(chatKey)) || [];
+                    
+                    // Clear current chat
+                    chatContainer.innerHTML = '';
+                    
+                    // Add all messages
+                    messages.forEach(msg => {
+                        if (msg.type === 'message') {
+                            addMessage(msg.direction === 'outgoing' ? 'sent' : 'received', msg.content, msg.metadata);
+                        } else if (msg.type === 'file') {
+                            addFileMessage(msg.direction === 'outgoing' ? 'sent' : 'received', msg.content);
+                        }
+                    });
+                } catch (err) {
+                    console.error('Error loading chat history:', err);
+                    showNotification('Failed to load chat history', 'error');
+                }
             }
             
             function loadRecentConnections() {
-                const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
-                const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
-                const recentConnections = document.getElementById('recentConnections');
+                try {
+                    const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
+                    const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                    const recentConnectionsEl = document.getElementById('recentConnections');
+                    
+                    recentConnectionsEl.innerHTML = '';
+                    
+                    connections.forEach(peerId => {
+                        const user = Object.values(users).find(u => u.peerId === peerId);
+                        if (user) {
+                            const connectionItem = document.createElement('div');
+                            connectionItem.className = 'recent-connection';
+                            connectionItem.dataset.peerId = peerId;
+                            
+                            // Profile pic
+                            const profilePic = document.createElement('div');
+                            profilePic.className = 'profile-pic';
+                            profilePic.textContent = user.profilePic || user.username.charAt(0).toUpperCase();
+                            
+                            // Connection info
+                            const connectionInfo = document.createElement('div');
+                            connectionInfo.className = 'connection-info';
+                            
+                            const usernameDiv = document.createElement('div');
+                            usernameDiv.className = 'username';
+                            usernameDiv.textContent = user.username;
+                            
+                            const peerIdDiv = document.createElement('div');
+                            peerIdDiv.className = 'peer-id';
+                            peerIdDiv.textContent = peerId;
+                            
+                            const lastSeenDiv = document.createElement('div');
+                            lastSeenDiv.className = 'last-seen';
+                            lastSeenDiv.textContent = formatLastSeen(user.lastSeen);
+                            
+                            connectionInfo.appendChild(usernameDiv);
+                            connectionInfo.appendChild(peerIdDiv);
+                            connectionInfo.appendChild(lastSeenDiv);
+                            
+                            // Status indicator
+                            const statusIndicator = document.createElement('div');
+                            statusIndicator.className = 'connection-status';
+                            statusIndicator.classList.add(isUserOnline(user) ? 'online' : 'offline');
+                            
+                            // Connection actions
+                            const connectionActions = document.createElement('div');
+                            connectionActions.className = 'connection-actions';
+                            
+                            const connectBtn = document.createElement('button');
+                            connectBtn.className = 'connection-action-btn';
+                            connectBtn.innerHTML = '<i class="fas fa-link"></i>';
+                            connectBtn.title = 'Connect to this user';
+                            connectBtn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                remoteIdInput.value = peerId;
+                                connectToPeer();
+                            });
+                            
+                            const removeBtn = document.createElement('button');
+                            removeBtn.className = 'connection-action-btn';
+                            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                            removeBtn.title = 'Remove from recent connections';
+                            removeBtn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                removeRecentConnection(peerId);
+                            });
+                            
+                            connectionActions.appendChild(connectBtn);
+                            connectionActions.appendChild(removeBtn);
+                            
+                            connectionItem.appendChild(profilePic);
+                            connectionItem.appendChild(connectionInfo);
+                            connectionItem.appendChild(statusIndicator);
+                            connectionItem.appendChild(connectionActions);
+                            
+                            // Click to connect
+                            connectionItem.addEventListener('click', () => {
+                                remoteIdInput.value = peerId;
+                                connectToPeer();
+                            });
+                            
+                            recentConnectionsEl.appendChild(connectionItem);
+                        }
+                    });
+                } catch (err) {
+                    console.error('Error loading recent connections:', err);
+                }
+            }
+            
+            function isUserOnline(user) {
+                if (!user || !user.lastSeen) return false;
+                try {
+                    const lastSeen = new Date(user.lastSeen);
+                    const now = new Date();
+                    return (now - lastSeen) < 5 * 60 * 1000; // 5 minutes
+                } catch (err) {
+                    console.error('Error checking user online status:', err);
+                    return false;
+                }
+            }
+            
+            function formatLastSeen(lastSeen) {
+                if (!lastSeen) return 'Never seen';
                 
-                recentConnections.innerHTML = '';
-                
-                connections.forEach(peerId => {
-                    const user = Object.values(users).find(u => u.peerId === peerId);
-                    if (user) {
-                        const div = document.createElement('div');
-                        div.className = 'suggestion-item';
-                        div.textContent = `${user.username} (${peerId})`;
-                        div.addEventListener('click', () => {
-                            remoteIdInput.value = peerId;
-                            userSuggestions.classList.add('hidden');
-                        });
-                        recentConnections.appendChild(div);
+                try {
+                    const date = new Date(lastSeen);
+                    const now = new Date();
+                    const diffMs = now - date;
+                    const diffMins = Math.floor(diffMs / 60000);
+                    const diffHours = Math.floor(diffMs / 3600000);
+                    const diffDays = Math.floor(diffMs / 86400000);
+                    
+                    if (diffMins < 1) {
+                        return 'Online now';
+                    } else if (diffMins < 60) {
+                        return `Last seen ${diffMins} min ago`;
+                    } else if (diffHours < 24) {
+                        return `Last seen ${diffHours} hours ago`;
+                    } else if (diffDays === 1) {
+                        return 'Last seen yesterday';
+                    } else {
+                        return `Last seen ${diffDays} days ago`;
                     }
-                });
+                } catch (err) {
+                    console.error('Error formatting last seen:', err);
+                    return 'Unknown';
+                }
+            }
+            
+            function removeRecentConnection(peerId) {
+                try {
+                    const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
+                    const updatedConnections = connections.filter(id => id !== peerId);
+                    localStorage.setItem('p2pChatConnections', JSON.stringify(updatedConnections));
+                    loadRecentConnections();
+                    showNotification('Connection removed from recent list', 'info');
+                } catch (err) {
+                    console.error('Error removing recent connection:', err);
+                    showNotification('Failed to remove connection', 'error');
+                }
             }
             
             function updateUserLastSeen() {
-                const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
-                if (users[currentUser.username]) {
-                    users[currentUser.username].lastSeen = new Date().toISOString();
-                    localStorage.setItem('p2pChatUsers', JSON.stringify(users));
+                try {
+                    const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                    if (users[currentUser.username]) {
+                        users[currentUser.username].lastSeen = new Date().toISOString();
+                        localStorage.setItem('p2pChatUsers', JSON.stringify(users));
+                    }
+                } catch (err) {
+                    console.error('Error updating last seen:', err);
+                }
+            }
+            
+            function updateUserActivity() {
+                // Update last seen every 30 seconds of activity
+                if (Date.now() - lastActivityTime > 30000) {
+                    updateUserLastSeen();
+                    lastActivityTime = Date.now();
                 }
             }
             
@@ -1706,6 +2740,15 @@
                 
                 document.getElementById('profileName').textContent = currentUser.username;
                 document.getElementById('profilePic').textContent = currentUser.profilePic;
+                
+                // Add online status indicator to profile name
+                const profileName = document.getElementById('profileName');
+                if (!profileName.querySelector('.status-indicator')) {
+                    const statusIndicator = document.createElement('span');
+                    statusIndicator.className = 'status-indicator';
+                    statusIndicator.title = 'Online';
+                    profileName.appendChild(statusIndicator);
+                }
             }
             
             function switchTab(tab) {
@@ -1722,76 +2765,61 @@
                 }
             }
             
-            function toggleEmojiPicker() {
-                emojiPicker.classList.toggle('show');
-            }
-            
-            function insertEmoji(emoji) {
-                const input = document.getElementById('messageInput');
-                input.value += emoji;
-                input.focus();
-                emojiPicker.classList.remove('show');
-            }
-            
             function showNotification(message, type = 'info') {
-                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
-                if (!settings.notifications) return;
-                
-                notificationText.textContent = message;
-                
-                // Reset all classes
-                notification.className = 'notification';
-                
-                // Add appropriate class based on type
-                if (type) {
-                    notification.classList.add(type);
+                try {
+                    const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                    if (!settings.notifications) return;
+                    
+                    notificationText.textContent = message;
+                    
+                    // Reset all classes
+                    notification.className = 'notification';
+                    
+                    // Add appropriate class based on type
+                    if (type) {
+                        notification.classList.add(type);
+                    }
+                    
+                    notification.classList.remove('hidden');
+                    
+                    if (settings.sounds) {
+                        playSound('notification');
+                    }
+                    
+                    // Auto-hide after 5 seconds
+                    setTimeout(() => {
+                        notification.classList.add('hidden');
+                    }, 5000);
+                } catch (err) {
+                    console.error('Error showing notification:', err);
                 }
-                
-                notification.classList.remove('hidden');
-                
-                if (settings.sounds) {
-                    playSound('notification');
-                }
-                
-                // Auto-hide after 5 seconds
-                setTimeout(() => {
-                    notification.classList.add('hidden');
-                }, 5000);
             }
             
             function playSound(type) {
-                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
-                if (!settings.sounds) return;
-                
-                let sound;
-                switch(type) {
-                    case 'message':
-                        sound = document.getElementById('messageSound');
-                        break;
-                    case 'connection':
-                        sound = document.getElementById('connectionSound');
-                        break;
-                    case 'notification':
-                        sound = document.getElementById('notificationSound');
-                        // Update sound source based on settings
-                        switch(settings.soundType) {
-                            case 'chime':
-                                sound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3';
-                                break;
-                            case 'ding':
-                                sound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3';
-                                break;
-                            case 'pop':
-                                sound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.mp3';
-                                break;
-                        }
-                        break;
-                    default:
-                        return;
+                try {
+                    const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                    if (!settings.sounds) return;
+                    
+                    let sound;
+                    switch(type) {
+                        case 'message':
+                            sound = document.getElementById('messageSound');
+                            break;
+                        case 'connection':
+                            sound = document.getElementById('connectionSound');
+                            break;
+                        case 'notification':
+                            sound = document.getElementById('notificationSound');
+                            break;
+                        default:
+                            return;
+                    }
+                    
+                    sound.currentTime = 0;
+                    sound.play().catch(e => console.log('Audio play failed:', e));
+                } catch (err) {
+                    console.error('Error playing sound:', err);
                 }
-                
-                sound.currentTime = 0;
-                sound.play().catch(e => console.log('Audio play failed:', e));
             }
             
             function toggleSettingsPanel() {
@@ -1800,255 +2828,329 @@
             }
             
             function loadSettings() {
-                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
-                
-                // Apply theme
-                document.getElementById('themeSelect').value = settings.theme;
-                updateTheme();
-                
-                // Highlight active theme option
-                document.querySelectorAll('.theme-option').forEach(option => {
-                    option.classList.toggle('active', option.dataset.theme === settings.theme);
-                });
-                
-                // Apply other settings
-                document.getElementById('densitySelect').value = settings.density;
-                document.getElementById('notificationsToggle').checked = settings.notifications;
-                document.getElementById('soundToggle').checked = settings.sounds;
-                document.getElementById('soundSelect').value = settings.soundType;
-                document.getElementById('typingIndicatorToggle').checked = settings.typingIndicator;
-                document.getElementById('readReceiptsToggle').checked = settings.readReceipts;
-                document.getElementById('saveHistoryToggle').checked = settings.saveHistory;
-            }
-            
-            function updateTheme() {
-                const theme = document.getElementById('themeSelect').value;
-                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
-                settings.theme = theme;
-                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
-                
-                // Update theme-option active states
-                document.querySelectorAll('.theme-option').forEach(option => {
-                    option.classList.toggle('active', option.dataset.theme === theme);
-                });
-                
-                // Apply theme to body
-                if (theme === 'system') {
-                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                        document.body.setAttribute('data-theme', 'dark');
-                    } else {
-                        document.body.removeAttribute('data-theme');
-                    }
-                } else {
-                    document.body.setAttribute('data-theme', theme);
+                try {
+                    const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                    
+                    // Apply settings
+                    document.getElementById('notificationsToggle').checked = settings.notifications;
+                    document.getElementById('soundToggle').checked = settings.sounds;
+                    document.getElementById('saveHistoryToggle').checked = settings.saveHistory;
+                    document.getElementById('autoPreviewLinksToggle').checked = settings.autoPreviewLinks;
+                } catch (err) {
+                    console.error('Error loading settings:', err);
                 }
             }
             
-            function updateDensity() {
-                const density = document.getElementById('densitySelect').value;
-                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
-                settings.density = density;
-                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
-                
-                // Apply density changes
-                const messages = document.querySelectorAll('.message');
-                messages.forEach(msg => {
-                    msg.style.padding = density === 'compact' ? '5px 8px' : 
-                                      density === 'comfortable' ? '12px 16px' : '8px 12px';
-                    msg.style.marginBottom = density === 'compact' ? '5px' : 
-                                           density === 'comfortable' ? '15px' : '10px';
-                });
-            }
-            
             function toggleNotifications() {
-                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
-                settings.notifications = document.getElementById('notificationsToggle').checked;
-                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+                try {
+                    const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                    settings.notifications = document.getElementById('notificationsToggle').checked;
+                    localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+                } catch (err) {
+                    console.error('Error toggling notifications:', err);
+                }
             }
             
             function toggleSounds() {
-                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
-                settings.sounds = document.getElementById('soundToggle').checked;
-                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
-            }
-            
-            function updateSound() {
-                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
-                settings.soundType = document.getElementById('soundSelect').value;
-                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
-            }
-            
-            function testSound() {
-                playSound('notification');
-            }
-            
-            function toggleTypingIndicator() {
-                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
-                settings.typingIndicator = document.getElementById('typingIndicatorToggle').checked;
-                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
-            }
-            
-            function toggleReadReceipts() {
-                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
-                settings.readReceipts = document.getElementById('readReceiptsToggle').checked;
-                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+                try {
+                    const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                    settings.sounds = document.getElementById('soundToggle').checked;
+                    localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+                } catch (err) {
+                    console.error('Error toggling sounds:', err);
+                }
             }
             
             function toggleSaveHistory() {
-                const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
-                settings.saveHistory = document.getElementById('saveHistoryToggle').checked;
-                localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+                try {
+                    const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                    settings.saveHistory = document.getElementById('saveHistoryToggle').checked;
+                    localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+                } catch (err) {
+                    console.error('Error toggling save history:', err);
+                }
+            }
+            
+            function toggleAutoPreviewLinks() {
+                try {
+                    const settings = JSON.parse(localStorage.getItem('p2pChatSettings'));
+                    settings.autoPreviewLinks = document.getElementById('autoPreviewLinksToggle').checked;
+                    localStorage.setItem('p2pChatSettings', JSON.stringify(settings));
+                } catch (err) {
+                    console.error('Error toggling auto-preview links:', err);
+                }
             }
             
             function clearHistory() {
-                if (confirm('Are you sure you want to clear all chat history? This cannot be undone.')) {
-                    // Get all keys starting with 'chat_'
-                    const keys = Object.keys(localStorage).filter(key => key.startsWith('chat_'));
-                    
-                    // Remove each chat history
-                    keys.forEach(key => {
-                        localStorage.removeItem(key);
-                    });
-                    
-                    showNotification('Chat history cleared', 'success');
+                try {
+                    if (confirm('Are you sure you want to clear all chat history? This cannot be undone.')) {
+                        // Get all keys starting with 'chat_'
+                        const keys = Object.keys(localStorage).filter(key => key.startsWith('chat_'));
+                        
+                        // Remove each chat history
+                        keys.forEach(key => {
+                            localStorage.removeItem(key);
+                        });
+                        
+                        showNotification('Chat history cleared', 'success');
+                    }
+                } catch (err) {
+                    console.error('Error clearing history:', err);
+                    showNotification('Failed to clear history', 'error');
                 }
             }
             
             function exportData() {
-                const data = {
-                    users: JSON.parse(localStorage.getItem('p2pChatUsers')),
-                    connections: JSON.parse(localStorage.getItem('p2pChatConnections')),
-                    settings: JSON.parse(localStorage.getItem('p2pChatSettings')),
-                    chats: {}
-                };
-                
-                // Get all chat histories
-                const chatKeys = Object.keys(localStorage).filter(key => key.startsWith('chat_'));
-                chatKeys.forEach(key => {
-                    data.chats[key] = JSON.parse(localStorage.getItem(key));
-                });
-                
-                // Create download link
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `p2p_chat_backup_${new Date().toISOString().split('T')[0]}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                showNotification('Data exported successfully', 'success');
+                try {
+                    const data = {
+                        users: JSON.parse(localStorage.getItem('p2pChatUsers')),
+                        connections: JSON.parse(localStorage.getItem('p2pChatConnections')),
+                        settings: JSON.parse(localStorage.getItem('p2pChatSettings')),
+                        savedItems: JSON.parse(localStorage.getItem('p2pChatSavedItems')),
+                        groups: JSON.parse(localStorage.getItem('p2pChatGroups')),
+                        chats: {}
+                    };
+                    
+                    // Get all chat histories
+                    const chatKeys = Object.keys(localStorage).filter(key => key.startsWith('chat_'));
+                    chatKeys.forEach(key => {
+                        data.chats[key] = JSON.parse(localStorage.getItem(key));
+                    });
+                    
+                    // Create download link
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `p2p_chat_backup_${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    showNotification('Data exported successfully', 'success');
+                } catch (err) {
+                    console.error('Error exporting data:', err);
+                    showNotification('Failed to export data', 'error');
+                }
             }
             
             function importData(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-                
-                if (confirm('Importing data will overwrite your current settings and chat history. Continue?')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        try {
-                            const data = JSON.parse(e.target.result);
-                            
-                            // Import data
-                            if (data.users) localStorage.setItem('p2pChatUsers', JSON.stringify(data.users));
-                            if (data.connections) localStorage.setItem('p2pChatConnections', JSON.stringify(data.connections));
-                            if (data.settings) localStorage.setItem('p2pChatSettings', JSON.stringify(data.settings));
-                            
-                            // Import chat histories
-                            if (data.chats) {
-                                Object.keys(data.chats).forEach(key => {
-                                    localStorage.setItem(key, JSON.stringify(data.chats[key]));
-                                });
+                try {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    
+                    if (confirm('Importing data will overwrite your current settings and chat history. Continue?')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            try {
+                                const data = JSON.parse(e.target.result);
+                                
+                                // Import data
+                                if (data.users) localStorage.setItem('p2pChatUsers', JSON.stringify(data.users));
+                                if (data.connections) localStorage.setItem('p2pChatConnections', JSON.stringify(data.connections));
+                                if (data.settings) localStorage.setItem('p2pChatSettings', JSON.stringify(data.settings));
+                                if (data.savedItems) localStorage.setItem('p2pChatSavedItems', JSON.stringify(data.savedItems));
+                                if (data.groups) localStorage.setItem('p2pChatGroups', JSON.stringify(data.groups));
+                                
+                                // Import chat histories
+                                if (data.chats) {
+                                    Object.keys(data.chats).forEach(key => {
+                                        localStorage.setItem(key, JSON.stringify(data.chats[key]));
+                                    });
+                                }
+                                
+                                // Reload settings
+                                loadSettings();
+                                
+                                showNotification('Data imported successfully', 'success');
+                            } catch (err) {
+                                console.error('Error parsing import file:', err);
+                                showNotification('Invalid data file', 'error');
                             }
-                            
-                            // Reload settings
-                            loadSettings();
-                            
-                            showNotification('Data imported successfully', 'success');
-                        } catch (err) {
-                            showNotification('Error importing data: ' + err.message, 'error');
-                        }
-                    };
-                    reader.readAsText(file);
+                        };
+                        reader.onerror = function() {
+                            showNotification('Error reading file', 'error');
+                        };
+                        reader.readAsText(file);
+                    }
+                    
+                    // Reset file input
+                    event.target.value = '';
+                } catch (err) {
+                    console.error('Error importing data:', err);
+                    showNotification('Failed to import data', 'error');
                 }
-                
-                // Reset file input
-                event.target.value = '';
             }
             
             function changePassword() {
-                const newPassword = prompt('Enter new password:');
-                if (newPassword) {
-                    const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
-                    if (users[currentUser.username]) {
-                        users[currentUser.username].password = newPassword;
-                        localStorage.setItem('p2pChatUsers', JSON.stringify(users));
-                        showNotification('Password changed successfully', 'success');
+                try {
+                    const newPassword = prompt('Enter new password:');
+                    if (newPassword) {
+                        const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                        if (users[currentUser.username]) {
+                            users[currentUser.username].password = newPassword;
+                            localStorage.setItem('p2pChatUsers', JSON.stringify(users));
+                            showNotification('Password changed successfully', 'success');
+                        }
                     }
+                } catch (err) {
+                    console.error('Error changing password:', err);
+                    showNotification('Failed to change password', 'error');
                 }
             }
             
             function deleteAccount() {
-                if (confirm('Are you sure you want to delete your account? All your data will be permanently removed.')) {
-                    const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
-                    delete users[currentUser.username];
-                    localStorage.setItem('p2pChatUsers', JSON.stringify(users));
-                    
-                    // Remove all chat histories involving this user
-                    const chatKeys = Object.keys(localStorage).filter(key => key.startsWith('chat_') && key.includes(currentUser.peerId));
-                    chatKeys.forEach(key => {
-                        localStorage.removeItem(key);
-                    });
-                    
-                    // Remove from connections
-                    const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
-                    const updatedConnections = connections.filter(peerId => peerId !== currentUser.peerId);
-                    localStorage.setItem('p2pChatConnections', JSON.stringify(updatedConnections));
-                    
-                    // Logout
-                    logout();
-                    
-                    showNotification('Account deleted successfully', 'success');
+                try {
+                    if (confirm('Are you sure you want to delete your account? All your data will be permanently removed.')) {
+                        const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                        delete users[currentUser.username];
+                        localStorage.setItem('p2pChatUsers', JSON.stringify(users));
+                        
+                        // Remove all chat histories involving this user
+                        const chatKeys = Object.keys(localStorage).filter(key => key.startsWith('chat_') && key.includes(currentUser.peerId));
+                        chatKeys.forEach(key => {
+                            localStorage.removeItem(key);
+                        });
+                        
+                        // Remove from connections
+                        const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
+                        const updatedConnections = connections.filter(peerId => peerId !== currentUser.peerId);
+                        localStorage.setItem('p2pChatConnections', JSON.stringify(updatedConnections));
+                        
+                        // Remove saved items
+                        localStorage.removeItem('p2pChatSavedItems');
+                        
+                        // Remove from groups
+                        const groups = JSON.parse(localStorage.getItem('p2pChatGroups'));
+                        Object.keys(groups).forEach(groupId => {
+                            groups[groupId].members = groups[groupId].members.filter(member => member !== currentUser.peerId);
+                            if (groups[groupId].members.length === 0) {
+                                delete groups[groupId];
+                            }
+                        });
+                        localStorage.setItem('p2pChatGroups', JSON.stringify(groups));
+                        
+                        // Logout
+                        logout();
+                        
+                        showNotification('Account deleted successfully', 'success');
+                    }
+                } catch (err) {
+                    console.error('Error deleting account:', err);
+                    showNotification('Failed to delete account', 'error');
                 }
             }
             
             function handleContextMenu(e) {
-                e.preventDefault();
-                
-                // Check if right-click was on a message
-                const message = e.target.closest('.message');
-                if (message) {
-                    const contextMenu = document.getElementById('contextMenu');
-                    contextMenu.style.display = 'block';
-                    contextMenu.style.left = `${e.pageX}px`;
-                    contextMenu.style.top = `${e.pageY}px`;
+                try {
+                    e.preventDefault();
                     
-                    // Store the clicked message for context actions
-                    contextMenu.dataset.messageId = message.dataset.id || '';
-                    contextMenu.dataset.messageContent = message.querySelector('div').textContent;
+                    // Check if right-click was on a message
+                    const message = e.target.closest('.message');
+                    if (message) {
+                        const contextMenu = document.getElementById('contextMenu');
+                        contextMenu.style.display = 'block';
+                        contextMenu.style.left = `${e.pageX}px`;
+                        contextMenu.style.top = `${e.pageY}px`;
+                        
+                        // Store the clicked message for context actions
+                        contextMenu.dataset.messageId = message.dataset.id || '';
+                        contextMenu.dataset.messageContent = message.querySelector('.message-content')?.textContent || '';
+                    }
+                } catch (err) {
+                    console.error('Error handling context menu:', err);
                 }
             }
             
             function copyMessage() {
-                const contextMenu = document.getElementById('contextMenu');
-                navigator.clipboard.writeText(contextMenu.dataset.messageContent);
-                contextMenu.style.display = 'none';
-                showNotification('Message copied to clipboard', 'success');
+                try {
+                    const contextMenu = document.getElementById('contextMenu');
+                    navigator.clipboard.writeText(contextMenu.dataset.messageContent)
+                        .then(() => {
+                            showNotification('Message copied to clipboard', 'success');
+                        })
+                        .catch(err => {
+                            console.error('Failed to copy:', err);
+                            showNotification('Failed to copy message', 'error');
+                        });
+                    contextMenu.style.display = 'none';
+                } catch (err) {
+                    console.error('Error copying message:', err);
+                    showNotification('Failed to copy message', 'error');
+                }
             }
             
-            function deleteMessage() {
-                // In a real app, you would need to implement message deletion logic
-                showNotification('Message deletion not implemented in this demo', 'warning');
-                document.getElementById('contextMenu').style.display = 'none';
+            function saveMessageToStorage() {
+                try {
+                    const contextMenu = document.getElementById('contextMenu');
+                    const messageId = contextMenu.dataset.messageId;
+                    const content = contextMenu.dataset.messageContent;
+                    
+                    const savedItems = JSON.parse(localStorage.getItem('p2pChatSavedItems')) || [];
+                    
+                    // Check if already saved
+                    if (!savedItems.some(item => item.id === messageId)) {
+                        savedItems.push({
+                            id: messageId,
+                            type: 'message',
+                            content: content,
+                            timestamp: new Date().toISOString()
+                        });
+                        
+                        localStorage.setItem('p2pChatSavedItems', JSON.stringify(savedItems));
+                        showNotification('Message saved', 'success');
+                    } else {
+                        showNotification('Message already saved', 'info');
+                    }
+                    
+                    contextMenu.style.display = 'none';
+                } catch (err) {
+                    console.error('Error saving message:', err);
+                    showNotification('Failed to save message', 'error');
+                }
             }
             
-            function forwardMessage() {
-                // In a real app, you would implement message forwarding
-                showNotification('Message forwarding not implemented in this demo', 'warning');
-                document.getElementById('contextMenu').style.display = 'none';
+            function saveFileToStorage(fileData) {
+                try {
+                    const savedItems = JSON.parse(localStorage.getItem('p2pChatSavedItems')) || [];
+                    
+                    // Check if already saved
+                    if (!savedItems.some(item => item.name === fileData.name && item.size === fileData.size)) {
+                        savedItems.push({
+                            type: 'file',
+                            name: fileData.name,
+                            size: fileData.size,
+                            mimeType: fileData.mimeType,
+                            data: fileData.data,
+                            timestamp: new Date().toISOString()
+                        });
+                        
+                        localStorage.setItem('p2pChatSavedItems', JSON.stringify(savedItems));
+                        showNotification('File saved', 'success');
+                    } else {
+                        showNotification('File already saved', 'info');
+                    }
+                } catch (err) {
+                    console.error('Error saving file:', err);
+                    showNotification('Failed to save file', 'error');
+                }
+            }
+            
+            function deleteMessage(messageId) {
+                try {
+                    if (confirm('Delete this message?')) {
+                        const messageElement = document.querySelector(`.message[data-id="${messageId}"]`);
+                        if (messageElement) {
+                            messageElement.remove();
+                            showNotification('Message deleted', 'success');
+                        }
+                    }
+                    document.getElementById('contextMenu').style.display = 'none';
+                } catch (err) {
+                    console.error('Error deleting message:', err);
+                    showNotification('Failed to delete message', 'error');
+                }
             }
             
             function formatFileSize(bytes) {
@@ -2060,44 +3162,272 @@
             }
             
             function createRipple(event) {
-                const button = event.currentTarget;
-                const circle = document.createElement('span');
-                const diameter = Math.max(button.clientWidth, button.clientHeight);
-                const radius = diameter / 2;
-                
-                circle.style.width = circle.style.height = `${diameter}px`;
-                circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
-                circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
-                circle.classList.add('ripple');
-                
-                const ripple = button.getElementsByClassName('ripple')[0];
-                if (ripple) {
-                    ripple.remove();
+                try {
+                    const button = event.currentTarget;
+                    const circle = document.createElement('span');
+                    const diameter = Math.max(button.clientWidth, button.clientHeight);
+                    const radius = diameter / 2;
+                    
+                    circle.style.width = circle.style.height = `${diameter}px`;
+                    circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+                    circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+                    circle.classList.add('ripple');
+                    
+                    const ripple = button.getElementsByClassName('ripple')[0];
+                    if (ripple) {
+                        ripple.remove();
+                    }
+                    
+                    button.appendChild(circle);
+                    
+                    // Remove ripple after animation completes
+                    setTimeout(() => {
+                        circle.remove();
+                    }, 600);
+                } catch (err) {
+                    console.error('Error creating ripple effect:', err);
                 }
-                
-                button.appendChild(circle);
-                
-                // Remove ripple after animation completes
-                setTimeout(() => {
-                    circle.remove();
-                }, 600);
             }
             
-            // Make functions available globally for HTML onclick handlers
-            window.showFullscreenImage = function(src) {
-                document.getElementById('fullscreenImageContent').src = src;
-                document.getElementById('fullscreenImage').classList.add('show');
-            };
+            function showFullscreenImage(src, filename = 'image') {
+                try {
+                    const fullscreenImage = document.getElementById('fullscreenImage');
+                    const img = document.getElementById('fullscreenImageContent');
+                    
+                    img.src = src;
+                    img.dataset.filename = filename;
+                    fullscreenImage.classList.add('show');
+                } catch (err) {
+                    console.error('Error showing fullscreen image:', err);
+                    showNotification('Failed to display image', 'error');
+                }
+            }
             
-            window.downloadFile = function(filename, data) {
-                const element = document.createElement('a');
-                element.setAttribute('href', 'data:application/octet-stream;base64,' + btoa(data));
-                element.setAttribute('download', filename);
-                element.style.display = 'none';
-                document.body.appendChild(element);
-                element.click();
-                document.body.removeChild(element);
-            };
+            function downloadCurrentImage() {
+                try {
+                    const img = document.getElementById('fullscreenImageContent');
+                    downloadFile(img.dataset.filename || 'image', img.src);
+                } catch (err) {
+                    console.error('Error downloading image:', err);
+                    showNotification('Failed to download image', 'error');
+                }
+            }
+            
+            function saveCurrentImage() {
+                try {
+                    const img = document.getElementById('fullscreenImageContent');
+                    const fileData = {
+                        type: 'file',
+                        name: img.dataset.filename || 'image',
+                        size: 0, // Can't determine size from data URL
+                        mimeType: 'image/jpeg',
+                        data: img.src
+                    };
+                    
+                    saveFileToStorage(fileData);
+                } catch (err) {
+                    console.error('Error saving image:', err);
+                    showNotification('Failed to save image', 'error');
+                }
+            }
+            
+            function downloadFile(filename, dataUrl) {
+                try {
+                    const element = document.createElement('a');
+                    element.setAttribute('href', dataUrl);
+                    element.setAttribute('download', filename);
+                    element.style.display = 'none';
+                    document.body.appendChild(element);
+                    element.click();
+                    document.body.removeChild(element);
+                } catch (err) {
+                    console.error('Error downloading file:', err);
+                    showNotification('Failed to download file', 'error');
+                }
+            }
+            
+            function showGroupCreationModal() {
+                try {
+                    const modal = document.getElementById('groupModal');
+                    const userList = document.getElementById('groupUserList');
+                    
+                    // Clear previous selections
+                    userList.innerHTML = '';
+                    
+                    // Get all users except current user
+                    const users = JSON.parse(localStorage.getItem('p2pChatUsers'));
+                    const connections = JSON.parse(localStorage.getItem('p2pChatConnections'));
+                    
+                    connections.forEach(peerId => {
+                        const user = Object.values(users).find(u => u.peerId === peerId);
+                        if (user && user.peerId !== currentUser.peerId) {
+                            const userItem = document.createElement('div');
+                            userItem.className = 'user-item';
+                            
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.id = `user-${user.peerId}`;
+                            checkbox.value = user.peerId;
+                            
+                            const label = document.createElement('label');
+                            label.htmlFor = `user-${user.peerId}`;
+                            
+                            const pic = document.createElement('div');
+                            pic.className = 'profile-pic';
+                            pic.textContent = user.profilePic || user.username.charAt(0).toUpperCase();
+                            
+                            const name = document.createElement('span');
+                            name.textContent = user.username;
+                            
+                            label.appendChild(pic);
+                            label.appendChild(name);
+                            userItem.appendChild(checkbox);
+                            userItem.appendChild(label);
+                            userList.appendChild(userItem);
+                        }
+                    });
+                    
+                    modal.classList.remove('hidden');
+                } catch (err) {
+                    console.error('Error showing group creation modal:', err);
+                    showNotification('Failed to show group creation', 'error');
+                }
+            }
+            
+            function createGroup() {
+                try {
+                    const groupName = document.getElementById('groupNameInput').value.trim();
+                    if (!groupName) {
+                        showNotification('Group name is required', 'error');
+                        return;
+                    }
+                    
+                    const description = document.getElementById('groupDescriptionInput').value.trim();
+                    const checkboxes = document.querySelectorAll('#groupUserList input[type="checkbox"]:checked');
+                    
+                    if (checkboxes.length === 0) {
+                        showNotification('Please select at least one member', 'error');
+                        return;
+                    }
+                    
+                    const members = Array.from(checkboxes).map(cb => cb.value);
+                    members.push(currentUser.peerId); // Include self
+                    
+                    const groupId = 'group-' + Math.random().toString(36).substr(2, 9);
+                    const groups = JSON.parse(localStorage.getItem('p2pChatGroups')) || {};
+                    
+                    groups[groupId] = {
+                        id: groupId,
+                        name: groupName,
+                        description: description,
+                        members: members,
+                        created: new Date().toISOString(),
+                        creator: currentUser.peerId
+                    };
+                    
+                    localStorage.setItem('p2pChatGroups', JSON.stringify(groups));
+                    
+                    // Set as current group
+                    currentGroup = groups[groupId];
+                    currentPeer = null;
+                    
+                    // Update UI
+                    updateChatHeader();
+                    inputArea.classList.remove('hidden');
+                    chatContainer.classList.remove('hidden');
+                    connectionPanel.classList.add('hidden');
+                    
+                    document.getElementById('groupModal').classList.add('hidden');
+                    showNotification('Group created successfully', 'success');
+                } catch (err) {
+                    console.error('Error creating group:', err);
+                    showNotification('Failed to create group', 'error');
+                }
+            }
+            
+            function sendGroupMessage(message, metadata = {}) {
+                try {
+                    if (!currentGroup) return;
+                    
+                    // Add message locally
+                    addMessage('sent', message, metadata);
+                    
+                    // Save message to history for each member
+                    currentGroup.members.forEach(memberId => {
+                        if (memberId !== currentUser.peerId) {
+                            saveMessage(memberId, message, false, metadata);
+                        }
+                    });
+                    
+                    showNotification('Message sent to group', 'success');
+                } catch (err) {
+                    console.error('Error sending group message:', err);
+                    showNotification('Failed to send group message', 'error');
+                }
+            }
+            
+            function sendGroupFile(fileData) {
+                try {
+                    if (!currentGroup) return;
+                    
+                    // Add file message locally
+                    addFileMessage('sent', fileData);
+                    
+                    // Save file to history for each member
+                    currentGroup.members.forEach(memberId => {
+                        if (memberId !== currentUser.peerId) {
+                            saveMessage(memberId, fileData, true);
+                        }
+                    });
+                    
+                    showNotification('File sent to group', 'success');
+                } catch (err) {
+                    console.error('Error sending group file:', err);
+                    showNotification('Failed to send group file', 'error');
+                }
+            }
+            
+            function sendGroupReaction(messageId, reaction) {
+                try {
+                    if (!currentGroup) return;
+                    
+                    // Add reaction locally
+                    addReactionToMessage(messageId, reaction);
+                    
+                    showNotification('Reaction sent to group', 'success');
+                } catch (err) {
+                    console.error('Error sending group reaction:', err);
+                    showNotification('Failed to send group reaction', 'error');
+                }
+            }
+            
+            function sendGroupPin(messageId, pinned) {
+                try {
+                    if (!currentGroup) return;
+                    
+                    // Update pin status locally
+                    updatePinnedMessage(messageId, pinned);
+                    
+                    showNotification(pinned ? 'Message pinned' : 'Message unpinned', 'success');
+                } catch (err) {
+                    console.error('Error sending group pin:', err);
+                    showNotification('Failed to update pin status', 'error');
+                }
+            }
+            
+            function sendGroupForward(content, originalSender) {
+                try {
+                    if (!currentGroup) return;
+                    
+                    // Add forwarded message locally
+                    addForwardedMessage('sent', content, originalSender);
+                    
+                    showNotification('Message forwarded to group', 'success');
+                } catch (err) {
+                    console.error('Error forwarding to group:', err);
+                    showNotification('Failed to forward message', 'error');
+                }
+            }
         });
     </script>
 </body>
